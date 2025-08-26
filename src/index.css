@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: "Sora", sans-serif;
+}
+
+@layer utilities {
+	.font-poppins {
+		font-family: "Poppins", sans-serif;
+	}
+	.font-inter {
+		font-family: "Inter", sans-serif;
+	}
+}
+
+@theme {
+	--breakpoint-*: initial;
+	--breakpoint-sm: 640px;
+	--breakpoint-md: 864px;
+	--breakpoint-lg: 1024px;
+	--breakpoint-xl: 1280px;
+	--color-primary-purple: #320d5e;
+	--color-black-slate: #020617;
+}
+
+.flex-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.flex-between {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.auth-bg {
+	background-image: url(assets/auth-hero.jpg);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+button {
+	cursor: pointer;
+}
+
+.five {
+	background-image: url(assets//rect.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center 100px;
+}
+
+.six-title {
+	background: linear-gradient(90deg, #fafafa 0%, #777df950 30%, #fafafa 95%);
+}
+
+.six-button {
+	/* box-shadow: 0px 7px 17px 0px #6950eb4f;
+	box-shadow: 0px 4px 7px 0px #9c8aea4d inset; */
+	box-shadow: 0px 7px 17px 0px #6950eb4f,
+		/* outer shadow */ inset 0px 4px 7px 0px #9c8aea4d; /* inner shadow */
+}
+
+.up {
+	rotate: 0deg;
+	transition: rotate linear 0.2s;
+}
+.down {
+	transition: rotate linear 0.2s;
+	rotate: 180deg;
+}
+
+@media (min-width: 640px) {
+	.five {
+		background-position: 50px 80px;
+	}
+}
+
+@media (min-width: 864px) {
+	.five {
+		background-position: 120px 50px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.five {
+		background-position: 160px 60px;
+	}
+}
+
+@media (min-width: 1280px) {
+	.five {
+		background-position: 185px 60px;
+	}
+}
