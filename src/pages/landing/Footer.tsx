@@ -7,9 +7,9 @@ import { BsFacebook, BsInstagram } from "react-icons/bs";
 
 const Footer = () => {
 	return (
-		<footer className="py-8 sm:py-10 md:py-12 lg:py-16 xl:py-20 bg-primary-purple text-white">
+		<footer className="bg-primary-purple text-white">
 			<PageWrapper>
-				<div className="sm:mx-10 md:mx-0 grid grid-cols-2 sm:grid-cols-3 gap-10 lg:grid-cols-6 lg:gap-8 xl:gap-10">
+				<div className="sm:mx-10 md:mx-0 grid grid-cols-2 sm:grid-cols-3 gap-10 lg:grid-cols-6 lg:gap-8 xl:gap-10 py-8 sm:py-10 md:py-12 lg:py-16 xl:py-20 ">
 					<div className="col-span-2">
 						<img
 							src={logo}
@@ -59,7 +59,7 @@ const Footer = () => {
 					</div>
 				</div>
 
-				<div className="mt-20 border-t border-[#EBF1FF] flex-between flex-wrap gap-5 pt-8 text-sm sm:text-[15px] lg:text-base">
+				<div className="mt-12 md:mt-10 lg:mt-4 border-t border-[#EBF1FF] flex-between flex-wrap gap-5 pt-6 pb-10 sm:pt-7 md:pt-8 text-sm sm:text-[15px] lg:text-base">
 					<div className="flex gap-3">
 						<Link to="">Privacy Policy</Link>
 						<Link to="">Cookie Policy</Link>
