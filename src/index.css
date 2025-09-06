@@ -21,6 +21,12 @@ body {
 	.font-inter {
 		font-family: "Inter", sans-serif;
 	}
+	.font-montserrat {
+		font-family: "Montserrat", sans-serif;
+	}
+	.font-ibmplex {
+		font-family: "IBM Plex Sans", sans-serif;
+	}
 }
 
 @theme {
@@ -31,6 +37,8 @@ body {
 	--breakpoint-xl: 1280px;
 	--color-primary-purple: #320d5e;
 	--color-black-slate: #020617;
+	--color-light-black: #060606;
+	--color-netral-900: #18181b;
 }
 
 .flex-center {
@@ -50,6 +58,10 @@ body {
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
+}
+
+.hide-scroll::-webkit-scrollbar {
+	display: none;
 }
 
 button {

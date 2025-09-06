@@ -1,3 +1,4 @@
+import { IoIosArrowDown } from "react-icons/io";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 type SelectProps = {
@@ -22,6 +23,19 @@ export const CustomSelectNoDropDown = ({
 					<MdKeyboardArrowDown size={22} />
 				</span>
 			</div>
+		</div>
+	);
+};
+
+export const MiniDropDown = () => {
+	return (
+		<div className="text-[#060606]">
+			<button className="bg-white flex items-center gap-3 px-4 py-3 rounded-[25px] text-sm xl:text-[14.5px]">
+				<span>Last 30 Days</span>
+				<span>
+					<IoIosArrowDown size={18} />
+				</span>
+			</button>
 		</div>
 	);
 };

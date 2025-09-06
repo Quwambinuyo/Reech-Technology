@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { CustomCheckbox, CustomTextInput } from "../../components/CustomInput";
 import Button from "../../components/Button";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/reech.png";
 import LandingMobileNavbar from "../../layout/LandingMobileNavbar";
 
 const SignIn = () => {
 	const [togglePassword, setTogglePassword] = useState(false);
+
+	const navigate = useNavigate();
+
+	const onClick = (e: FormEvent) => {
+		e.preventDefault();
+
+		navigate("/dashboard");
+	};
 
 	return (
 		<main className="md:flex h-screen mt-[60px] sm:mt-[63px] md:mt-0">
@@ -36,7 +44,10 @@ const SignIn = () => {
 						</p>
 					</div>
 
-					<form className="flex flex-col gap-6 md:gap-7 xl:gap-8">
+					<form
+						className="flex flex-col gap-6 md:gap-7 xl:gap-8"
+						onSubmit={onClick}
+					>
 						<CustomTextInput
 							label="Email address"
 							type="email"
@@ -67,7 +78,7 @@ const SignIn = () => {
 								</div>
 							</div>
 						</div>
-						<Button text="Login" />
+						<Button text="Login" type="submit" />
 					</form>
 
 					<div className="flex flex-col gap-4 xl:gap-5 mt-6 md:mt-7 xl:mt-8">
