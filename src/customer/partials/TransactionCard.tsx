@@ -1,6 +1,8 @@
 import moment from "moment";
 import type { TransactionProps } from "../../types";
 import { StatusDisplay } from "../../components/small";
+import { useAppDispatch } from "../../redux/hooks";
+import { onToggleTransactionDetails } from "../../redux/transaction/reducer";
 
 const TransactionCard = ({
 	transaction,
@@ -9,6 +11,12 @@ const TransactionCard = ({
 	transaction: TransactionProps;
 	page?: string;
 }) => {
+	const dispatch = useAppDispatch();
+
+	const onDetailsClick = () => {
+		dispatch(onToggleTransactionDetails(transaction));
+	};
+
 	return (
 		<div
 			className="grid font-ibmplex font-semibold text-neutral-900 gap-3 text-sm xl:text-[14.5px]"
@@ -49,6 +57,7 @@ const TransactionCard = ({
 				className={`text-[#4A148C] border border-[#4A148C] rounded-lg py-2 font-normal text-sm font-inter font-normal col-span-2 ${
 					page === "all" ? "" : "mx-3"
 				}`}
+				onClick={onDetailsClick}
 			>
 				Details
 			</button>

@@ -7,6 +7,7 @@ import Dashboard from "../pages/dashboard";
 import MakePayment from "../pages/payment";
 import Transaction from "../pages/transaction";
 import AllTransactions from "../customer/AllTransactions";
+import Profile from "../pages/profile";
 
 export default function BaseRoutes() {
 	return (
@@ -21,6 +22,7 @@ export default function BaseRoutes() {
 					<Route path="/make-payments" element={<MakePayment />} />
 					<Route path="/transactions" element={<Transaction />} />
 					<Route path="/transactions/all" element={<AllTransactions />} />
+					<Route path="/profile" element={<Profile />} />
 				</Route>
 			</Routes>
 		</Router>

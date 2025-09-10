@@ -14,11 +14,11 @@ type TextInputProps = {
 
 type OtherInputProps = {
 	id: string;
-	handleChange: () => void;
+	handleChange?: () => void;
 	disabled?: boolean;
-	isChecked: boolean;
+	isChecked?: boolean;
 	readOnly?: boolean;
-	value: any;
+	value?: any;
 	name?: string;
 };
 
