@@ -4,5 +4,26 @@ import pointSpent from "../assets/spent.png";
 import rank from "../assets/rank.png";
 import wallet from "../assets/wallet.png";
 import billLine from "../assets/bill-line.png";
+import profileImg from "../assets/profile.png";
+import mailIcon from "../assets/mail-icon.png";
+import personIcon from "../assets/person-icon.png";
+import uploadIcon from "../assets/upload-icon.png";
+import commentImg from "../assets/comment.png";
+import ac_reward from "../assets/ac-task.png";
+import in_reward from "../assets/ac-task.png";
 
-export { pointBalance, pointSpent, rank, redeemedPoint, wallet, billLine };
+export {
+	pointBalance,
+	pointSpent,
+	rank,
+	redeemedPoint,
+	wallet,
+	billLine,
+	profileImg,
+	mailIcon,
+	personIcon,
+	uploadIcon,
+	commentImg,
+	ac_reward,
+	in_reward,
+};

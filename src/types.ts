@@ -7,3 +7,16 @@ export type TransactionProps = {
 	pointsEarned: number;
 	date: string;
 };
+
+export type CountryProps = {
+	code: string;
+	currency: string;
+	currency_code: string;
+	currency_symbol: string;
+	dial_code: string;
+	flag: string;
+	local_name: string;
+	name: string;
+};
+
+export type UserRole = "customer" | "merchant";

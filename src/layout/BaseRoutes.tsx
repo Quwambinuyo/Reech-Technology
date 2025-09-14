@@ -8,6 +8,8 @@ import MakePayment from "../pages/payment";
 import Transaction from "../pages/transaction";
 import AllTransactions from "../customer/AllTransactions";
 import Profile from "../pages/profile";
+import PointUpload from "../merchant/PointUpload";
+import RewardsSetting from "../merchant/Rewards";
 
 export default function BaseRoutes() {
 	return (
@@ -20,6 +22,8 @@ export default function BaseRoutes() {
 				<Route element={<LayoutWrapper />}>
 					<Route path="/dashboard" element={<Dashboard />} />
 					<Route path="/make-payments" element={<MakePayment />} />
+					<Route path="/upload-points" element={<PointUpload />} />
+					<Route path="/rewards-settings" element={<RewardsSetting />} />
 					<Route path="/transactions" element={<Transaction />} />
 					<Route path="/transactions/all" element={<AllTransactions />} />
 					<Route path="/profile" element={<Profile />} />
