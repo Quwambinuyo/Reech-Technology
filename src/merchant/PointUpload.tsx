@@ -14,7 +14,7 @@ const PointUpload = () => {
 					</h4>
 
 					<div className="flex items-center gap-6 xl:gap-8">
-						<SeeAllBtn />
+						<SeeAllBtn onClick={() => {}} />
 						<MiniCreateButton text="create new" />
 					</div>
 				</div>
@@ -40,7 +40,7 @@ const PointUpload = () => {
 						Point-to-Naira Conversion <FaQuestion color="#4A148C" size={15} />
 					</h4>
 					<div className="flex items-center gap-6 xl:gap-8">
-						<SeeAllBtn />
+						<SeeAllBtn onClick={() => {}} />
 						<MiniCreateButton text="create new" />
 					</div>
 				</div>
