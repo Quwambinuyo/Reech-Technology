@@ -11,6 +11,8 @@ import uploadIcon from "../assets/upload-icon.png";
 import commentImg from "../assets/comment.png";
 import ac_reward from "../assets/ac-task.png";
 import in_reward from "../assets/ac-task.png";
+import copyIcon from "../assets/copy-icon.png";
+import emptyIcon from "../assets/info-filled.png";
 
 export {
 	pointBalance,
@@ -26,4 +28,6 @@ export {
 	commentImg,
 	ac_reward,
 	in_reward,
+	copyIcon,
+	emptyIcon,
 };

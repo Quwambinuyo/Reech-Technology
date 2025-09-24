@@ -4,7 +4,7 @@ interface DashboardCard {
 	icon: string;
 	title: string;
 	value: string;
-	context?: "point" | "";
+	context?: "point" | "user" | "";
 	info?: { percentage: number };
 }
 
@@ -26,7 +26,7 @@ export const DashboardCard = ({
 					{value}
 				</h4>
 				<p className="text-sm font-normal">
-					{context === "point" ? "Points" : ""}
+					{context === "point" ? "Points" : context === "user" ? "Users" : ""}
 				</p>
 			</div>
 			{info?.percentage && (

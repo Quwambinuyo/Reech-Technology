@@ -1,8 +1,12 @@
 import { MiniDropDown } from "../../components/CustomSelect";
 import CustomerDashboard from "../../customer/Dashboard";
+import MerchantDashboard from "../../merchant/Dashboard";
+import type { UserRole } from "../../types";
 import { userRole } from "../../utils";
 
 const Dashboard = () => {
+	const currentUserRole = userRole as UserRole;
+
 	return (
 		<div>
 			<section className="flex-between">
@@ -10,10 +14,10 @@ const Dashboard = () => {
 				<MiniDropDown />
 			</section>
 
-			{userRole === "customer" ? (
+			{currentUserRole === "customer" ? (
 				<CustomerDashboard />
 			) : (
-				<p>Merchant Dashboard</p>
+				<MerchantDashboard />
 			)}
 		</div>
 	);

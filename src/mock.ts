@@ -96,3 +96,79 @@ export const customerTransactions: TransactionProps[] = [
 		company: mtn,
 	},
 ];
+
+export const activityBasedPoints = [
+	{
+		id: 1,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 2,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 3,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 4,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 5,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 6,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 7,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 8,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 9,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+	{
+		id: 10,
+		activity: "Fund Transfer",
+		points: 10,
+		description: "For every successful transaction",
+	},
+];
+
+export const pointToNaira = [
+	{ id: 1, points: 10 },
+	{ id: 2, points: 20 },
+	{ id: 3, points: 30 },
+	{ id: 4, points: 40 },
+	{ id: 5, points: 10 },
+	{ id: 6, points: 20 },
+	{ id: 7, points: 30 },
+	{ id: 9, points: 40 },
+	{ id: 9, points: 10 },
+	{ id: 10, points: 20 },
+];

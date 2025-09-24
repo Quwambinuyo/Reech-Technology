@@ -20,3 +20,12 @@ export type CountryProps = {
 };
 
 export type UserRole = "customer" | "merchant";
+
+export type ActivityBasedProp = {
+	id: number;
+	activity: string;
+	points: number;
+	description: string;
+};
+
+export type PointEquivalentProp = { id: number; points: number };

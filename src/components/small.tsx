@@ -18,3 +18,15 @@ export const StatusDisplay = ({ status }: { status: string }) => {
 		</p>
 	);
 };
+
+export const SeeAllBtn = ({ onClick }: { onClick: () => void }) => (
+	<button className="text-sm text-[#4A148C]" onClick={onClick}>
+		See All
+	</button>
+);
+
+export const MiniCreateButton = ({ text }: { text: string }) => (
+	<button className="bg-[#4A148C] text-sm font-semibold text-[#D9D9D9] rounded-xl p-3.5 capitalize">
+		{text}
+	</button>
+);

@@ -7,6 +7,7 @@ import TransactionCard from "./partials/TransactionCard";
 import TabSelector from "../components/TabSelector";
 import { customerTransactions } from "../mock";
 import { tabs } from "./partials";
+import { SeeAllBtn } from "../components/small";
 
 const CustomerTransactions = () => {
 	const navigate = useNavigate();
@@ -53,12 +54,7 @@ const CustomerTransactions = () => {
 					<h5 className="text-light-black font-medium lg:text-lg">
 						Recent Transactions
 					</h5>
-					<button
-						className="text-sm text-[#4A148C]"
-						onClick={() => navigate("/transactions/all")}
-					>
-						See All
-					</button>
+					<SeeAllBtn onClick={() => navigate("/transactions/all")} />
 				</div>
 				<TabSelector
 					options={tabs}

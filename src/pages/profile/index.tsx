@@ -1,11 +1,15 @@
 import CustomerProfile from "../../customer/Profile";
+import MerchantProfile from "../../merchant/Profile";
+import type { UserRole } from "../../types";
 import { userRole } from "../../utils";
 
 const Profile = () => {
-	if (userRole === "customer") {
+	const currentUserRole = userRole as UserRole;
+
+	if (currentUserRole === "customer") {
 		return <CustomerProfile />;
 	}
-	return <p>Merchant Profile</p>;
+	return <MerchantProfile />;
 };
 
 export default Profile;

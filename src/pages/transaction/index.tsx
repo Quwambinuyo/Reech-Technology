@@ -1,8 +1,11 @@
 import { MiniDropDown } from "../../components/CustomSelect";
 import CustomerTransactions from "../../customer/Transactions";
+import MerchantTransactions from "../../merchant/Transactions";
+import type { UserRole } from "../../types";
 import { userRole } from "../../utils";
 
 const Transaction = () => {
+	const currentUserRole = userRole as UserRole;
 	return (
 		<div>
 			<section className="flex-between">
@@ -10,10 +13,10 @@ const Transaction = () => {
 				<MiniDropDown />
 			</section>
 
-			{userRole === "customer" ? (
+			{currentUserRole === "customer" ? (
 				<CustomerTransactions />
 			) : (
-				<p>Merchant Transaction</p>
+				<MerchantTransactions />
 			)}
 		</div>
 	);
