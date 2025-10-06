@@ -4,7 +4,7 @@ import TabSelector from "../components/TabSelector";
 import { tabs } from "./partials";
 import TransactionCard from "./partials/TransactionCard";
 
-const AllTransactions = () => {
+const AllCustomerTrx = () => {
 	const [activeTab, setActiveTab] = useState("All");
 
 	const selectedTransactions = customerTransactions.filter((a) => {
@@ -48,4 +48,4 @@ const AllTransactions = () => {
 	);
 };
 
-export default AllTransactions;
+export default AllCustomerTrx;
