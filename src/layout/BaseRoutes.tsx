@@ -6,12 +6,12 @@ import LayoutWrapper from ".";
 import Dashboard from "../pages/dashboard";
 import MakePayment from "../pages/payment";
 import Transaction from "../pages/transaction";
-import AllTransactions from "../customer/AllTransactions";
 import Profile from "../pages/profile";
 import PointUpload from "../merchant/PointUpload";
 import RewardsSetting from "../merchant/Rewards";
 import AllActivityPoints from "../merchant/AllActivityPoints";
 import AllConversionPoints from "../merchant/AllConversionPoints";
+import AllTransactions from "../pages/transaction/AllTransactions";
 
 export default function BaseRoutes() {
 	return (

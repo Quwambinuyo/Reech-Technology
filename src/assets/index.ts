@@ -13,6 +13,7 @@ import ac_reward from "../assets/ac-task.png";
 import in_reward from "../assets/ac-task.png";
 import copyIcon from "../assets/copy-icon.png";
 import emptyIcon from "../assets/info-filled.png";
+import customerImg from "../assets/customer.png";
 
 export {
 	pointBalance,
@@ -30,4 +31,5 @@ export {
 	in_reward,
 	copyIcon,
 	emptyIcon,
+	customerImg,
 };

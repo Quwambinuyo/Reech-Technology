@@ -1,15 +1,39 @@
 import { FaQuestion } from "react-icons/fa";
-import { MiniCreateButton, SeeAllBtn } from "../components/small";
-import { activityBasedPoints, pointToNaira } from "../mock";
-import ActivityPointCard from "./partial/ActivityPointCard";
-import PointEquivalentCard from "./partial/PointEquivalentCard";
 import { useNavigate } from "react-router-dom";
 
+import {
+	onToggleCreateActivityPoint,
+	onToggleCreatePointConversion,
+} from "../redux/point/reducer";
+import { MiniCreateButton, SeeAllBtn } from "../components/small";
+import PointEquivalentCard from "./partial/PointEquivalentCard";
+import { activityBasedPoints, pointToNaira } from "../mock";
+import ActivityPointCard from "./partial/ActivityPointCard";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import Modal from "../layout/Modal";
+import NewActivityPointForm from "./modal/NewActivityPointForm";
+import NewPointConversionForm from "./modal/NewPointConversionForm";
+
 const PointUpload = () => {
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+
+	const { toggleCreateActivityPoint, toggleCreatePointConversion } =
+		useAppSelector((state) => state.point);
+
+	const onCreateNewActivity = () => dispatch(onToggleCreateActivityPoint());
+	const onCreateNewConversion = () => dispatch(onToggleCreatePointConversion());
 
 	return (
 		<>
+			<Modal modal={toggleCreateActivityPoint}>
+				<NewActivityPointForm onClose={onCreateNewActivity} />
+			</Modal>
+
+			<Modal modal={toggleCreatePointConversion}>
+				<NewPointConversionForm onClose={onCreateNewConversion} />
+			</Modal>
+
 			<section className="bg-[#FFFFFFCC] rounded-2xl py-4 lg:py-5 px-3 lg:px-4">
 				<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
 					<h4 className="text-light-black text-lg flex items-center gap-1">
@@ -20,7 +44,7 @@ const PointUpload = () => {
 						<SeeAllBtn
 							onClick={() => navigate("/upload-points/activity-based")}
 						/>
-						<MiniCreateButton text="create new" />
+						<MiniCreateButton text="create new" onClick={onCreateNewActivity} />
 					</div>
 				</div>
 
@@ -48,7 +72,10 @@ const PointUpload = () => {
 						<SeeAllBtn
 							onClick={() => navigate("/upload-points/point-conversion")}
 						/>
-						<MiniCreateButton text="create new" />
+						<MiniCreateButton
+							text="create new"
+							onClick={onCreateNewConversion}
+						/>
 					</div>
 				</div>
 

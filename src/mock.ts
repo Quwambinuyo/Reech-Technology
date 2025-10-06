@@ -3,6 +3,7 @@ import shoprite from "./assets/shoprite.png";
 import bonusrank from "./assets/bonus-rank.png";
 import oraimo from "./assets/oraimo.png";
 import type { TransactionProps } from "./types";
+import { customerImg } from "./assets";
 
 export const customerTransactions: TransactionProps[] = [
 	{
@@ -171,4 +172,249 @@ export const pointToNaira = [
 	{ id: 9, points: 40 },
 	{ id: 9, points: 10 },
 	{ id: 10, points: 20 },
+];
+
+export const merchantTransactions1 = [
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "successful",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "successful",
+		id: 2,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "successful",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "pending",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "pending",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "successful",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "successful",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "pending",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "pending",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		status: "successful",
+		id: 1,
+	},
+];
+export const merchantTransactions2 = [
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 2,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
+	{
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		merchant: "JUST RITE STORE",
+		date: "2025-09-03T10:39:45",
+		pointsEarned: 260,
+		redeemed: "AJX Global",
+		id: 1,
+	},
 ];

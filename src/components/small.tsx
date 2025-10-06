@@ -25,8 +25,17 @@ export const SeeAllBtn = ({ onClick }: { onClick: () => void }) => (
 	</button>
 );
 
-export const MiniCreateButton = ({ text }: { text: string }) => (
-	<button className="bg-[#4A148C] text-sm font-semibold text-[#D9D9D9] rounded-xl p-3.5 capitalize">
+export const MiniCreateButton = ({
+	text,
+	onClick,
+}: {
+	text: string;
+	onClick: () => void;
+}) => (
+	<button
+		className="bg-[#4A148C] text-sm font-semibold text-[#D9D9D9] rounded-xl p-3.5 capitalize"
+		onClick={onClick}
+	>
 		{text}
 	</button>
 );
