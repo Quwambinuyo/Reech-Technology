@@ -29,3 +29,9 @@ export type ActivityBasedProp = {
 };
 
 export type PointEquivalentProp = { id: number; points: number };
+
+export type UserProps = {
+	name: string;
+	email: string;
+	avatarUrl: string;
+};

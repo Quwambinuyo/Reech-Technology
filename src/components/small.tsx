@@ -7,7 +7,7 @@ export const StatusDisplay = ({ status }: { status: string }) => {
 				status === "pending"
 					? "bg-[#FEEACD] text-[#FFAA2D]"
 					: status === "point deducted"
-					? "bg-[#FCD9DB] text-[#C81119]"
+					? "bg-[#FCD9DB] text-default-red"
 					: "bg-[#E2F3E3] text-[#48B34C]"
 			}`}
 		>

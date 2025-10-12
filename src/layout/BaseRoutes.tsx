@@ -12,6 +12,7 @@ import RewardsSetting from "../merchant/Rewards";
 import AllActivityPoints from "../merchant/AllActivityPoints";
 import AllConversionPoints from "../merchant/AllConversionPoints";
 import AllTransactions from "../pages/transaction/AllTransactions";
+import AllUserRanks from "../merchant/AllUserRanks";
 
 export default function BaseRoutes() {
 	return (
@@ -34,6 +35,14 @@ export default function BaseRoutes() {
 						element={<AllConversionPoints />}
 					/>
 					<Route path="/rewards-settings" element={<RewardsSetting />} />
+					<Route
+						path="/rewards-settings/user-ranks"
+						element={<AllUserRanks />}
+					/>
+					{/* <Route
+						path="/rewards-settings/rank-levels"
+						element={<AllUserRanks />}
+					/> */}
 					<Route path="/transactions" element={<Transaction />} />
 					<Route path="/transactions/all" element={<AllTransactions />} />
 					<Route path="/profile" element={<Profile />} />

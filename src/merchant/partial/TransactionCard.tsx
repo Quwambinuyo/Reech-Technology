@@ -1,13 +1,11 @@
 import moment from "moment";
 import { customerImg } from "../../assets";
 import { StatusDisplay } from "../../components/small";
+import { CustomerInfo } from ".";
+import type { UserProps } from "../../types";
 
 type MerchantTrxProps = {
-	customer: {
-		name: string;
-		email: string;
-		avatarUrl: string;
-	};
+	customer: UserProps;
 	merchant: string;
 	date: string;
 	pointsEarned: number;
@@ -16,27 +14,22 @@ type MerchantTrxProps = {
 	id: number;
 };
 
-type TransactionCardProps = {
-	type: string;
+const TransactionCard = ({
+	transaction,
+}: {
 	transaction: MerchantTrxProps;
-};
-
-const TransactionCard = ({ type, transaction }: TransactionCardProps) => {
+}) => {
 	return (
 		<div
 			className="grid grid font-ibmplex font-semibold text-neutral-900 gap-4 text-sm xl:text-[14.5px] odd:bg-[#F5F6FF] p-4"
 			style={{ gridTemplateColumns: "repeat(19, 1fr)" }}
 		>
-			<div className="col-span-4 flex items-center gap-2">
-				<img
-					src={customerImg}
-					alt="person"
-					className="rounded-full w-[28px] h-[28px]"
+			<div className="col-span-4">
+				<CustomerInfo
+					imgUrl={customerImg}
+					name={transaction.customer.name}
+					email={transaction.customer.email}
 				/>
-				<div className="flex flex-col gap-0.5">
-					<p className="font-semibold">{transaction.customer.name}</p>
-					<p className="text-[#A3A3A3] text-xs">{transaction.customer.email}</p>
-				</div>
 			</div>
 			<p className="col-span-3 flex items-center">{transaction.merchant}</p>
 			<p className="col-span-4 flex-center gap-2 text-sm">

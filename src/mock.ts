@@ -418,3 +418,179 @@ export const merchantTransactions2 = [
 		id: 1,
 	},
 ];
+
+export const rankLevelsTable = [
+	{
+		id: 1,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 2,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 3,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 4,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 5,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 6,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 7,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 8,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 9,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+	{
+		id: 10,
+		rankName: "gold",
+		pointRange: { min: 150, max: 299 },
+		benfitSummary: "5% Cashback + VIP Access",
+		colorTag: "#DFA510",
+	},
+];
+
+export const usersRank = [
+	{
+		id: 1,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 2,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 3,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 4,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 5,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 6,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 7,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 8,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 9,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+	{
+		id: 10,
+		customer: {
+			name: "David Abolaji",
+			email: "david@google.com",
+			avatarUrl: customerImg,
+		},
+		rank: "gold",
+		totalPoints: 260,
+	},
+];
