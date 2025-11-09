@@ -9,14 +9,15 @@ export type TransactionProps = {
 };
 
 export type CountryProps = {
-	code: string;
-	currency: string;
-	currency_code: string;
-	currency_symbol: string;
-	dial_code: string;
-	flag: string;
-	local_name: string;
-	name: string;
+	code?: string;
+	currency?: string;
+	currency_code?: string;
+	currency_symbol?: string;
+	dial_code?: string;
+	flag?: string;
+	local_name?: string;
+	name?: string;
+	id?: string;
 };
 
 export type UserRole = "customer" | "merchant";
@@ -35,3 +36,19 @@ export type UserProps = {
 	email: string;
 	avatarUrl: string;
 };
+
+export type InputEvent = React.ChangeEvent<HTMLInputElement>;
+export type TextAreaEvent = React.ChangeEvent<HTMLTextAreaElement>;
+export type ButtonEvent = React.MouseEvent<HTMLButtonElement>;
+export type FormEvent = React.FormEvent<HTMLFormElement>;
+
+export interface StakeholderProps {
+	id: string;
+	token: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	emailConfirmed: boolean;
+	roles: string[];
+	avatar?: string;
+}

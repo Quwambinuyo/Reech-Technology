@@ -1,15 +1,12 @@
-import { userRole } from "../../utils";
-import type { UserRole } from "../../types";
 import AllCustomerTrx from "../../customer/AllCustomerTrx";
 import AllMerchantTrx from "../../merchant/AllMerchantTrx";
+import { useRole } from "../../hooks/useRole";
 
 const AllTransactions = () => {
-	const currentUserRole = userRole as UserRole;
+	const currentUserRole = useRole();
 
 	return (
-		<>
-			{currentUserRole === "customer" ? <AllCustomerTrx /> : <AllMerchantTrx />}
-		</>
+		<>{currentUserRole === "User" ? <AllCustomerTrx /> : <AllMerchantTrx />}</>
 	);
 };
 

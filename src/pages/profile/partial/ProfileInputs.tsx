@@ -15,6 +15,7 @@ type ProfileInputProps = {
 	onTogglePhone?: () => void;
 	onCountrySelect?: (opt: any) => void;
 	selectedCountry?: CountryProps | null;
+	value: string;
 };
 
 const ProfileInput = ({
@@ -26,8 +27,9 @@ const ProfileInput = ({
 	onTogglePhone,
 	onCountrySelect,
 	selectedCountry,
+	value,
 }: ProfileInputProps) => {
-	console.log(selectedCountry, type);
+	// console.log(selectedCountry, type);
 
 	return (
 		<div className="flex flex-col gap-2 lg:gap-2.5 relative">
@@ -73,6 +75,7 @@ const ProfileInput = ({
 					}`}
 					placeholder={placeholder}
 					id={id}
+					value={value}
 				/>
 			</div>
 			<div className="absolute top-[85px] w-full">

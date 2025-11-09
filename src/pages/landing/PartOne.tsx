@@ -3,8 +3,11 @@ import patreon from "../../assets/patreon-s.png";
 import uber from "../../assets/uber-s.png";
 import shopify from "../../assets/shopify-s.png";
 import visa from "../../assets/visa-s.png";
+import { useNavigate } from "react-router-dom";
 
 const PartOne = () => {
+	const navigate = useNavigate();
+
 	return (
 		<section className="bg-[#EBECFE] mt-[60px] md:mt-[70px] lg:mt-[75px] xl:mt[80px] pt-0 sm:pt-5 md:pt-10 lg:pt-12 xl:pt-12">
 			<PageWrapper>
@@ -21,8 +24,16 @@ const PartOne = () => {
 								engagement soar!
 							</p>
 							<div className="flex gap-3 sm:gap-4 xl:gap-5">
-								<LandingPageButton btnColor="purple" btnText="Get started" />
-								<LandingPageButton btnColor="white" btnText="Learn more" />
+								<LandingPageButton
+									btnColor="purple"
+									btnText="Get started"
+									onClick={() => navigate("/sign-up")}
+								/>
+								<LandingPageButton
+									btnColor="white"
+									btnText="Learn more"
+									onClick={() => navigate("/sign-up")}
+								/>
 							</div>
 							<p>
 								Trusted by{" "}

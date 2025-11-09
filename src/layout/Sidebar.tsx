@@ -8,8 +8,7 @@ import ac_transaction from "../assets/ac-transaction.png";
 import in_transaction from "../assets/in-transaction.png";
 import ac_profile from "../assets/ac-profile.png";
 import in_profile from "../assets/in-profile.png";
-import { userRole } from "../utils";
-import type { UserRole } from "../types";
+import { useRole } from "../hooks/useRole";
 
 const Sidebar = () => {
 	const { pathname } = useLocation();
@@ -20,14 +19,19 @@ const Sidebar = () => {
 		return pathname.includes(updPath);
 	};
 
-	const currentUserRole = userRole as UserRole;
-	const links = currentUserRole === "customer" ? customerLinks : merchantLinks;
+	const currentUserRole = useRole();
+	const links =
+		currentUserRole === "User"
+			? customerLinks
+			: currentUserRole === "BusinessAdmin"
+			? merchantLinks
+			: [];
 
 	return (
 		<aside className="w-full bg-primary-purple h-full py-6 xl:py-7 md:px-4 lg:px-5 xl:px-6">
 			<Link
 				to="/dashboard"
-				className="bg-white inline-flex items-center justify-center gap-1 rounded-[20px] h-[50px] w-[130px]"
+				className="hidden bg-white md:inline-flex items-center justify-center gap-1 rounded-[20px] h-[50px] w-[130px]"
 			>
 				<img src={logo} alt="logo" className="w-[40px]" />
 				<span className="font-poppins text-lg font-medium text-[#000000]">
@@ -100,5 +104,14 @@ const SidebarLink = ({
 			<img src={isActive ? link.icon.active : link.icon.inactive} />
 			<span>{link.text}</span>
 		</Link>
+	);
+};
+
+export const MobileSidebarWrapper = () => {
+	return (
+		<div className="fixed bg-primary-purple z-50 top-[60px] left-0 w-[230px] bottom-0 md:hidden p-6">
+			<p className="text-white">Text side bar... will change soon</p>
+			<Sidebar />
+		</div>
 	);
 };

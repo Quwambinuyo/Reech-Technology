@@ -3,6 +3,7 @@ import CountryFlagSvg from "country-list-with-dial-code-and-flag/dist/flag-svg";
 import type { CountryProps } from "../types";
 import { useState } from "react";
 import { commentImg } from "../assets";
+import { useAppSelector } from "../redux/hooks";
 
 const CountryDropdown = ({
 	onSelect,
@@ -11,9 +12,38 @@ const CountryDropdown = ({
 }) => {
 	const countries = CountryList.getAll();
 
+	const { countriesLoading, allCountries } = useAppSelector(
+		(state) => state.auth
+	);
+
 	const [searchTerm, setSearchTerm] = useState("");
 
-	const filteredCountries = countries.filter(
+	const mergeCountries = () => {
+		const merged = allCountries
+			.map((endpointCountry) => {
+				const match = countries.find(
+					(pkgCountry) => pkgCountry.dial_code === endpointCountry.code
+				);
+
+				if (!match) return null;
+
+				return { ...endpointCountry, ...match };
+			})
+			.filter(Boolean) as any[];
+
+		// 🔹 Flatten the `data` property if present
+		const formatted = merged.map((c) => {
+			if (c.data && typeof c.data === "object") {
+				const { data, ...rest } = c;
+				return { ...rest, ...data }; // spread data into root and remove it
+			}
+			return c;
+		});
+
+		return formatted;
+	};
+
+	const filteredCountries = mergeCountries().filter(
 		(country) =>
 			country.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			country.dial_code.includes(searchTerm)
@@ -31,7 +61,11 @@ const CountryDropdown = ({
 				/>
 			</div>
 			<div className="min-h-[160px] max-h-[190px] mt-2 overflow-y-auto">
-				{filteredCountries.length > 0 ? (
+				{countriesLoading ? (
+					<div className="p-4 text-sm">
+						<p>Temp. Loading...</p>
+					</div>
+				) : filteredCountries.length > 0 ? (
 					filteredCountries.map((country, i) => (
 						<div
 							key={i}

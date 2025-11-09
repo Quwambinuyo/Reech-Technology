@@ -1,15 +1,143 @@
-import { useState } from "react";
-import { CustomTextInput } from "../../components/CustomInput";
-import Button from "../../components/Button";
-import { Link } from "react-router-dom";
-import { FaApple } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa6";
+
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
-import logo from "../../assets/reech.png";
 import LandingMobileNavbar from "../../layout/LandingMobileNavbar";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { CustomTextInput } from "../../components/CustomInput";
+import type { CountryProps, FormEvent, InputEvent } from "../../types";
+import Button from "../../components/Button";
+import { validateEmail } from "../../utils";
+import logo from "../../assets/reech.png";
+import { createHolderAccount } from "../../redux/auth/authActions";
+import PasswordCriteria from "./partial/PasswordCriteria";
+import CountryDropdown from "../../components/CountryDropdown";
+import { onClearAccountCreationSuccess } from "../../redux/auth/authReducer";
 
 const SignUp = () => {
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+
+	const { allCountries, createAccountLoading, createAccountSuccess } =
+		useAppSelector((state) => state.auth);
+
+	const [togglePasswordHint, setTogglePasswordHint] = useState(false);
+	const [toggleCountry, setToggleCountry] = useState(false);
 	const [activeTab, setActiveTab] = useState("user");
+	const [togglePassword, setTogglePassword] = useState({
+		normal: false,
+		confirm: false,
+	});
+	const [form, setForm] = useState({
+		firstName: "",
+		lastName: "",
+		email: "",
+		password: "",
+		confirmPassword: "",
+		phone: "",
+		businessName: "",
+	});
+
+	const [country, setCountry] = useState<CountryProps | null>(null);
+	const {
+		firstName,
+		lastName,
+		email,
+		password,
+		confirmPassword,
+		phone,
+		businessName,
+	} = form;
+
+	const handleChange = (e: InputEvent) => {
+		setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+	};
+
+	const isEmailValid = validateEmail(email);
+
+	const hasNumber = /\d/.test(password);
+	const hasSpecialCharacter = /[!@#=$%^&*()_+{}\\[\]:;<>,.?~\\/-]/.test(
+		password
+	);
+	const hasLowerCase = /[a-z]/.test(password);
+	const hasUpperCase = /[A-Z]/.test(password);
+	const moreThan7 = password.length > 7;
+
+	const isPasswordValid = {
+		number: hasNumber,
+		specialCha: hasSpecialCharacter,
+		lCase: hasLowerCase,
+		uCase: hasUpperCase,
+		moreThan7,
+	};
+
+	const onCountrySelect = (opt: any) => {
+		const findCountry = allCountries.find((c) => c?.code === opt?.dial_code);
+
+		if (findCountry) {
+			setCountry(findCountry);
+		}
+		setToggleCountry(false);
+	};
+
+	const handleAccountCreation = (e: FormEvent) => {
+		e.preventDefault();
+
+		if (activeTab === "merchant" && !businessName) {
+			toast.error("Please provide your business name.");
+			document
+				.getElementById("sign-up")
+				?.scrollIntoView({ behavior: "smooth" });
+		} else if (!firstName || !lastName || !email || !password) {
+			toast.error("Please fill all fields");
+			document
+				.getElementById("sign-up")
+				?.scrollIntoView({ behavior: "smooth" });
+		} else if (!isEmailValid) {
+			toast.error("Please enter a valid email");
+		} else if (isNaN(Number(phone))) {
+			toast.error("Phone number is invalid");
+		} else if (Object.values(isPasswordValid).includes(false)) {
+			toast.error("Password does not match the criteria provided.");
+		} else if (password !== confirmPassword) {
+			toast.error("Passwords does not match. Please check!");
+		} else {
+			const userData = {
+				firstName,
+				lastName,
+				phoneNumber: phone,
+				email,
+				password,
+			};
+
+			const merchantData = {
+				firstName,
+				lastName,
+				email,
+				phoneNumber: phone,
+				password,
+				businessName,
+				countryId: country?.id,
+			};
+
+			const dataToSend = {
+				data: activeTab === "merchant" ? merchantData : userData,
+				url: activeTab === "merchant" ? "businesses" : "users/signup",
+			};
+			dispatch(createHolderAccount(dataToSend));
+		}
+	};
+
+	useEffect(() => {
+		if (createAccountSuccess) {
+			dispatch(onClearAccountCreationSuccess());
+
+			navigate("/sign-in");
+		}
+	}, [createAccountSuccess]);
 
 	return (
 		<main className="md:flex h-screen mt-[60px] sm:mt-[63px] md:mt-0">
@@ -52,18 +180,32 @@ const SignUp = () => {
 						Enter your Credentials to get started
 					</p>
 
-					<form className="mt-8 md:mt-10 grid gap-4 sm:gap-5 md:gap-6 xl:gap-7">
+					<form
+						className="mt-8 md:mt-10 grid gap-4 sm:gap-5 md:gap-6 xl:gap-7"
+						onSubmit={handleAccountCreation}
+						id="sign-up"
+					>
 						{activeTab === "merchant" && (
 							<>
-								<CustomSelectNoDropDown
-									context="Country"
-									value=""
-									placeholder="Select your country"
-								/>
+								<div className="relative">
+									<CustomSelectNoDropDown
+										context="Country"
+										value={country?.name as never as string}
+										placeholder="Select your country"
+										handleToggle={() => setToggleCountry(!toggleCountry)}
+									/>
+									{toggleCountry && (
+										<div className="absolute z-5 top-[75px] w-full">
+											<CountryDropdown onSelect={onCountrySelect} />
+										</div>
+									)}
+								</div>
 								<CustomTextInput
 									label="Business Name"
 									id="businessName"
 									placeholder="Enter your business name"
+									value={businessName}
+									handleChange={handleChange}
 								/>
 							</>
 						)}
@@ -71,34 +213,75 @@ const SignUp = () => {
 							label="First Name"
 							id="firstName"
 							placeholder="Enter your first name"
+							value={firstName}
+							handleChange={handleChange}
 						/>
 						<CustomTextInput
 							label="Last Name"
 							id="lastName"
 							placeholder="Enter your last name"
+							value={lastName}
+							handleChange={handleChange}
 						/>
 						<CustomTextInput
 							label="Email Address"
 							id="email"
 							placeholder="Enter your email"
+							value={email}
+							handleChange={handleChange}
 						/>
 						<CustomTextInput
 							label="Phone Number"
 							id="phone"
+							type="tel"
+							value={phone}
+							handleChange={handleChange}
 							placeholder="Enter your phone number"
 						/>
-						<CustomTextInput
-							label="Password"
-							id="password"
-							placeholder="Enter your password"
-						/>
+						<div className="relative">
+							{togglePasswordHint && (
+								<PasswordCriteria isPasswordValid={isPasswordValid} />
+							)}
+							<CustomTextInput
+								label="Password"
+								id="password"
+								placeholder="Enter your password"
+								type="password"
+								value={password}
+								handleChange={handleChange}
+								togglePassword={togglePassword.normal}
+								handleTogglePassword={() =>
+									setTogglePassword((prev) => ({
+										...prev,
+										normal: !togglePassword.normal,
+									}))
+								}
+								onBlur={() => setTogglePasswordHint(false)}
+								onFocus={() => setTogglePasswordHint(true)}
+							/>
+						</div>
 						<CustomTextInput
 							label="Confirm Password"
 							id="confirmPassword"
 							placeholder="Re-enter your password"
+							type="password"
+							value={confirmPassword}
+							handleChange={handleChange}
+							togglePassword={togglePassword.confirm}
+							handleTogglePassword={() =>
+								setTogglePassword((prev) => ({
+									...prev,
+									confirm: !togglePassword.confirm,
+								}))
+							}
 						/>
 						<div className="mt-6">
-							<Button text="Register" />
+							<Button
+								text={createAccountLoading ? "Registering..." : "Register"}
+								type="submit"
+								isDisabled={createAccountLoading}
+								isLoading={createAccountLoading}
+							/>
 						</div>
 					</form>
 
