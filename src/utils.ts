@@ -40,17 +40,30 @@ export function getActiveRole() {
 }
 
 export function getUserFromStorage() {
-	const tabId = sessionStorage.getItem("tabId");
-	if (!tabId) return null;
+	return {
+		id: "randomid",
+		token: "random token",
+		email: "admineamil@yahoo.com",
+		firstName: "John",
+		lastName: "Doe",
+		emailConfirmed: true,
+		roles: ["Admin"],
+		avatar: "",
+	};
 
-	const role = sessionStorage.getItem(`activeRole_${tabId}`);
-	if (!role) return null; // no logged-in stakeholder
+	// const tabId = sessionStorage.getItem("tabId");
+	// if (!tabId) return null;
 
-	const remember = localStorage.getItem(`${role}_remember_${tabId}`) === "true";
-	const storage = remember ? localStorage : sessionStorage;
+	// const role = sessionStorage.getItem(`activeRole_${tabId}`);
+	// if (!role) return null; // no logged-in stakeholder
 
-	const userData = storage.getItem(`${role}_user_${tabId}`);
-	return userData ? JSON.parse(userData) : null;
+	// const remember = localStorage.getItem(`${role}_remember_${tabId}`) === "true";
+	// const storage = remember ? localStorage : sessionStorage;
+
+	// const userData = storage.getItem(`${role}_user_${tabId}`);
+	// console.log(userData);
+
+	// return userData ? JSON.parse(userData) : null;
 }
 
 function getRandomId() {
@@ -83,3 +96,6 @@ export const getNameInitials = (name: string) => {
 
 	return a?.slice(0, 2)?.join("");
 };
+
+export const range = (start: number, end: number) =>
+	Array.from({ length: end - start }, (_, i) => start + i);

@@ -22,8 +22,8 @@ const Navbar = () => {
 		<nav className="fixed sm:h-[65px] md:h-[70px] lg:h-[75px] xl:h-[80px] w-full left-0 top-0 z-[1000] hidden md:flex max-w-[1655px] mx-auto bg-[#F0F1FE]">
 			<div className="flex w-full items-center border-b border-[#00000014]">
 				<div className="md:ml-[220px] lg:ml-[230px] xl:ml-[256px] flex gap-3 items-center justify-between w-full px-6">
-					<h4 className="text-xl lg:text-[22px] xl:text-2xl text-[#060606] sm:w-2/5 capitalize">
-						{displayPath}
+					<h4 className="text-xl lg:text-[22px] xl:text-2xl text-[#060606] sm:w-2/5 capitalize font-medium">
+						{displayPath === "merchants" ? "manage merchants" : displayPath}
 					</h4>
 
 					<div className="flex items-center gap-3 xl:gap-4 sm:w-3/5">

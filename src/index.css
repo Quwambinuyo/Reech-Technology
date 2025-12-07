@@ -50,6 +50,11 @@ body {
 	height: 100%;
 }
 
+.point-doughnut canvas {
+	height: inherit !important;
+	width: inherit !important;
+}
+
 .flex-center {
 	display: flex;
 	align-items: center;
@@ -67,6 +72,15 @@ body {
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
+}
+
+.merchant-bg {
+	background-image: url(assets/half-lines.png), url(assets/q-circle-2.png),
+		url(assets/q-circle1.png);
+	background-position: center, 18% top, right bottom;
+	background-size: contain, 180px, 120px;
+	background-repeat: no-repeat;
+	background-color: #320d5e;
 }
 
 .hide-scroll::-webkit-scrollbar {

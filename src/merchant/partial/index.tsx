@@ -1,12 +1,22 @@
-type ActionButtonProps = { type: "edit" | "delete" | "details" };
+type ActionButtonProps = {
+	type: "edit" | "delete" | "details" | "disable" | "enable" | "approve";
+	onClick?: () => void;
+};
 
-export const ActionButton = ({ type }: ActionButtonProps) => (
+export const ActionButton = ({ type, onClick }: ActionButtonProps) => (
 	<button
 		className={`font-inter text-sm w-[100px] py-1.5 capitalize rounded-[10px] border font-normal ${
 			type === "delete"
 				? "text-default-red border-default-red"
+				: type === "disable"
+				? "text-default-red border-default-red"
+				: type === "enable"
+				? "text-[#1A932E] border-[#1A932E]"
+				: type === "approve"
+				? "text-[#1A932E] border-[#1A932E]"
 				: "text-[#4A148C] border-[#4A148C]"
 		}`}
+		onClick={onClick}
 	>
 		{type}
 	</button>

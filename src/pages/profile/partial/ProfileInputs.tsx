@@ -143,23 +143,28 @@ export const AvatarDisplay = ({ label }: AvatarDisplayProps) => {
 };
 
 type ProfileButtonProps = {
-	type: "cancel" | "save";
+	type: "cancel" | "save" | "approve" | "decline";
 	onClick?: () => void;
 };
 
 export const ProfileButton = ({ type, onClick }: ProfileButtonProps) => {
+	const negatives = ["cancel", "decline"];
 	return (
 		<button
 			className={`capitalize font-semibold font-jarkata px-5 py-3 rounded-[30px] flex items-center gap-2 ${
 				type === "cancel"
 					? "border border-[#CBD5E1] text-[#475569]"
+					: type === "approve"
+					? "bg-[#48B34C] text-white"
+					: type === "decline"
+					? "border border-[#F05158] text-[#F05158]"
 					: "bg-primary-purple text-white"
 			}`}
 			onClick={onClick}
 		>
 			<span className="text-[15px]">{type}</span>
 
-			{type === "cancel" ? (
+			{negatives.includes(type) ? (
 				<RiCloseLargeFill size={18} />
 			) : (
 				<PiCheckBold size={22} />

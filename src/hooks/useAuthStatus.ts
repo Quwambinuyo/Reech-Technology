@@ -6,6 +6,7 @@ export const useAuthStatus = () => {
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [checkingStatus, setCheckingStatus] = useState(true);
 	const { currentUser } = useAppSelector((state) => state.auth);
+	console.log(currentUser);
 
 	useEffect(() => {
 		if (isMounted.current) {

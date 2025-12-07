@@ -4,7 +4,7 @@ interface DashboardCard {
 	icon: string;
 	title: string;
 	value: string;
-	context?: "point" | "user" | "";
+	context?: "point" | "user" | "merchant";
 	info?: { percentage: number };
 }
 
@@ -18,7 +18,7 @@ export const DashboardCard = ({
 	return (
 		<div className="bg-[#FFFFFFCC] rounded-xl p-4 flex flex-col gap-2 xl:gap-3 min-w-[220px] xl:min-w-[230px]">
 			<img src={icon} alt={title} className="w-[38px] xl:w-[40px]" />
-			<p className="text-[#797979] capitalize text-[15px] xl:text-base">
+			<p className="text-[#797979] capitalize text-sm xl:text-[15px]">
 				{title}
 			</p>
 			<div className="flex gap-1.5">
@@ -26,7 +26,13 @@ export const DashboardCard = ({
 					{value}
 				</h4>
 				<p className="text-sm font-normal">
-					{context === "point" ? "Points" : context === "user" ? "Users" : ""}
+					{context === "point"
+						? "Points"
+						: context === "user"
+						? "Users"
+						: context === "merchant"
+						? "Merchants"
+						: ""}
 				</p>
 			</div>
 			{info?.percentage && (

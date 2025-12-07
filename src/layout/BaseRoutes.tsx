@@ -21,6 +21,11 @@ import PrivateRoute from "../pages/auth/partial/PrivateRoute";
 import Unauthorized from "../pages/auth/Unathorized";
 import RoleProtectedRoute from "../pages/auth/partial/RoleProtectedRoute";
 import { LandingPageHamburgerOverlay } from "./LandingMobileNavbar";
+import ManageUsers from "../pages/manage-users";
+import ManageMerchants from "../pages/manage-merchant";
+import ManageCategories from "../pages/categories";
+import AllCategories from "../pages/categories/AllCategories";
+import SingleMerchant from "../pages/manage-merchant/SingleMerchant";
 
 export default function BaseRoutes() {
 	const dispatch = useAppDispatch();
@@ -38,7 +43,7 @@ export default function BaseRoutes() {
 	useEffect(() => {
 		if (allCountries.length > 0) return;
 
-		dispatch(fetchCountries());
+		// dispatch(fetchCountries());
 	}, []);
 
 	return (
@@ -75,6 +80,21 @@ export default function BaseRoutes() {
 								path="/rewards-settings/user-ranks"
 								element={<AllUserRanks />}
 							/>
+						</Route>
+
+						<Route element={<RoleProtectedRoute allowedRoles={["Admin"]} />}>
+							<Route path="/manage-categories" element={<ManageCategories />} />
+							<Route
+								path="/manage-categories/all"
+								element={<AllCategories />}
+							/>
+						</Route>
+						<Route element={<RoleProtectedRoute allowedRoles={["Admin"]} />}>
+							<Route path="/manage-users" element={<ManageUsers />} />
+						</Route>
+						<Route element={<RoleProtectedRoute allowedRoles={["Admin"]} />}>
+							<Route path="/merchants" element={<ManageMerchants />} />
+							<Route path="/merchants/:id" element={<SingleMerchant />} />
 						</Route>
 
 						<Route path="/transactions" element={<Transaction />} />

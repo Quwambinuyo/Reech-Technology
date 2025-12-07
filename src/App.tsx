@@ -6,6 +6,31 @@ import BaseRoutes from "./layout/BaseRoutes";
 import { store } from "./redux/store";
 import { BrowserRouter } from "react-router-dom";
 
+import {
+	Chart as ChartJS,
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
+	ArcElement,
+	BarElement,
+} from "chart.js";
+
+ChartJS.register(
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
+	ArcElement,
+	BarElement
+);
+
 function App() {
 	return (
 		<Provider store={store}>

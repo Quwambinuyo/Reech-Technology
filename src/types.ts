@@ -52,3 +52,33 @@ export interface StakeholderProps {
 	roles: string[];
 	avatar?: string;
 }
+
+export interface SelectProps {
+	selectedText: string;
+	isOpen: boolean;
+	onToggle: () => void;
+	handleSelect: (value: string) => void;
+}
+
+export interface AdminMerchantListProps {
+	id: number;
+	totalUsers: number;
+	totalPoints: number;
+	status: string;
+	date: string;
+	company: {
+		name: string;
+		category: string;
+		address: string;
+		landMark: string;
+		image: string;
+		documents: any;
+	};
+	director: {
+		name: string;
+		email: string;
+		idType: string;
+		phone: string;
+		idUrl: string;
+	};
+}

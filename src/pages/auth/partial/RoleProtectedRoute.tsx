@@ -4,7 +4,7 @@ import { useRole } from "../../../hooks/useRole";
 const RoleProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
 	const role = useRole();
 
-	if (!role) return <Navigate to="/login" replace />;
+	if (!role) return <Navigate to="/sign-in" replace />;
 
 	return allowedRoles.includes(role) ? (
 		<Outlet />

@@ -3,6 +3,7 @@ import { transactionReducer } from "./transaction/reducer";
 import { pointReducer } from "./point/reducer";
 import { rewardReducer } from "./reward/reducer";
 import { authReducer } from "./auth/authReducer";
+import { categoryReducer } from "./category/reducer";
 
 export const store = configureStore({
 	reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
 		transaction: transactionReducer,
 		point: pointReducer,
 		reward: rewardReducer,
+		category: categoryReducer,
 	},
 });
 

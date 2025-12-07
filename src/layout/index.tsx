@@ -30,7 +30,7 @@ const LayoutWrapper = () => {
 				<MobileNavbar />
 				<Navbar />
 				<aside
-					className="fixed bg-primary-color md:w-[220px] lg:w-[230px] xl:w-[256px] h-screen left-0 top-0 hidden md:block"
+					className="fixed bg-primary-color md:w-[220px] lg:w-[233px] xl:w-[256px] h-screen left-0 top-0 hidden md:block"
 					style={{ zIndex: 1001 }}
 				>
 					<Sidebar />
