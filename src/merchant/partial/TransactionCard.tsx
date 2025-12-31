@@ -39,13 +39,13 @@ const TransactionCard = ({
 			<p className="col-span-3 flex-center">
 				{transaction.pointsEarned} points
 			</p>
-			<p className="col-span-3 text-center">
+			<div className="col-span-3 text-center">
 				{transaction.status ? (
 					<StatusDisplay status={transaction.status} />
 				) : (
 					transaction.redeemed
 				)}
-			</p>
+			</div>
 			<div className="col-span-2">
 				<button className="text-[#4A148C] border border-[#4A148C] rounded-lg py-2 font-normal text-sm font-inter font-normal w-full">
 					Details

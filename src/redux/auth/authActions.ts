@@ -41,7 +41,7 @@ export const fetchCountries = createAsyncThunk(
 		try {
 			const response = await axios.get(`${baseURL}/countries`);
 
-			if (response.data?.statusCode === 200) {
+			if (response.data?.isSuccess) {
 				return response.data?.data;
 			} else {
 				throw new Error("Failed to fetch countries");
@@ -65,7 +65,7 @@ export const userAccountLogin = createAsyncThunk(
 		try {
 			const response = await axios.post(`${baseURL}/auth/login`, reqBody.data);
 
-			if (response.data?.statusCode === 200) {
+			if (response.data?.isSuccess) {
 				toast.success("You are now logged in to your account.");
 				const userData = response.data?.data;
 
@@ -73,7 +73,7 @@ export const userAccountLogin = createAsyncThunk(
 
 				return userData;
 			} else {
-				throw new Error("Failed to login user");
+				throw new Error(response.data?.message || "Login failed");
 			}
 		} catch (error: any) {
 			console.log(error);

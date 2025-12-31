@@ -619,7 +619,6 @@ export const mockCategories = [
 		description:
 			"This category includes businesses that produce, package, and sell food and drinks, from restaurants and cafes to packaged goods brands and specialty grocery stores.",
 		status: "enabled",
-		status: "enabled",
 	},
 	{
 		id: "4",

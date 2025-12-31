@@ -22,8 +22,18 @@ export const StatusDisplay = ({ status }: { status: string }) => {
 	);
 };
 
-export const SeeAllBtn = ({ onClick }: { onClick: () => void }) => (
-	<button className="text-sm text-[#4A148C]" onClick={onClick}>
+export const SeeAllBtn = ({
+	onClick,
+	isDisabled,
+}: {
+	onClick: () => void;
+	isDisabled?: boolean;
+}) => (
+	<button
+		className="text-sm text-[#4A148C] disabled:opacity-50"
+		onClick={onClick}
+		disabled={isDisabled}
+	>
 		See All
 	</button>
 );
@@ -31,13 +41,16 @@ export const SeeAllBtn = ({ onClick }: { onClick: () => void }) => (
 export const MiniCreateButton = ({
 	text,
 	onClick,
+	isDisabled,
 }: {
 	text: string;
-	onClick: () => void;
+	onClick?: () => void;
+	isDisabled?: boolean;
 }) => (
 	<button
-		className="bg-[#4A148C] text-sm font-semibold text-[#D9D9D9] rounded-xl p-3.5 capitalize"
+		className="bg-[#4A148C] text-sm font-semibold text-[#D9D9D9] rounded-xl p-3.5 capitalize disabled:opacity-50"
 		onClick={onClick}
+		disabled={isDisabled}
 	>
 		{text}
 	</button>

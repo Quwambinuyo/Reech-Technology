@@ -3,7 +3,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import "./input.css";
 import type { InputEvent } from "../types";
 
-type TextInputProps = {
+interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	id: string;
 	label: string;
 	type?: string;
@@ -15,7 +15,8 @@ type TextInputProps = {
 	handleChange?: (e: InputEvent) => void;
 	onBlur?: () => void;
 	onFocus?: () => void;
-};
+	otherInputProps?: any;
+}
 
 type OtherInputProps = {
 	id: string;
@@ -39,6 +40,7 @@ export const CustomTextInput = ({
 	handleChange,
 	onBlur,
 	onFocus,
+	otherInputProps,
 }: TextInputProps) => {
 	return (
 		<div className="flex flex-col gap-1">
@@ -55,6 +57,7 @@ export const CustomTextInput = ({
 					onChange={handleChange}
 					onBlur={onBlur}
 					onFocus={onFocus}
+					{...otherInputProps}
 				/>
 				{type === "password" && (
 					<button

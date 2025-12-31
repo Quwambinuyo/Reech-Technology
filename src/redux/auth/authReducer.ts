@@ -73,7 +73,6 @@ const authSlice = createSlice({
 			.addCase(fetchCountries.rejected, (state, action) => {
 				state.countriesLoading = false;
 				const error = action.payload as string;
-				console.log(error);
 
 				state.authNetworkError = error?.includes("Network")
 					? "Network Error"

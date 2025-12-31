@@ -12,8 +12,8 @@ const Transaction = () => {
 				<MiniDropDown />
 			</section>
 
-			{currentUserRole === "Admin" ? (
-				<div>Admin Transaction</div>
+			{currentUserRole === "SuperAdmin" ? (
+				<div>SuperAdmin Transaction</div>
 			) : currentUserRole === "BusinessAdmin" ? (
 				<MerchantTransactions />
 			) : (

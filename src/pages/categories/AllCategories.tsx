@@ -1,4 +1,3 @@
-import React from "react";
 import { MiniCreateButton } from "../../components/small";
 import { FaQuestion } from "react-icons/fa6";
 import CategoryList from "./partial/CategoryList";

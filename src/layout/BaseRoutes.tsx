@@ -33,24 +33,32 @@ export default function BaseRoutes() {
 	const {
 		authNetworkError,
 		allCountries,
-		currentUser,
+		// currentUser,
 		landingPageHamburgerToggle,
 	} = useAppSelector((state) => state.auth);
 
-	const currentUserRole = currentUser?.roles[0];
-	console.log(currentUserRole);
+	const { categoryNetworkError } = useAppSelector((state) => state.category);
+
+	// const currentUserRole = currentUser?.roles[0];
+	// console.log(currentUserRole);
+	const showNetworkError = () => {
+		if (authNetworkError || categoryNetworkError) {
+			return true;
+		}
+		return false;
+	};
 
 	useEffect(() => {
 		if (allCountries.length > 0) return;
 
-		// dispatch(fetchCountries());
+		dispatch(fetchCountries());
 	}, []);
 
 	return (
 		<>
-			{authNetworkError && <NetworkError />}
+			{showNetworkError() && <NetworkError />}
 			{landingPageHamburgerToggle && <LandingPageHamburgerOverlay />}
-			{/* <Router> */}
+
 			<Routes>
 				<Route path="/" element={<LandingPage />} />
 				<Route path="/sign-in" element={<SignIn />} />
@@ -82,17 +90,23 @@ export default function BaseRoutes() {
 							/>
 						</Route>
 
-						<Route element={<RoleProtectedRoute allowedRoles={["Admin"]} />}>
+						<Route
+							element={<RoleProtectedRoute allowedRoles={["SuperAdmin"]} />}
+						>
 							<Route path="/manage-categories" element={<ManageCategories />} />
 							<Route
 								path="/manage-categories/all"
 								element={<AllCategories />}
 							/>
 						</Route>
-						<Route element={<RoleProtectedRoute allowedRoles={["Admin"]} />}>
+						<Route
+							element={<RoleProtectedRoute allowedRoles={["SuperAdmin"]} />}
+						>
 							<Route path="/manage-users" element={<ManageUsers />} />
 						</Route>
-						<Route element={<RoleProtectedRoute allowedRoles={["Admin"]} />}>
+						<Route
+							element={<RoleProtectedRoute allowedRoles={["SuperAdmin"]} />}
+						>
 							<Route path="/merchants" element={<ManageMerchants />} />
 							<Route path="/merchants/:id" element={<SingleMerchant />} />
 						</Route>

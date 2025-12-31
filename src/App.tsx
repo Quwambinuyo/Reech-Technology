@@ -2,6 +2,7 @@ import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import 'react-loading-skeleton/dist/skeleton.css'
 import BaseRoutes from "./layout/BaseRoutes";
 import { store } from "./redux/store";
 import { BrowserRouter } from "react-router-dom";

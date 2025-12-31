@@ -1,6 +1,6 @@
 import { useAppSelector } from "../redux/hooks";
 
-type Role = "Admin" | "BusinessAdmin" | "User";
+type Role = "SuperAdmin" | "BusinessAdmin" | "User";
 
 export const useRole = () => {
 	const { currentUser } = useAppSelector((state) => state.auth);

@@ -14,7 +14,7 @@ const Dashboard = () => {
 				<MiniDropDown />
 			</section>
 
-			{currentUserRole === "Admin" ? (
+			{currentUserRole === "SuperAdmin" ? (
 				<AdminDashboard />
 			) : currentUserRole === "BusinessAdmin" ? (
 				<MerchantDashboard />

@@ -1,33 +1,79 @@
+import { useEffect } from "react";
 import { FaQuestion } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+import NewPointConversionForm from "./modal/NewPointConversionForm";
+import { MiniCreateButton, SeeAllBtn } from "../components/small";
+import PointEquivalentCard from "./partial/PointEquivalentCard";
+import NewActivityPointForm from "./modal/NewActivityPointForm";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import ActivityPointCard from "./partial/ActivityPointCard";
+import ConfirmAction from "../components/ConfirmAction";
+import { FetchActivityPointLoading } from "./partial";
+import Empty from "../components/Empty";
+import { pointToNaira } from "../mock";
+import Modal from "../layout/Modal";
+import {
+	deleteActivityPoints,
+	fetchActivityPoints,
+} from "../redux/point/action";
 import {
 	onToggleCreateActivityPoint,
 	onToggleCreatePointConversion,
+	onToggleDeleteActivityPoint,
+	onToggleEditActivityPoint,
 } from "../redux/point/reducer";
-import { MiniCreateButton, SeeAllBtn } from "../components/small";
-import PointEquivalentCard from "./partial/PointEquivalentCard";
-import { activityBasedPoints, pointToNaira } from "../mock";
-import ActivityPointCard from "./partial/ActivityPointCard";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import Modal from "../layout/Modal";
-import NewActivityPointForm from "./modal/NewActivityPointForm";
-import NewPointConversionForm from "./modal/NewPointConversionForm";
 
 const PointUpload = () => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
-	const { toggleCreateActivityPoint, toggleCreatePointConversion } =
-		useAppSelector((state) => state.point);
+	const {
+		toggleCreateActivityPoint,
+		toggleCreatePointConversion,
+		fetchActivityPointsLoading,
+		allActivityPoints,
+		createActivityPointSuccesss,
+		toggleEditActivityPoint,
+		editActivityPointSuccess,
+		deleteActivityPointLoading,
+		deleteActivityPointSuccess,
+		toggleDeleteActivityPoint,
+	} = useAppSelector((state) => state.point);
 
 	const onCreateNewActivity = () => dispatch(onToggleCreateActivityPoint());
+	const onEditNewActivity = () => dispatch(onToggleEditActivityPoint());
 	const onCreateNewConversion = () => dispatch(onToggleCreatePointConversion());
+
+	const onDeleteActivityPoint = () => {
+		dispatch(deleteActivityPoints(toggleDeleteActivityPoint));
+	};
+
+	useEffect(() => {
+		dispatch(fetchActivityPoints());
+	}, [
+		createActivityPointSuccesss,
+		editActivityPointSuccess,
+		deleteActivityPointSuccess,
+	]);
 
 	return (
 		<>
+			<Modal modal={!!toggleDeleteActivityPoint}>
+				<ConfirmAction
+					onClose={() => dispatch(onToggleDeleteActivityPoint(""))}
+					action="delete"
+					loading={deleteActivityPointLoading}
+					onConfirmAction={onDeleteActivityPoint}
+				/>
+			</Modal>
+
+			<Modal modal={!!toggleEditActivityPoint}>
+				<NewActivityPointForm onClose={onEditNewActivity} context="edit" />
+			</Modal>
+
 			<Modal modal={toggleCreateActivityPoint}>
-				<NewActivityPointForm onClose={onCreateNewActivity} />
+				<NewActivityPointForm onClose={onCreateNewActivity} context="new" />
 			</Modal>
 
 			<Modal modal={toggleCreatePointConversion}>
@@ -43,23 +89,38 @@ const PointUpload = () => {
 					<div className="flex justify-between items-center gap-6 xl:gap-8">
 						<SeeAllBtn
 							onClick={() => navigate("/upload-points/activity-based")}
+							isDisabled={fetchActivityPointsLoading}
 						/>
-						<MiniCreateButton text="create new" onClick={onCreateNewActivity} />
+						<MiniCreateButton
+							text="create new"
+							onClick={onCreateNewActivity}
+							isDisabled={fetchActivityPointsLoading}
+						/>
 					</div>
 				</div>
 
-				<div className="mt-5 lg:mt-6 overflow-x-auto">
-					<div className="grid grid-cols-10 gap-5 font-montserrat font-semibold text-sm min-w-[800px]">
-						<p className="col-span-3">Activity Name</p>
-						<p className="col-span-2">Points</p>
-						<p className="col-span-3">Description</p>
-						<p className="col-span-2">Action</p>
-					</div>
-					<div className="mt-4">
-						{activityBasedPoints.slice(0, 6).map((act) => (
-							<ActivityPointCard act={act} key={act.id} />
-						))}
-					</div>
+				<div className="mt-5 lg:mt-6 overflow-x-auto min-h-[350px]">
+					{fetchActivityPointsLoading ? (
+						<FetchActivityPointLoading />
+					) : allActivityPoints?.result?.length > 0 ? (
+						<>
+							<div className="grid grid-cols-10 gap-5 font-montserrat font-semibold text-sm min-w-[800px]">
+								<p className="col-span-3">Activity Name</p>
+								<p className="col-span-2">Points</p>
+								<p className="col-span-3">Description</p>
+								<p className="col-span-2">Action</p>
+							</div>
+							<div className="mt-4">
+								{allActivityPoints?.result?.slice(0, 6).map((act) => (
+									<ActivityPointCard act={act} key={act.id} />
+								))}
+							</div>
+						</>
+					) : (
+						<div className="h-[300px] xl:h-[300px]">
+							<Empty text="No Activity point has been created yet" />
+						</div>
+					)}
 				</div>
 			</section>
 
@@ -79,7 +140,7 @@ const PointUpload = () => {
 					</div>
 				</div>
 
-				<div className="mt-5 lg:mt-6 overflow-x-auto">
+				<div className="mt-5 lg:mt-6 overflow-x-auto min-h-[350px]">
 					<div className="gap-5 font-montserrat font-semibold text-sm grid grid-cols-10 px-5 md:px-6 xl:px-8 min-w-[700px]">
 						<p className="col-span-3">Points Required</p>
 						<p className="col-span-4 flex-center">Equivalent in ₦</p>

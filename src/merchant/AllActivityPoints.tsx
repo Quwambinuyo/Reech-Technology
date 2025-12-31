@@ -1,24 +1,71 @@
+import { useEffect } from "react";
 import { FaQuestion } from "react-icons/fa6";
 
-import { onToggleCreateActivityPoint } from "../redux/point/reducer";
 import NewActivityPointForm from "./modal/NewActivityPointForm";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import ActivityPointCard from "./partial/ActivityPointCard";
+import ConfirmAction from "../components/ConfirmAction";
 import { MiniCreateButton } from "../components/small";
-import { activityBasedPoints } from "../mock";
+import { FetchActivityPointLoading } from "./partial";
+import Empty from "../components/Empty";
 import Modal from "../layout/Modal";
+import {
+	onToggleCreateActivityPoint,
+	onToggleDeleteActivityPoint,
+	onToggleEditActivityPoint,
+} from "../redux/point/reducer";
+import {
+	deleteActivityPoints,
+	fetchActivityPoints,
+} from "../redux/point/action";
 
 const AllActivityPoints = () => {
 	const dispatch = useAppDispatch();
 
-	const { toggleCreateActivityPoint } = useAppSelector((state) => state.point);
+	const {
+		toggleCreateActivityPoint,
+		fetchActivityPointsLoading,
+		allActivityPoints,
+		createActivityPointSuccesss,
+		toggleEditActivityPoint,
+		editActivityPointSuccess,
+		deleteActivityPointLoading,
+		deleteActivityPointSuccess,
+		toggleDeleteActivityPoint,
+	} = useAppSelector((state) => state.point);
 
 	const onCreateNewActivity = () => dispatch(onToggleCreateActivityPoint());
+	const onEditNewActivity = () => dispatch(onToggleEditActivityPoint());
+
+	const onDeleteActivityPoint = () => {
+		dispatch(deleteActivityPoints(toggleDeleteActivityPoint));
+	};
+
+	useEffect(() => {
+		dispatch(fetchActivityPoints());
+	}, [
+		createActivityPointSuccesss,
+		editActivityPointSuccess,
+		deleteActivityPointSuccess,
+	]);
 
 	return (
 		<>
+			<Modal modal={!!toggleDeleteActivityPoint}>
+				<ConfirmAction
+					onClose={() => dispatch(onToggleDeleteActivityPoint(""))}
+					action="delete"
+					loading={deleteActivityPointLoading}
+					onConfirmAction={onDeleteActivityPoint}
+				/>
+			</Modal>
+
+			<Modal modal={!!toggleEditActivityPoint}>
+				<NewActivityPointForm onClose={onEditNewActivity} context="edit" />
+			</Modal>
+
 			<Modal modal={toggleCreateActivityPoint}>
-				<NewActivityPointForm onClose={onCreateNewActivity} />
+				<NewActivityPointForm onClose={onCreateNewActivity} context="new" />
 			</Modal>
 
 			<div className="bg-[#FFFFFFCC] rounded-2xl py-4 lg:py-5 px-3 lg:px-4">
@@ -30,18 +77,28 @@ const AllActivityPoints = () => {
 					<MiniCreateButton text="create new" onClick={onCreateNewActivity} />
 				</section>
 
-				<section className="mt-5 lg:mt-6 overflow-x-auto">
-					<div className="grid grid-cols-10 gap-5 font-montserrat font-semibold text-sm min-w-[800px]">
-						<p className="col-span-3">Activity Name</p>
-						<p className="col-span-2">Points</p>
-						<p className="col-span-3">Description</p>
-						<p className="col-span-2">Action</p>
-					</div>
-					<div className="mt-4">
-						{activityBasedPoints.map((act) => (
-							<ActivityPointCard act={act} key={act.id} />
-						))}
-					</div>
+				<section className="mt-5 lg:mt-6 overflow-x-auto min-h-[350px]">
+					{fetchActivityPointsLoading ? (
+						<FetchActivityPointLoading />
+					) : allActivityPoints?.result?.length > 0 ? (
+						<>
+							<div className="grid grid-cols-10 gap-5 font-montserrat font-semibold text-sm min-w-[800px]">
+								<p className="col-span-3">Activity Name</p>
+								<p className="col-span-2">Points</p>
+								<p className="col-span-3">Description</p>
+								<p className="col-span-2">Action</p>
+							</div>
+							<div className="mt-4">
+								{allActivityPoints?.result?.slice(0, 6).map((act) => (
+									<ActivityPointCard act={act} key={act.id} />
+								))}
+							</div>
+						</>
+					) : (
+						<div className="h-[300px] xl:h-[300px]">
+							<Empty text="No Activity point has been created yet" />
+						</div>
+					)}
 				</section>
 			</div>
 		</>

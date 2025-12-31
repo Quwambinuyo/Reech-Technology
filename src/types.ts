@@ -82,3 +82,18 @@ export interface AdminMerchantListProps {
 		idUrl: string;
 	};
 }
+
+export interface AdminCategoryListProps {
+	name: string;
+	numOfMerchants?: number;
+	description: string;
+	id: string;
+	// status?: "enabled" | "disabled";
+}
+
+export interface ActivityPointProps {
+	name: string;
+	points: number;
+	description: string;
+	id: string;
+}

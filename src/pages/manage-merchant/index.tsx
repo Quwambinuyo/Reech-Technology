@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TabSelector from "../../components/TabSelector";
 import { MiniCreateButton } from "../../components/small";
 import { MerchantStatusSelect } from "../../admin/partial";
 import { mockMerchantLists } from "../../mock";

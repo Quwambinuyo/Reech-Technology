@@ -19,7 +19,7 @@ export function saveUserToStorage(
 	remember: boolean
 ) {
 	const role = (userData.roles?.[0] || "user").toLowerCase(); // normalize
-	const storageKey = `${role}_user_${tabId}`;
+	const storageKey = `${role}_stakeholder_${tabId}`;
 	const rememberKey = `${role}_remember_${tabId}`;
 
 	// Save the role for this tab — helps with auto-detection later
@@ -40,30 +40,30 @@ export function getActiveRole() {
 }
 
 export function getUserFromStorage() {
-	return {
-		id: "randomid",
-		token: "random token",
-		email: "admineamil@yahoo.com",
-		firstName: "John",
-		lastName: "Doe",
-		emailConfirmed: true,
-		roles: ["Admin"],
-		avatar: "",
-	};
+	// return {
+	// 	id: "randomid",
+	// 	token: "random token",
+	// 	email: "admineamil@yahoo.com",
+	// 	firstName: "John",
+	// 	lastName: "Doe",
+	// 	emailConfirmed: true,
+	// 	roles: ["SuperAdmin"],
+	// 	avatar: "",
+	// };
 
-	// const tabId = sessionStorage.getItem("tabId");
-	// if (!tabId) return null;
+	const tabId = sessionStorage.getItem("tabId");
+	if (!tabId) return null;
 
-	// const role = sessionStorage.getItem(`activeRole_${tabId}`);
-	// if (!role) return null; // no logged-in stakeholder
+	const role = sessionStorage.getItem(`activeRole_${tabId}`);
+	if (!role) return null; // no logged-in stakeholder
 
-	// const remember = localStorage.getItem(`${role}_remember_${tabId}`) === "true";
-	// const storage = remember ? localStorage : sessionStorage;
+	const remember = localStorage.getItem(`${role}_remember_${tabId}`) === "true";
+	const storage = remember ? localStorage : sessionStorage;
 
-	// const userData = storage.getItem(`${role}_user_${tabId}`);
+	const userData = storage.getItem(`${role}_stakeholder_${tabId}`);
 	// console.log(userData);
 
-	// return userData ? JSON.parse(userData) : null;
+	return userData ? JSON.parse(userData) : null;
 }
 
 function getRandomId() {
@@ -99,3 +99,35 @@ export const getNameInitials = (name: string) => {
 
 export const range = (start: number, end: number) =>
 	Array.from({ length: end - start }, (_, i) => start + i);
+
+// authToken.ts
+export const getAuthToken = (): string | null => {
+	try {
+		const user = getUserFromStorage();
+
+		return user?.token || null;
+	} catch (error) {
+		console.error("Failed to parse user from storage", error);
+		return null;
+	}
+};
+
+export function clearUserSession(tabId: string) {
+	// Detect role that was active in this tab
+	const role = sessionStorage.getItem(`activeRole_${tabId}`);
+
+	if (!role) return;
+
+	const storageKey = `${role}_stakeholder_${tabId}`;
+	const rememberKey = `${role}_remember_${tabId}`;
+
+	// Remove user data from both storages (only one will exist)
+	localStorage.removeItem(storageKey);
+	sessionStorage.removeItem(storageKey);
+
+	// Remove remember flag
+	localStorage.removeItem(rememberKey);
+
+	// Remove active role mapping
+	sessionStorage.removeItem(`activeRole_${tabId}`);
+}

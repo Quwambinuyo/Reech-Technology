@@ -32,7 +32,7 @@ const Navbar = () => {
 							placeholder="Search for anything..."
 							className="placeholder:text-[#06060666] bg-white pl-8 pr-3 lg:pr-4 py-2.5 rounded-[30px] text-[15px] outline-0 focus:border focus:border-[#00000014] w-3/4 xl:w-full h-[46px] lg:h-[47px] xl:h-[48px]"
 						/>
-						<div className="bg-white rounded-[30px] flex-between gap-2 lg:gap-3 py-1 lg:py-1.5 xl:min-w-[200px] px-2">
+						<div className="bg-white rounded-[30px] flex-between gap-2 py-1 lg:py-1.5 xl:min-w-[210px] px-2">
 							<div className="flex items-center gap-3">
 								<img
 									src={currentUser?.avatar ? currentUser?.avatar : person}
@@ -44,7 +44,7 @@ const Navbar = () => {
 									{userName}
 								</p>
 							</div>
-							<button>
+							<button className="mr-1">
 								<IoIosArrowDown size={20} />
 							</button>
 						</div>
