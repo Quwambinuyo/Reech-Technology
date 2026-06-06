@@ -8,8 +8,13 @@ import ac_transaction from "../assets/ac-transaction.png";
 import in_transaction from "../assets/in-transaction.png";
 import ac_profile from "../assets/ac-profile.png";
 import in_profile from "../assets/in-profile.png";
-import { userRole } from "../utils";
-import type { UserRole } from "../types";
+import ac_task from "../assets/ac-task.png";
+import in_task from "../assets/in-task.png";
+import ac_user from "../assets/ac-user.png";
+import ac_merchant from "../assets/ac-merchant.png";
+import in_merchant from "../assets/inac-merchant.png";
+import in_user from "../assets/inac-user.png";
+import { useRole } from "../hooks/useRole";
 
 const Sidebar = () => {
 	const { pathname } = useLocation();
@@ -20,14 +25,19 @@ const Sidebar = () => {
 		return pathname.includes(updPath);
 	};
 
-	const currentUserRole = userRole as UserRole;
-	const links = currentUserRole === "customer" ? customerLinks : merchantLinks;
+	const currentUserRole = useRole();
+	const links =
+		currentUserRole === "User"
+			? customerLinks
+			: currentUserRole === "BusinessAdmin"
+			? merchantLinks
+			: adminLinks;
 
 	return (
 		<aside className="w-full bg-primary-purple h-full py-6 xl:py-7 md:px-4 lg:px-5 xl:px-6">
 			<Link
 				to="/dashboard"
-				className="bg-white inline-flex items-center justify-center gap-1 rounded-[20px] h-[50px] w-[130px]"
+				className="hidden bg-white md:inline-flex items-center justify-center gap-1 rounded-[20px] h-[50px] w-[130px]"
 			>
 				<img src={logo} alt="logo" className="w-[40px]" />
 				<span className="font-poppins text-lg font-medium text-[#000000]">
@@ -65,11 +75,28 @@ const merchantLinks = [
 	{ text: "upload points", icon: { active: ac_payment, inactive: in_payment } },
 	{
 		text: "rewards settings",
-		icon: { active: ac_payment, inactive: in_payment },
+		icon: { active: ac_task, inactive: in_task },
 	},
 	{
 		text: "transactions",
 		icon: { active: ac_transaction, inactive: in_transaction },
+	},
+	{ text: "profile", icon: { active: ac_profile, inactive: in_profile } },
+];
+
+const adminLinks = [
+	{ text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
+	{
+		text: "manage categories",
+		icon: { active: ac_payment, inactive: in_payment },
+	},
+	{
+		text: "manage users",
+		icon: { active: ac_user, inactive: in_user },
+	},
+	{
+		text: "merchants",
+		icon: { active: ac_merchant, inactive: in_merchant },
 	},
 	{ text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
@@ -91,14 +118,27 @@ const SidebarLink = ({
 	return (
 		<Link
 			to={`/${path}`}
-			className={`flex items-center gap-2 xl:gap-3 capitalize lg:w-[180px] xl:w-[195px] px-4 xl:px-5 py-3.5 xl:py-4 text-sm xl:text-[14.5px] text-nowrap ${
+			className={`flex items-center gap-2 xl:gap-3 capitalize px-4 xl:px-5 py-3.5 xl:py-4 text-sm xl:text-[14.5px] text-nowrap ${
 				isActive
 					? "bg-white text-primary-purple rounded-[30px] font-medium"
 					: "text-white"
+			} ${
+				link.text.includes("categories")
+					? "lg:w-[187px] xl:w-[205px]"
+					: "lg:w-[180px] xl:w-[195px]"
 			}`}
 		>
 			<img src={isActive ? link.icon.active : link.icon.inactive} />
 			<span>{link.text}</span>
 		</Link>
+	);
+};
+
+export const MobileSidebarWrapper = () => {
+	return (
+		<div className="fixed bg-primary-purple z-50 top-[60px] left-0 w-[230px] bottom-0 md:hidden p-6">
+			<p className="text-white">Text side bar... will change soon</p>
+			<Sidebar />
+		</div>
 	);
 };

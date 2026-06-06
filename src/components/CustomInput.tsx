@@ -1,8 +1,9 @@
 import type React from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import "./input.css";
+import type { InputEvent } from "../types";
 
-type TextInputProps = {
+interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	id: string;
 	label: string;
 	type?: string;
@@ -10,11 +11,16 @@ type TextInputProps = {
 	togglePassword?: boolean;
 	handleTogglePassword?: () => void;
 	otherInfo?: string | React.ReactElement;
-};
+	value?: string;
+	handleChange?: (e: InputEvent) => void;
+	onBlur?: () => void;
+	onFocus?: () => void;
+	otherInputProps?: any;
+}
 
 type OtherInputProps = {
 	id: string;
-	handleChange?: () => void;
+	handleChange?: (e: InputEvent) => void;
 	disabled?: boolean;
 	isChecked?: boolean;
 	readOnly?: boolean;
@@ -28,8 +34,13 @@ export const CustomTextInput = ({
 	type,
 	placeholder,
 	togglePassword,
+	value,
 	handleTogglePassword,
 	otherInfo,
+	handleChange,
+	onBlur,
+	onFocus,
+	otherInputProps,
 }: TextInputProps) => {
 	return (
 		<div className="flex flex-col gap-1">
@@ -42,6 +53,11 @@ export const CustomTextInput = ({
 					type={togglePassword ? "text" : type || "text"}
 					placeholder={placeholder}
 					className="border border-[#D9D9D9] px-3 py-2.5 rounded-xl placeholder:text-[#D9D9D9] placeholder:text-[15px] outline-none focus:border-2 focus:border-primary-purple w-full"
+					value={value}
+					onChange={handleChange}
+					onBlur={onBlur}
+					onFocus={onFocus}
+					{...otherInputProps}
 				/>
 				{type === "password" && (
 					<button

@@ -1,7 +1,14 @@
 import { DashboardCard } from "../pages/dashboard/partials";
 import { pointBalance, pointSpent, rank, redeemedPoint } from "../assets";
+import DashboardCharts from "../components/DashboardCharts";
 
 const MerchantDashboard = () => {
+	const completed = 26;
+	const delayed = 35;
+	const ongoing = 35;
+
+	const doughnutValues = { completed, delayed, ongoing };
+
 	return (
 		<div className="mt-7">
 			<section className="overflow-x-auto hide-scroll">
@@ -31,11 +38,13 @@ const MerchantDashboard = () => {
 						icon={pointSpent}
 						title="total spent"
 						value="10,300"
-						context=""
+						// context=""
 						info={{ percentage: 2 }}
 					/>
 				</div>
 			</section>
+
+			<DashboardCharts doughnutValues={doughnutValues} />
 		</div>
 	);
 };

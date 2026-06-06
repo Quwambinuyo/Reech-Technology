@@ -30,7 +30,7 @@ const TransactionDetails = () => {
 						<img
 							src={toggleTransactionDetails?.company}
 							alt={toggleTransactionDetails?.productType}
-							className="`w-[29px] xl:w-[30px]"
+							className="`w-[29px] xl:w-[30px] h-auto"
 						/>
 						<p className="text-xs md:text-[13px]">
 							{toggleTransactionDetails?.productType}

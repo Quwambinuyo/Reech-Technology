@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { CustomCheckbox, CustomTextInput } from "../../components/CustomInput";
 import Button from "../../components/Button";
 import { FcGoogle } from "react-icons/fc";
@@ -6,17 +6,60 @@ import { FaApple } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/reech.png";
 import LandingMobileNavbar from "../../layout/LandingMobileNavbar";
+import type { InputEvent } from "../../types";
+import { validateEmail } from "../../utils";
+import { toast } from "react-toastify";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { userAccountLogin } from "../../redux/auth/authActions";
 
 const SignIn = () => {
-	const [togglePassword, setTogglePassword] = useState(false);
-
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
+
+	const { currentUser, loginLoading } = useAppSelector((state) => state.auth);
+
+	const [togglePassword, setTogglePassword] = useState(false);
+	const [form, setForm] = useState({
+		email: "",
+		password: "",
+		rememberMe: false,
+	});
+
+	const handleForm = (e: InputEvent) => {
+		if (e.target.type === "checkbox") {
+			setForm((prev) => ({ ...prev, rememberMe: e.target.checked }));
+		} else {
+			setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+		}
+	};
+
+	const { email, password, rememberMe } = form;
+
+	const isEmailValid = validateEmail(email);
 
 	const onClick = (e: FormEvent) => {
 		e.preventDefault();
 
-		navigate("/dashboard");
+		if (!isEmailValid) {
+			toast.error("Please enter a valid email");
+		} else {
+			const dataToSend = {
+				data: { email, password },
+				rememberMe,
+			};
+			dispatch(userAccountLogin(dataToSend));
+		}
 	};
+
+	useEffect(() => {
+		if (currentUser) {
+			navigate("/dashboard");
+		}
+	}, [currentUser]);
+
+	useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, []);
 
 	return (
 		<main className="md:flex h-screen mt-[60px] sm:mt-[63px] md:mt-0">
@@ -53,6 +96,8 @@ const SignIn = () => {
 							type="email"
 							id="email"
 							placeholder="Enter your email"
+							value={email}
+							handleChange={handleForm}
 						/>
 						<div>
 							<CustomTextInput
@@ -62,15 +107,22 @@ const SignIn = () => {
 								placeholder="Enter your password"
 								togglePassword={togglePassword}
 								handleTogglePassword={() => setTogglePassword((prev) => !prev)}
+								value={password}
+								handleChange={handleForm}
 							/>
 							<div className="font-poppins flex flex-col gap-2 mt-2">
 								<button className=" font-light text-[15px] md:text-base text-[#4A148C] self-end">
 									forgot password
 								</button>
 								<div className="flex items-center gap-2">
-									<CustomCheckbox id="remember-me" />
+									<CustomCheckbox
+										id="rememberMe"
+										value={rememberMe}
+										isChecked={rememberMe}
+										handleChange={handleForm}
+									/>
 									<label
-										htmlFor="remember-me"
+										htmlFor="rememberMe"
 										className="font-medium text-sm md:text-[14.5px]"
 									>
 										Remember me for 30 days
@@ -78,7 +130,12 @@ const SignIn = () => {
 								</div>
 							</div>
 						</div>
-						<Button text="Login" type="submit" />
+						<Button
+							text={loginLoading ? "Logging in..." : "Login"}
+							type="submit"
+							isDisabled={password.length < 8 || !email}
+							isLoading={loginLoading}
+						/>
 					</form>
 
 					<div className="flex flex-col gap-4 xl:gap-5 mt-6 md:mt-7 xl:mt-8">

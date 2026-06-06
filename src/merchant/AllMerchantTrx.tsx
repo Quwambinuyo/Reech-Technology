@@ -55,11 +55,7 @@ const AllMerchantTrx = () => {
 				<div className="px-2 py-4 lg:py-5 lg:px-3 min-h-[250px] min-w-[1000px]">
 					<div className="grid gap-2">
 						{selectedTransactions().map((transaction, i) => (
-							<TransactionCard
-								transaction={transaction}
-								type={activeTab.toLowerCase()}
-								key={i}
-							/>
+							<TransactionCard transaction={transaction} key={i} />
 						))}
 					</div>
 				</div>

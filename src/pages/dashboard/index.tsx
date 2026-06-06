@@ -1,11 +1,11 @@
+import AdminDashboard from "../../admin/Dashboard";
 import { MiniDropDown } from "../../components/CustomSelect";
 import CustomerDashboard from "../../customer/Dashboard";
+import { useRole } from "../../hooks/useRole";
 import MerchantDashboard from "../../merchant/Dashboard";
-import type { UserRole } from "../../types";
-import { userRole } from "../../utils";
 
 const Dashboard = () => {
-	const currentUserRole = userRole as UserRole;
+	const currentUserRole = useRole();
 
 	return (
 		<div>
@@ -14,10 +14,12 @@ const Dashboard = () => {
 				<MiniDropDown />
 			</section>
 
-			{currentUserRole === "customer" ? (
-				<CustomerDashboard />
-			) : (
+			{currentUserRole === "SuperAdmin" ? (
+				<AdminDashboard />
+			) : currentUserRole === "BusinessAdmin" ? (
 				<MerchantDashboard />
+			) : (
+				<CustomerDashboard />
 			)}
 		</div>
 	);
