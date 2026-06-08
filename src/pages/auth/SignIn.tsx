@@ -13,160 +13,164 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { userAccountLogin } from "../../redux/auth/authActions";
 
 const SignIn = () => {
-	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-	const { currentUser, loginLoading } = useAppSelector((state) => state.auth);
+  const { currentUser, loginLoading } = useAppSelector((state) => state.auth);
 
-	const [togglePassword, setTogglePassword] = useState(false);
-	const [form, setForm] = useState({
-		email: "",
-		password: "",
-		rememberMe: false,
-	});
+  const [togglePassword, setTogglePassword] = useState(false);
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
 
-	const handleForm = (e: InputEvent) => {
-		if (e.target.type === "checkbox") {
-			setForm((prev) => ({ ...prev, rememberMe: e.target.checked }));
-		} else {
-			setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-		}
-	};
+  const handleForm = (e: InputEvent) => {
+    if (e.target.type === "checkbox") {
+      setForm((prev) => ({ ...prev, rememberMe: e.target.checked }));
+    } else {
+      setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+    }
+  };
 
-	const { email, password, rememberMe } = form;
+  const { email, password, rememberMe } = form;
 
-	const isEmailValid = validateEmail(email);
+  const isEmailValid = validateEmail(email);
 
-	const onClick = (e: FormEvent) => {
-		e.preventDefault();
+  const onClick = (e: FormEvent) => {
+    e.preventDefault();
 
-		if (!isEmailValid) {
-			toast.error("Please enter a valid email");
-		} else {
-			const dataToSend = {
-				data: { email, password },
-				rememberMe,
-			};
-			dispatch(userAccountLogin(dataToSend));
-		}
-	};
+    if (!isEmailValid) {
+      toast.error("Please enter a valid email");
+    } else {
+      const dataToSend = {
+        data: { email, password },
+        rememberMe,
+      };
+      dispatch(userAccountLogin(dataToSend));
+    }
+  };
 
-	useEffect(() => {
-		if (currentUser) {
-			navigate("/dashboard");
-		}
-	}, [currentUser]);
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/dashboard");
+    }
+  }, [currentUser]);
 
-	useEffect(() => {
-		window.scrollTo({ top: 0, behavior: "smooth" });
-	}, []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
-	return (
-		<main className="md:flex h-screen mt-[60px] sm:mt-[63px] md:mt-0">
-			<LandingMobileNavbar />
-			<section className="auth-bg hidden md:block md:w-1/2 lg:w-[52%] relative">
-				<Link to="/" className=" absolute z-2 top-7 left-7 xl:top-8 xl:left-8">
-					<img
-						src={logo}
-						alt="logo"
-						className="w-[120px] lg:w-[130px] xl:w-auto"
-					/>
-				</Link>
+  return (
+    <main className="md:flex h-screen mt-[60px] sm:mt-[63px] md:mt-0">
+      <LandingMobileNavbar />
+      <section className="auth-bg hidden md:block md:w-1/2 lg:w-[52%] relative">
+        <Link to="/" className=" absolute z-2 top-7 left-7 xl:top-8 xl:left-8">
+          <img
+            src={logo}
+            alt="logo"
+            className="w-[120px] lg:w-[130px] xl:w-auto"
+          />
+        </Link>
 
-				<div className="absolute inset-0 bg-[#320D5EB2]"></div>
-			</section>
+        <div className="absolute inset-0 bg-[#320D5EB2]"></div>
+      </section>
 
-			<section className="max-w-[500px] mx-auto md:max-w-none md:w-1/2 lg:w-[48%] overflow-y-auto">
-				<div className="px-5 sm:px-8 md:px-10 lg:px-12 xl:px-20 mt-5 sm:my-8 md:my-14 lg:my-16 xl:my-24">
-					<div className="mb-8 xl:mb-10">
-						<h3 className="text-[25px] sm:text-[27px] md:text-[30px] lg:text-[32px] xl:text-[36px] font-semibold">
-							Welcome back!
-						</h3>
-						<p className="font-light text-[13.8px] sm:text-[15px] lg:text-base xl:text-lg">
-							Enter your Credentials to access your account
-						</p>
-					</div>
+      <section className="max-w-[500px] mx-auto md:max-w-none md:w-1/2 lg:w-[48%] overflow-y-auto">
+        <div className="px-5 sm:px-8 md:px-10 lg:px-12 xl:px-20 mt-5 sm:my-8 md:my-14 lg:my-16 xl:my-24">
+          <div className="mb-8 xl:mb-10">
+            <h3 className="text-[25px] sm:text-[27px] md:text-[30px] lg:text-[32px] xl:text-[36px] font-semibold">
+              Welcome back!
+            </h3>
+            <p className="font-light text-[13.8px] sm:text-[15px] lg:text-base xl:text-lg">
+              Enter your Credentials to access your account
+            </p>
+          </div>
 
-					<form
-						className="flex flex-col gap-6 md:gap-7 xl:gap-8"
-						onSubmit={onClick}
-					>
-						<CustomTextInput
-							label="Email address"
-							type="email"
-							id="email"
-							placeholder="Enter your email"
-							value={email}
-							handleChange={handleForm}
-						/>
-						<div>
-							<CustomTextInput
-								label="Password"
-								type="password"
-								id="password"
-								placeholder="Enter your password"
-								togglePassword={togglePassword}
-								handleTogglePassword={() => setTogglePassword((prev) => !prev)}
-								value={password}
-								handleChange={handleForm}
-							/>
-							<div className="font-poppins flex flex-col gap-2 mt-2">
-								<button className=" font-light text-[15px] md:text-base text-[#4A148C] self-end">
-									forgot password
-								</button>
-								<div className="flex items-center gap-2">
-									<CustomCheckbox
-										id="rememberMe"
-										value={rememberMe}
-										isChecked={rememberMe}
-										handleChange={handleForm}
-									/>
-									<label
-										htmlFor="rememberMe"
-										className="font-medium text-sm md:text-[14.5px]"
-									>
-										Remember me for 30 days
-									</label>
-								</div>
-							</div>
-						</div>
-						<Button
-							text={loginLoading ? "Logging in..." : "Login"}
-							type="submit"
-							isDisabled={password.length < 8 || !email}
-							isLoading={loginLoading}
-						/>
-					</form>
+          <form
+            className="flex flex-col gap-6 md:gap-7 xl:gap-8"
+            onSubmit={onClick}
+          >
+            <CustomTextInput
+              label="Email address"
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              value={email}
+              handleChange={handleForm}
+            />
+            <div>
+              <CustomTextInput
+                label="Password"
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                togglePassword={togglePassword}
+                handleTogglePassword={() => setTogglePassword((prev) => !prev)}
+                value={password}
+                handleChange={handleForm}
+              />
+              <div className="font-poppins flex flex-col gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => navigate("/forgot-password")}
+                  className=" font-light text-[15px] md:text-base text-[#4A148C] self-end"
+                >
+                  forgot password
+                </button>
+                <div className="flex items-center gap-2">
+                  <CustomCheckbox
+                    id="rememberMe"
+                    value={rememberMe}
+                    isChecked={rememberMe}
+                    handleChange={handleForm}
+                  />
+                  <label
+                    htmlFor="rememberMe"
+                    className="font-medium text-sm md:text-[14.5px]"
+                  >
+                    Remember me for 30 days
+                  </label>
+                </div>
+              </div>
+            </div>
+            <Button
+              text={loginLoading ? "Logging in..." : "Login"}
+              type="submit"
+              isDisabled={password.length < 8 || !email}
+              isLoading={loginLoading}
+            />
+          </form>
 
-					<div className="flex flex-col gap-4 xl:gap-5 mt-6 md:mt-7 xl:mt-8">
-						<div className="grid sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6 font-poppins font-medium text-[15px]">
-							<button className="border border-[#D9D9D9] rounded-xl py-2.5 flex-center gap-2">
-								<span className="text-[24px] xl:text-[26px]">
-									<FcGoogle />
-								</span>
-								<span>Sign in with Google</span>
-							</button>
-							<button className="border border-[#D9D9D9] rounded-xl py-2.5 flex-center gap-2">
-								<span className="text-[24px] xl:text-[26px]">
-									<FaApple />
-								</span>
-								<span>Sign in with Apple</span>
-							</button>
-						</div>
-						<p className="self-center">
-							Don't have an account?{" "}
-							<Link
-								to="/sign-up"
-								className="text-[#4A148C] text-[17px] sm:text-lg"
-							>
-								Sign Up
-							</Link>
-						</p>
-					</div>
-				</div>
-			</section>
-		</main>
-	);
+          <div className="flex flex-col gap-4 xl:gap-5 mt-6 md:mt-7 xl:mt-8">
+            <div className="grid sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6 font-poppins font-medium text-[15px]">
+              <button className="border border-[#D9D9D9] rounded-xl py-2.5 flex-center gap-2">
+                <span className="text-[24px] xl:text-[26px]">
+                  <FcGoogle />
+                </span>
+                <span>Sign in with Google</span>
+              </button>
+              <button className="border border-[#D9D9D9] rounded-xl py-2.5 flex-center gap-2">
+                <span className="text-[24px] xl:text-[26px]">
+                  <FaApple />
+                </span>
+                <span>Sign in with Apple</span>
+              </button>
+            </div>
+            <p className="self-center">
+              Don't have an account?{" "}
+              <Link
+                to="/sign-up"
+                className="text-[#4A148C] text-[17px] sm:text-lg"
+              >
+                Sign Up
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 };
 
 export default SignIn;
