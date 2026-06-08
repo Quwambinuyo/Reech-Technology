@@ -2,30 +2,30 @@ import { ActionButton } from ".";
 import { useAppDispatch } from "../../redux/hooks";
 import type { ActivityPointProps } from "../../types";
 import {
-	onToggleDeleteActivityPoint,
-	onToggleEditActivityPoint,
+  onToggleDeleteActivityPoint,
+  onToggleEditActivityPoint,
 } from "../../redux/point/reducer";
 
 const ActivityPointCard = ({ act }: { act: ActivityPointProps }) => {
-	const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-	return (
-		<div className="grid gap-5 grid-cols-10 font-ibmplex font-semibold text-sm lg:text-[14.5px] py-5 odd:bg-[#F5F6FF] px-5 md:px-6 xl:px-8 min-w-[800px]">
-			<p className="col-span-3 flex items-center">{act.name}</p>
-			<p className="col-span-2 flex items-center">{act.points}</p>
-			<p className="col-span-3 flex items-center">{act.description}</p>
-			<div className="col-span-2 flex gap-3 lg:gap-4">
-				<ActionButton
-					type="edit"
-					onClick={() => dispatch(onToggleEditActivityPoint(act))}
-				/>
-				<ActionButton
-					type="delete"
-					onClick={() => dispatch(onToggleDeleteActivityPoint(act.id))}
-				/>
-			</div>
-		</div>
-	);
+  return (
+    <div className="grid gap-5 grid-cols-10 font-ibmplex font-semibold text-sm lg:text-[14.5px] py-5 odd:bg-[#F5F6FF] px-5 md:px-6 xl:px-8 min-w-[800px]">
+      <p className="col-span-3 flex items-center">{act.name}</p>
+      <p className="col-span-2 flex items-center">{act.points}</p>
+      <p className="col-span-3 flex items-center">{act.description}</p>
+      <div className="col-span-2 flex gap-3 lg:gap-4">
+        <ActionButton
+          type="edit"
+          onClick={() => dispatch(onToggleEditActivityPoint(act))}
+        />
+        <ActionButton
+          type="delete"
+          onClick={() => dispatch(onToggleDeleteActivityPoint(act.id))}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default ActivityPointCard;

@@ -22,6 +22,7 @@ import {
   onToggleCreatePointConversion,
   onToggleDeleteActivityPoint,
   onToggleEditActivityPoint,
+  onToggleEditPointConversion,
 } from "../redux/point/reducer";
 
 const PointUpload = () => {
@@ -39,13 +40,14 @@ const PointUpload = () => {
     deleteActivityPointLoading,
     deleteActivityPointSuccess,
     toggleDeleteActivityPoint,
+    toggleEditPointConversion,
   } = useAppSelector((state) => state.point);
 
-  // const { currentUser } = useAppSelector((state) => state.auth);
-
   const onCreateNewActivity = () => dispatch(onToggleCreateActivityPoint());
-  const onEditNewActivity = () => dispatch(onToggleEditActivityPoint());
+  const onCloseEditActivity = () => dispatch(onToggleEditActivityPoint(null));
   const onCreateNewConversion = () => dispatch(onToggleCreatePointConversion());
+  const onCloseEditConversion = () =>
+    dispatch(onToggleEditPointConversion(null));
 
   const onDeleteActivityPoint = () => {
     dispatch(deleteActivityPoints(toggleDeleteActivityPoint));
@@ -71,7 +73,7 @@ const PointUpload = () => {
       </Modal>
 
       <Modal modal={!!toggleEditActivityPoint}>
-        <NewActivityPointForm onClose={onEditNewActivity} context="edit" />
+        <NewActivityPointForm onClose={onCloseEditActivity} context="edit" />
       </Modal>
 
       <Modal modal={toggleCreateActivityPoint}>
@@ -79,7 +81,14 @@ const PointUpload = () => {
       </Modal>
 
       <Modal modal={toggleCreatePointConversion}>
-        <NewPointConversionForm onClose={onCreateNewConversion} />
+        <NewPointConversionForm onClose={onCreateNewConversion} context="new" />
+      </Modal>
+
+      <Modal modal={!!toggleEditPointConversion}>
+        <NewPointConversionForm
+          onClose={onCloseEditConversion}
+          context="edit"
+        />
       </Modal>
 
       <section className="bg-[#FFFFFFCC] rounded-2xl py-4 lg:py-5 px-3 lg:px-4">

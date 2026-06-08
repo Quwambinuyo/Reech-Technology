@@ -4,7 +4,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { CustomTextInput } from "../../components/CustomInput";
-import type { ActivityPointProps, InputEvent } from "../../types";
+import type { InputEvent } from "../../types";
 import Button from "../../components/Button";
 import {
   createActivityPoints,
@@ -14,10 +14,9 @@ import {
 type FormProps = {
   onClose: () => void;
   context: "new" | "edit";
-  data?: ActivityPointProps | null;
 };
 
-const NewActivityPointForm = ({ onClose, context, data }: FormProps) => {
+const NewActivityPointForm = ({ onClose, context }: FormProps) => {
   const dispatch = useAppDispatch();
   const {
     creatActivityPointLoading,
@@ -26,10 +25,12 @@ const NewActivityPointForm = ({ onClose, context, data }: FormProps) => {
   } = useAppSelector((state) => state.point);
 
   const [form, setForm] = useState({
-    activityName: context === "edit" ? toggleEditActivityPoint?.name : "",
+    activityName:
+      context === "edit" ? (toggleEditActivityPoint?.name ?? "") : "",
     numOfPoint:
-      context === "edit" ? String(toggleEditActivityPoint?.points) : "",
-    description: context === "edit" ? toggleEditActivityPoint?.description : "",
+      context === "edit" ? String(toggleEditActivityPoint?.points ?? "") : "",
+    description:
+      context === "edit" ? (toggleEditActivityPoint?.description ?? "") : "",
   });
 
   const { activityName, numOfPoint, description } = form;
@@ -59,6 +60,7 @@ const NewActivityPointForm = ({ onClose, context, data }: FormProps) => {
 
     if (Number(numOfPoint) < 0) {
       toast.error("Number of points must not be less than '0' ");
+      return;
     }
     if (context === "edit") {
       dispatch(
@@ -120,7 +122,7 @@ const NewActivityPointForm = ({ onClose, context, data }: FormProps) => {
           description === "" ||
           getIsOldNameEqual()
         }
-        isLoading={creatActivityPointLoading || editActivityPointLoading}
+        isLoading={isLoading}
       />
     </div>
   );
