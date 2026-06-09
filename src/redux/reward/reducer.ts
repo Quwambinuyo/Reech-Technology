@@ -12,11 +12,13 @@ interface RankLevel {
 interface RewardReducerProps {
   toggleCreateNewRank: boolean;
   editingRank: RankLevel | null;
+  viewingUserRank: number | null;
 }
 
 const initialState: RewardReducerProps = {
   toggleCreateNewRank: false,
   editingRank: null,
+  viewingUserRank: null,
 };
 
 const rewardSlice = createSlice({
@@ -33,9 +35,20 @@ const rewardSlice = createSlice({
       state.editingRank = action.payload;
       state.toggleCreateNewRank = true;
     },
+    onOpenUserRankDetail: (state, action: PayloadAction<number>) => {
+      state.viewingUserRank = action.payload;
+    },
+    onCloseUserRankDetail: (state) => {
+      state.viewingUserRank = null;
+    },
   },
 });
 
-export const { onToggleCreateNewRank, onOpenEditRank } = rewardSlice.actions;
+export const {
+  onToggleCreateNewRank,
+  onOpenEditRank,
+  onOpenUserRankDetail,
+  onCloseUserRankDetail,
+} = rewardSlice.actions;
 
 export const rewardReducer = rewardSlice.reducer;
