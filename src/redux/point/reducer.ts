@@ -4,6 +4,10 @@ import {
   deleteActivityPoints,
   editActivityPoints,
   fetchActivityPoints,
+  fetchPointConversions,
+  createPointConversions,
+  editPointConversions,
+  deletePointConversions,
 } from "./action";
 import type { ActivityPointProps, PointEquivalentProp } from "../../types";
 
@@ -14,11 +18,20 @@ type ActivityPointResponse = {
   totalPages: number;
 };
 
+type PointConversionResponse = {
+  pageNumber: number;
+  result: PointEquivalentProp[];
+  totalCount: number;
+  totalPages: number;
+};
+
 interface PointReducerProps {
   toggleCreateActivityPoint: boolean;
   toggleCreatePointConversion: boolean;
   fetchActivityPointsLoading: boolean;
+  fetchPointConversionsLoading: boolean;
   allActivityPoints: ActivityPointResponse;
+  allPointConversions: PointConversionResponse;
   fetchActivityPointsError: string;
   pointsNetworkError: string;
   creatActivityPointLoading: boolean;
@@ -33,13 +46,30 @@ interface PointReducerProps {
   deleteActivityPointSuccess: any;
   deleteActivityPointError: string;
   toggleEditPointConversion: PointEquivalentProp | null;
+  toggleDeletePointConversion: string;
+  createPointConversionLoading: boolean;
+  createPointConversionSuccess: any;
+  createPointConversionError: string;
+  editPointConversionLoading: boolean;
+  editPointConversionSuccess: any;
+  editPointConversionError: string;
+  deletePointConversionLoading: boolean;
+  deletePointConversionSuccess: any;
+  deletePointConversionError: string;
 }
 
 const initialState: PointReducerProps = {
   toggleCreateActivityPoint: false,
   toggleCreatePointConversion: false,
   fetchActivityPointsLoading: false,
+  fetchPointConversionsLoading: false,
   allActivityPoints: {
+    pageNumber: 1,
+    result: [],
+    totalCount: 0,
+    totalPages: 0,
+  },
+  allPointConversions: {
     pageNumber: 1,
     result: [],
     totalCount: 0,
@@ -59,6 +89,16 @@ const initialState: PointReducerProps = {
   deleteActivityPointSuccess: null,
   deleteActivityPointError: "",
   toggleEditPointConversion: null,
+  toggleDeletePointConversion: "",
+  createPointConversionLoading: false,
+  createPointConversionSuccess: null,
+  createPointConversionError: "",
+  editPointConversionLoading: false,
+  editPointConversionSuccess: null,
+  editPointConversionError: "",
+  deletePointConversionLoading: false,
+  deletePointConversionSuccess: null,
+  deletePointConversionError: "",
 };
 
 const pointSlice = createSlice({
@@ -100,6 +140,9 @@ const pointSlice = createSlice({
         return { payload: info };
       },
     },
+    onToggleDeletePointConversion: (state, action) => {
+      state.toggleDeletePointConversion = action.payload || "";
+    },
   },
   extraReducers(builder) {
     builder
@@ -116,9 +159,7 @@ const pointSlice = createSlice({
       })
       .addCase(fetchActivityPoints.rejected, (state, action) => {
         state.fetchActivityPointsLoading = false;
-
         const error = action.payload as string;
-
         state.pointsNetworkError = error?.includes("Network")
           ? "Network Error"
           : "";
@@ -138,7 +179,6 @@ const pointSlice = createSlice({
       .addCase(createActivityPoints.rejected, (state, action) => {
         state.creatActivityPointLoading = false;
         const error = action.payload as string;
-
         state.creatActivityPointError = error;
       })
       .addCase(editActivityPoints.pending, (state) => {
@@ -153,7 +193,6 @@ const pointSlice = createSlice({
       .addCase(editActivityPoints.rejected, (state, action) => {
         state.editActivityPointLoading = false;
         const error = action.payload as string;
-
         state.editActivityPointError = error;
       })
       .addCase(deleteActivityPoints.pending, (state) => {
@@ -168,8 +207,67 @@ const pointSlice = createSlice({
       .addCase(deleteActivityPoints.rejected, (state, action) => {
         state.deleteActivityPointLoading = false;
         const error = action.payload as string;
-
         state.deleteActivityPointError = error;
+      })
+      .addCase(fetchPointConversions.pending, (state) => {
+        state.fetchPointConversionsLoading = true;
+        state.pointsNetworkError = "";
+        state.createPointConversionSuccess = null;
+        state.editPointConversionSuccess = null;
+        state.deletePointConversionSuccess = null;
+      })
+      .addCase(fetchPointConversions.fulfilled, (state, action) => {
+        state.fetchPointConversionsLoading = false;
+        state.allPointConversions = action.payload;
+      })
+      .addCase(fetchPointConversions.rejected, (state, action) => {
+        state.fetchPointConversionsLoading = false;
+        const error = action.payload as string;
+        state.pointsNetworkError = error?.includes("Network")
+          ? "Network Error"
+          : "";
+      })
+      .addCase(createPointConversions.pending, (state) => {
+        state.createPointConversionLoading = true;
+        state.createPointConversionError = "";
+      })
+      .addCase(createPointConversions.fulfilled, (state, action) => {
+        state.createPointConversionLoading = false;
+        state.createPointConversionSuccess = action.payload;
+        state.toggleCreatePointConversion = false;
+      })
+      .addCase(createPointConversions.rejected, (state, action) => {
+        state.createPointConversionLoading = false;
+        const error = action.payload as string;
+        state.createPointConversionError = error;
+      })
+      .addCase(editPointConversions.pending, (state) => {
+        state.editPointConversionLoading = true;
+        state.editPointConversionError = "";
+      })
+      .addCase(editPointConversions.fulfilled, (state, action) => {
+        state.editPointConversionLoading = false;
+        state.editPointConversionSuccess = action.payload;
+        state.toggleEditPointConversion = null;
+      })
+      .addCase(editPointConversions.rejected, (state, action) => {
+        state.editPointConversionLoading = false;
+        const error = action.payload as string;
+        state.editPointConversionError = error;
+      })
+      .addCase(deletePointConversions.pending, (state) => {
+        state.deletePointConversionLoading = true;
+        state.deletePointConversionError = "";
+      })
+      .addCase(deletePointConversions.fulfilled, (state, action) => {
+        state.deletePointConversionLoading = false;
+        state.deletePointConversionSuccess = action.payload;
+        state.toggleDeletePointConversion = "";
+      })
+      .addCase(deletePointConversions.rejected, (state, action) => {
+        state.deletePointConversionLoading = false;
+        const error = action.payload as string;
+        state.deletePointConversionError = error;
       });
   },
 });
@@ -180,6 +278,7 @@ export const {
   onToggleEditActivityPoint,
   onToggleDeleteActivityPoint,
   onToggleEditPointConversion,
+  onToggleDeletePointConversion,
 } = pointSlice.actions;
 
 export const pointReducer = pointSlice.reducer;
