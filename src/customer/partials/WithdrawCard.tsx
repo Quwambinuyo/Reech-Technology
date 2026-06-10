@@ -37,7 +37,7 @@ const WithdrawCard = ({ onClose }: Props) => {
         </div>
         <button
           onClick={onClose}
-          className="text-2xl text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-2xl text-black hover:text-gray-600 transition-colors"
         >
           <IoCloseCircleOutline />
         </button>
@@ -126,7 +126,7 @@ const WithdrawCard = ({ onClose }: Props) => {
           </div>
         </div>
 
-        <button className="mt-5 w-full bg-[#4A148C] hover:bg-[#6A1B9A] transition-colors text-white font-montserrat font-semibold rounded-2xl py-4 flex items-center justify-center gap-2">
+        <button className="mt-5 w-full bg-[#4A148C] hover:bg-[#6A1B9A] transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2">
           Withdraw Funds
           <HiArrowRight size={18} />
         </button>

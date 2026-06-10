@@ -24,7 +24,6 @@ import { clearUserSession, getOrCreateTabId } from "../utils";
 const Sidebar = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -73,7 +72,7 @@ const Sidebar = () => {
 
       <button
         onClick={handleLogout}
-        className="flex mt-18 items-center gap-2 xl:gap-3 capitalize px-4 xl:px-5 py-3.5 xl:py-4 text-sm xl:text-[14.5px] text-nowrap bg-white text-red-600 rounded-[30px] font-medium w-full"
+        className="md:hidden flex mt-18 items-center gap-2 capitalize px-4 py-3.5 text-sm text-nowrap bg-white text-red-600 rounded-[30px] font-medium w-full"
       >
         <FiLogOut size={18} />
         <span>logout</span>

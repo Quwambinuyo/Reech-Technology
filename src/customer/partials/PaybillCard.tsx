@@ -93,7 +93,7 @@ const PayBillCard = ({ onClose }: Props) => {
           </div>
         </div>
 
-        <button className="mt-5 w-full bg-[#4A148C] hover:bg-[#6A1B9A] transition-colors text-white font-montserrat font-semibold rounded-2xl py-4 flex items-center justify-center gap-2">
+        <button className="mt-5 w-full bg-[#4A148C] hover:bg-[#6A1B9A] transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2">
           <MdReceipt size={18} />
           Pay Bill
         </button>
