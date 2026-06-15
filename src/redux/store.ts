@@ -4,15 +4,17 @@ import { pointReducer } from "./point/reducer";
 import { rewardReducer } from "./reward/reducer";
 import { authReducer } from "./auth/authReducer";
 import { categoryReducer } from "./category/reducer";
+import { merchantVerificationReducer } from "./merchantVerification/reducer";
 
 export const store = configureStore({
-	reducer: {
-		auth: authReducer,
-		transaction: transactionReducer,
-		point: pointReducer,
-		reward: rewardReducer,
-		category: categoryReducer,
-	},
+  reducer: {
+    auth: authReducer,
+    transaction: transactionReducer,
+    point: pointReducer,
+    reward: rewardReducer,
+    category: categoryReducer,
+    merchantVerification: merchantVerificationReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

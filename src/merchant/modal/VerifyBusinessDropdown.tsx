@@ -7,9 +7,13 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   firstName: string;
+  label?: string;
 }
 
-const VerifyBusinessDropdown = ({ isMobile = false }: Props) => {
+const VerifyBusinessDropdown = ({
+  isMobile = false,
+  label = "Complete Verification",
+}: Props) => {
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const verifyRef = useRef<HTMLDivElement>(null);
@@ -33,7 +37,7 @@ const VerifyBusinessDropdown = ({ isMobile = false }: Props) => {
           onClick={() => setVerifyOpen((prev) => !prev)}
           className={`${isMobile ? "text-[12px]" : "text-[13px]"} font-medium text-[#320D5E] hover:text-[#362e78] transition-colors whitespace-nowrap`}
         >
-          Complete Verification
+          {label}
         </button>
 
         {verifyOpen && (

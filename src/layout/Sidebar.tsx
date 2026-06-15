@@ -156,12 +156,13 @@ const SidebarLink = ({
     </Link>
   );
 };
-
 export const MobileSidebarWrapper = () => {
   return (
-    <div className="fixed bg-primary-purple z-50 top-[60px] left-0 w-[230px] bottom-0 md:hidden p-6">
-      <p className="text-white">Text side bar... will change soon</p>
-      <Sidebar />
+    <div className="fixed bg-primary-purple z-50  top-[60px] left-0 w-[230px] bottom-0 md:hidden flex flex-col">
+      <div className="overflow-y-auto flex-1 p-6 hide-scroll">
+        <p className="text-white">Text side bar... will change soon</p>
+        <Sidebar />
+      </div>
     </div>
   );
 };

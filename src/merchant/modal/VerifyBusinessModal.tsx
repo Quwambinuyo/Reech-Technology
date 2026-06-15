@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Modal from "../../layout/Modal";
 import CompanyInformationStep from "../step/CompanyInformationStep";
 import DirectorInformationStep from "../step/DirectorInformationStep";
@@ -12,10 +12,20 @@ interface Props {
 
 const VerifyBusinessModal = ({ isOpen, onClose, firstName }: Props) => {
   const [step, setStep] = useState(1);
+  const modalContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (modalContentRef.current) {
+      modalContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [step]);
 
   return (
     <Modal modal={isOpen} onClose={onClose}>
-      <div className="bg-white rounded-2xl w-[90vw] max-w-[480px] max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalContentRef}
+        className="bg-white rounded-2xl w-full max-w-[480px] md:max-w-[650px] max-h-[90vh] overflow-y-auto hide-scroll"
+      >
         <div className="px-6 pt-6 pb-2 text-center">
           <h2 className="text-[17px] font-semibold text-[#060606]">
             Welcome {firstName}!

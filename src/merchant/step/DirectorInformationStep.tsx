@@ -1,64 +1,110 @@
-import { useState } from "react";
-import { CustomTextInput } from "../../components/CustomInput";
-import { CustomSelectNoDropDown } from "../../components/CustomSelect";
+import { useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import {
+  addDirector,
+  removeDirector,
+} from "../../redux/merchantVerification/reducer";
+import { submitMerchantVerification } from "../../redux/merchantVerification/action";
 import Button from "../../components/Button";
+import DirectorForm from "./DirectorForm";
 
 interface Props {
   onBack: () => void;
   onNext: () => void;
+  cacFile: File | null;
+  utilityFile: File | null;
 }
 
-const DirectorInformationStep = ({ onNext }: Props) => {
-  const [fullName, setFullName] = useState("");
-  const [idType, setIdType] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+const DirectorInformationStep = ({
+  onBack,
+  onNext,
+  cacFile,
+  utilityFile,
+}: Props) => {
+  const dispatch = useAppDispatch();
+  const fullState = useAppSelector((state) => state.merchantVerification);
+  const { directors, isSubmitting, submitError } = fullState;
+
+  const idCardFiles = useRef<(File | null)[]>(directors.map(() => null));
+  const [idCardFileNames, setIdCardFileNames] = useState<(string | null)[]>(
+    directors.map(() => null),
+  );
+
+  const handleAddDirector = () => {
+    dispatch(addDirector());
+    idCardFiles.current.push(null);
+    setIdCardFileNames((prev) => [...prev, null]);
+  };
+
+  const handleRemoveDirector = (index: number) => {
+    dispatch(removeDirector(index));
+    idCardFiles.current.splice(index, 1);
+    setIdCardFileNames((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    const payload = {
+      ...fullState,
+      cacDocuments: cacFile,
+      utilityBill: utilityFile,
+      directors: fullState.directors.map((d, i) => ({
+        ...d,
+        idCard: idCardFiles.current[i] ?? null,
+      })),
+    };
+    const result = await dispatch(submitMerchantVerification(payload));
+    if (submitMerchantVerification.fulfilled.match(result)) {
+      onNext();
+    }
+  };
 
   return (
-    <div className="px-6 pb-6 flex flex-col gap-4">
+    <div className="px-6 pb-6 flex flex-col gap-6">
       <h3 className="text-[15px] font-semibold text-[#060606] text-center">
         Director's Information
       </h3>
-      <CustomTextInput
-        id="director-name"
-        label="Full Name"
-        placeholder="Enter your Director's Full Name"
-        value={fullName}
-        handleChange={(e) => setFullName(e.target.value)}
+
+      {directors.map((director, index) => (
+        <DirectorForm
+          key={index}
+          index={index}
+          director={director}
+          showRemove={directors.length > 1}
+          idCardFileName={idCardFileNames[index] ?? null}
+          onRemove={() => handleRemoveDirector(index)}
+          onIdCardChange={(file) => {
+            idCardFiles.current[index] = file;
+            setIdCardFileNames((prev) => {
+              const updated = [...prev];
+              updated[index] = file?.name ?? null;
+              return updated;
+            });
+          }}
+        />
+      ))}
+
+      {submitError ? (
+        <p className="text-red-500 text-[13px] text-center">{submitError}</p>
+      ) : null}
+
+      <Button
+        text={isSubmitting ? "Submitting..." : "Submit Company Registration"}
+        onClick={handleSubmit}
+        isDisabled={isSubmitting}
       />
-      <CustomSelectNoDropDown
-        context="ID Type"
-        value={idType}
-        placeholder="Select ID Type"
-        handleToggle={() => {}}
-      />
-      <div className="flex flex-col gap-1">
-        <p className="text-sm md:text-[14.5px]">Upload ID Card</p>
-        <div className="border border-dashed border-[#D9D9D9] rounded-xl px-4 py-4 flex items-center gap-4">
-          <button className="border border-[#4A3FA0] text-[#4A3FA0] text-[13px] font-medium px-4 py-2 rounded-lg whitespace-nowrap">
-            Upload files...
-          </button>
-          <p className="text-[#06060666] text-[13px]">Drop files here</p>
-        </div>
-      </div>
-      <CustomTextInput
-        id="director-email"
-        label="Email address"
-        type="email"
-        placeholder="Enter your Director's email address"
-        value={email}
-        handleChange={(e) => setEmail(e.target.value)}
-      />
-      <CustomTextInput
-        id="director-phone"
-        label="Phone Number"
-        placeholder="Enter your Director's Phone number"
-        value={phone}
-        handleChange={(e) => setPhone(e.target.value)}
-      />
-      <Button text="Submit Company Registration" onClick={onNext} />
-      <button className="w-full border border-[#06060620] text-[#060606] rounded-xl py-3 text-[15px] font-medium">
+
+      <button
+        onClick={handleAddDirector}
+        className="w-full border border-[#06060620] text-[#060606] rounded-xl py-3 text-[15px] font-medium"
+      >
         Add Another Director
+      </button>
+
+      <button
+        onClick={onBack}
+        className="w-full text-[#06060666] text-[13px] font-medium"
+      >
+        Back
       </button>
     </div>
   );

@@ -1,52 +1,38 @@
-import { useState, useRef, useEffect } from "react";
-import { IoIosArrowDown } from "react-icons/io";
-import { FiUser, FiLogOut } from "react-icons/fi";
-import person from "../assets/empty-p.png";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import logo from "../assets/reech-single.png";
 import { IoMenuOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
-import { onToggleMobileSidebar, onLogout } from "../redux/auth/authReducer";
-import { clearUserSession, getOrCreateTabId } from "../utils";
+import { onToggleMobileSidebar } from "../redux/auth/authReducer";
+
 import { toast } from "react-toastify";
 import VerifyBusinessDropdown from "../merchant/modal/VerifyBusinessDropdown";
+import ProfileDropdown from "./ProfileDropdown";
 
 const Navbar = () => {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+
   const { currentUser } = useAppSelector((state) => state.auth);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const displayPath = pathname.split("/")[1].replace("-", " ");
   const userName = `${currentUser?.firstName || ""} ${currentUser?.lastName || ""}`;
 
   const isBusinessAdmin = currentUser?.roles?.includes("BusinessAdmin");
-  const businessStatus = currentUser?.business?.status;
-  const showVerification = !!(isBusinessAdmin && !businessStatus);
+  const businessStatus = currentUser?.business?.status as
+    | "Pending"
+    | "Approved"
+    | "Rejected"
+    | undefined;
 
-  const handleLogout = () => {
-    const tabId = getOrCreateTabId();
-    clearUserSession(tabId);
-    dispatch(onLogout());
-    toast.success("Logged out successfully");
-    navigate("/sign-in", { replace: true });
+  const isPending = !!(isBusinessAdmin && businessStatus === "Pending");
+  const showVerification = !!(isBusinessAdmin && businessStatus === "Rejected");
+  const showComplete = !!(isBusinessAdmin && !businessStatus);
+
+  const handleVerificationClick = () => {
+    toast.info(
+      "Your account is currently under verification. We'll notify you once it's approved.",
+    );
   };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <nav className="fixed sm:h-[65px] md:h-[70px] lg:h-[75px] xl:h-[80px] w-full left-0 top-0 z-[1000] hidden md:flex max-w-[1655px] mx-auto bg-[#F0F1FE]">
@@ -57,11 +43,30 @@ const Navbar = () => {
               {displayPath === "merchants" ? "manage merchants" : displayPath}
             </h4>
 
+            {isPending && (
+              <button
+                onClick={handleVerificationClick}
+                className="text-[13px] font-medium text-[#E67E22] whitespace-nowrap"
+              >
+                Pending Verification
+              </button>
+            )}
+
+            {showComplete && (
+              <VerifyBusinessDropdown
+                isOpen={false}
+                onClose={() => {}}
+                firstName={currentUser?.firstName || ""}
+                label="Complete Verification"
+              />
+            )}
+
             {showVerification && (
               <VerifyBusinessDropdown
                 isOpen={false}
                 onClose={() => {}}
                 firstName={currentUser?.firstName || ""}
+                label="Resubmit Verification"
               />
             )}
           </div>
@@ -73,52 +78,10 @@ const Navbar = () => {
               className="placeholder:text-[#06060666] bg-white pl-8 pr-3 lg:pr-4 py-2.5 rounded-[30px] text-[15px] outline-0 focus:border focus:border-[#00000014] w-3/4 xl:w-full h-[46px] lg:h-[47px] xl:h-[48px]"
             />
 
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setDropdownOpen((prev) => !prev)}
-                className="bg-white rounded-[30px] flex-between gap-2 py-1 lg:py-1.5 xl:min-w-[210px] px-2"
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={currentUser?.avatar ? currentUser?.avatar : person}
-                    alt="person"
-                    className="w-[37px] xl:w-[38px] h-[37px] xl:h-[38px] object-fit rounded-full"
-                  />
-                  <p className="text-nowrap text-[#292D32] text-[15px] hidden sm:block md:hidden lg:block truncate">
-                    {userName}
-                  </p>
-                </div>
-                <span className="mr-1">
-                  <IoIosArrowDown
-                    size={20}
-                    className={`transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
-                  />
-                </span>
-              </button>
-
-              {dropdownOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] bg-white rounded-2xl shadow-lg border border-[#00000014] py-2 min-w-[210px] z-50">
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      navigate("/profile");
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F5F6FF] transition-colors text-[#292D32] text-[14px]"
-                  >
-                    <FiUser size={17} />
-                    View Profile
-                  </button>
-
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#FFF0F0] transition-colors text-red-500 text-[14px]"
-                  >
-                    <FiLogOut size={17} />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+            <ProfileDropdown
+              userName={userName}
+              userAvatar={currentUser?.avatar}
+            />
           </div>
         </div>
       </div>
@@ -135,8 +98,21 @@ export const MobileNavbar = () => {
   );
 
   const isBusinessAdmin = currentUser?.roles?.includes("BusinessAdmin");
-  const businessStatus = currentUser?.business?.status;
-  const showVerification = !!(isBusinessAdmin && !businessStatus);
+  const businessStatus = currentUser?.business?.status as
+    | "Pending"
+    | "Approved"
+    | "Rejected"
+    | undefined;
+
+  const isPending = !!(isBusinessAdmin && businessStatus === "Pending");
+  const showVerification = !!(isBusinessAdmin && businessStatus === "Rejected");
+  const showComplete = !!(isBusinessAdmin && !businessStatus);
+
+  const handleVerificationClick = () => {
+    toast.info(
+      "Your account is currently under verification. We'll notify you once it's approved.",
+    );
+  };
 
   return (
     <nav className="fixed bg-white px-4 sm:px-8 md:hidden top-0 left-0 z-10 w-full h-[60px] sm:h-[63px] flex items-center">
@@ -152,12 +128,32 @@ export const MobileNavbar = () => {
         </Link>
 
         <div className="flex items-center gap-3">
+          {isPending && (
+            <button
+              onClick={handleVerificationClick}
+              className="text-[12px] font-medium text-[#E67E22] whitespace-nowrap"
+            >
+              Pending Verification
+            </button>
+          )}
+
+          {showComplete && (
+            <VerifyBusinessDropdown
+              isMobile={true}
+              isOpen={false}
+              onClose={() => {}}
+              firstName={currentUser?.firstName || ""}
+              label="Complete Verification"
+            />
+          )}
+
           {showVerification && (
             <VerifyBusinessDropdown
               isMobile={true}
               isOpen={false}
               onClose={() => {}}
               firstName={currentUser?.firstName || ""}
+              label="Resubmit Verification"
             />
           )}
 

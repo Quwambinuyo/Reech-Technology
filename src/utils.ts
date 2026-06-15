@@ -3,131 +3,138 @@ import type { StakeholderProps } from "./types";
 export const userRole = "merchant"; // Change to 'customer' or 'merchant' to test different roles
 
 export const validateEmail = (email: string) => {
-	const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-	return emailRegex.test(email);
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  return emailRegex.test(email);
 };
 
 export const validatePassword = (password: string) => {
-	const passwordRegex =
-		/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i;
-	return passwordRegex.test(password);
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i;
+  return passwordRegex.test(password);
 };
 
 export function saveUserToStorage(
-	userData: StakeholderProps,
-	tabId: string,
-	remember: boolean
+  userData: StakeholderProps,
+  tabId: string,
+  remember: boolean,
 ) {
-	const role = (userData.roles?.[0] || "user").toLowerCase(); // normalize
-	const storageKey = `${role}_stakeholder_${tabId}`;
-	const rememberKey = `${role}_remember_${tabId}`;
+  const role = (userData.roles?.[0] || "user").toLowerCase(); // normalize
+  const storageKey = `${role}_stakeholder_${tabId}`;
+  const rememberKey = `${role}_remember_${tabId}`;
 
-	// Save the role for this tab — helps with auto-detection later
-	sessionStorage.setItem(`activeRole_${tabId}`, role);
+  // Save the role for this tab — helps with auto-detection later
+  sessionStorage.setItem(`activeRole_${tabId}`, role);
 
-	if (remember) {
-		localStorage.setItem(storageKey, JSON.stringify(userData));
-		localStorage.setItem(rememberKey, "true");
-	} else {
-		sessionStorage.setItem(storageKey, JSON.stringify(userData));
-		localStorage.setItem(rememberKey, "false");
-	}
+  if (remember) {
+    localStorage.setItem(storageKey, JSON.stringify(userData));
+    localStorage.setItem(rememberKey, "true");
+  } else {
+    sessionStorage.setItem(storageKey, JSON.stringify(userData));
+    localStorage.setItem(rememberKey, "false");
+  }
 }
 
 export function getActiveRole() {
-	const tabId = sessionStorage.getItem("tabId");
-	return tabId ? sessionStorage.getItem(`activeRole_${tabId}`) : null;
+  const tabId = sessionStorage.getItem("tabId");
+  return tabId ? sessionStorage.getItem(`activeRole_${tabId}`) : null;
 }
 
 export function getUserFromStorage() {
-	// return {
-	// 	id: "randomid",
-	// 	token: "random token",
-	// 	email: "admineamil@yahoo.com",
-	// 	firstName: "John",
-	// 	lastName: "Doe",
-	// 	emailConfirmed: true,
-	// 	roles: ["SuperAdmin"],
-	// 	avatar: "",
-	// };
+  // return {
+  // 	id: "randomid",
+  // 	token: "random token",
+  // 	email: "admineamil@yahoo.com",
+  // 	firstName: "John",
+  // 	lastName: "Doe",
+  // 	emailConfirmed: true,
+  // 	roles: ["SuperAdmin"],
+  // 	avatar: "",
+  // };
 
-	const tabId = sessionStorage.getItem("tabId");
-	if (!tabId) return null;
+  const tabId = sessionStorage.getItem("tabId");
+  if (!tabId) return null;
 
-	const role = sessionStorage.getItem(`activeRole_${tabId}`);
-	if (!role) return null; // no logged-in stakeholder
+  const role = sessionStorage.getItem(`activeRole_${tabId}`);
+  if (!role) return null; // no logged-in stakeholder
 
-	const remember = localStorage.getItem(`${role}_remember_${tabId}`) === "true";
-	const storage = remember ? localStorage : sessionStorage;
+  const remember = localStorage.getItem(`${role}_remember_${tabId}`) === "true";
+  const storage = remember ? localStorage : sessionStorage;
 
-	const userData = storage.getItem(`${role}_stakeholder_${tabId}`);
-	// console.log(userData);
+  const userData = storage.getItem(`${role}_stakeholder_${tabId}`);
+  // console.log(userData);
 
-	return userData ? JSON.parse(userData) : null;
+  return userData ? JSON.parse(userData) : null;
 }
 
 function getRandomId() {
-	// if (crypto && crypto?.randomUUID()) {
-	// 	return crypto?.randomUUID();
-	// } else {
-	const chars =
-		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	return Array.from(
-		{ length: 20 },
-		() => chars[Math.floor(Math.random() * chars.length)]
-	).join("");
-	// }
+  // if (crypto && crypto?.randomUUID()) {
+  // 	return crypto?.randomUUID();
+  // } else {
+  const chars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from(
+    { length: 20 },
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join("");
+  // }
 }
 
 export function getOrCreateTabId() {
-	let tabId = sessionStorage.getItem("tabId");
-	if (!tabId) {
-		tabId = getRandomId();
-		sessionStorage.setItem("tabId", tabId);
-	}
-	return tabId;
+  let tabId = sessionStorage.getItem("tabId");
+  if (!tabId) {
+    tabId = getRandomId();
+    sessionStorage.setItem("tabId", tabId);
+  }
+  return tabId;
 }
 
 export const getNameInitials = (name: string) => {
-	// console.log(name);
+  // console.log(name);
 
-	const splitName = name?.split(" ");
-	const a = splitName.map((n) => n[0]);
+  const splitName = name?.split(" ");
+  const a = splitName.map((n) => n[0]);
 
-	return a?.slice(0, 2)?.join("");
+  return a?.slice(0, 2)?.join("");
 };
 
 export const range = (start: number, end: number) =>
-	Array.from({ length: end - start }, (_, i) => start + i);
+  Array.from({ length: end - start }, (_, i) => start + i);
 
 // authToken.ts
 export const getAuthToken = (): string | null => {
-	try {
-		const user = getUserFromStorage();
+  try {
+    const user = getUserFromStorage();
 
-		return user?.token || null;
-	} catch (error) {
-		console.error("Failed to parse user from storage", error);
-		return null;
-	}
+    return user?.token || null;
+  } catch (error) {
+    console.error("Failed to parse user from storage", error);
+    return null;
+  }
 };
 
 export function clearUserSession(tabId: string) {
-	// Detect role that was active in this tab
-	const role = sessionStorage.getItem(`activeRole_${tabId}`);
+  // Detect role that was active in this tab
+  const role = sessionStorage.getItem(`activeRole_${tabId}`);
 
-	if (!role) return;
+  if (!role) return;
 
-	const storageKey = `${role}_stakeholder_${tabId}`;
-	const rememberKey = `${role}_remember_${tabId}`;
+  const storageKey = `${role}_stakeholder_${tabId}`;
+  const rememberKey = `${role}_remember_${tabId}`;
 
-	// Remove user data from both storages (only one will exist)
-	localStorage.removeItem(storageKey);
-	sessionStorage.removeItem(storageKey);
+  // Remove user data from both storages (only one will exist)
+  localStorage.removeItem(storageKey);
+  sessionStorage.removeItem(storageKey);
 
-	// Remove remember flag
-	localStorage.removeItem(rememberKey);
+  // Remove remember flag
+  localStorage.removeItem(rememberKey);
 
-	// Remove active role mapping
-	sessionStorage.removeItem(`activeRole_${tabId}`);
+  // Remove active role mapping
+  sessionStorage.removeItem(`activeRole_${tabId}`);
 }
+
+export const timeRangeOptions = [
+  "Last Month",
+  "Yesterday",
+  "Last Week",
+  "Last Month",
+];
