@@ -28,6 +28,7 @@ export const submitMerchantVerification = createAsyncThunk(
       if (info.utilityBill) {
         formData.append("UtilityBill", info.utilityBill, info.utilityBill.name);
       }
+      console.log(info?.cacDocuments);
 
       info.directors.forEach((director: any, index: number) => {
         formData.append(`Directors[${index}].FullName`, director.fullName);

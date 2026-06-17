@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   setCategoryId,
@@ -10,6 +10,7 @@ import {
 import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
 import Button from "../../components/Button";
+import { fetchAdminCategories } from "../../redux/category/actions";
 
 interface Props {
   onNext: (cacFile: File | null, utilityFile: File | null) => void;
@@ -19,12 +20,6 @@ type CategoryOption = {
   id: string;
   label: string;
 };
-
-const COMPANY_CATEGORIES: CategoryOption[] = [
-  { id: "08dec52a-6d68-ecb1-c436-514300000001", label: "Retail" },
-  { id: "08dec52a-6d68-ecb1-c436-514300000002", label: "Logistics" },
-  { id: "08dec52a-6d68-ecb1-c436-514300000003", label: "Food & Beverage" },
-];
 
 const CompanyInformationStep = ({ onNext }: Props) => {
   const dispatch = useAppDispatch();
@@ -40,7 +35,22 @@ const CompanyInformationStep = ({ onNext }: Props) => {
   const [cacFileName, setCacFileName] = useState<string | null>(null);
   const [utilityFileName, setUtilityFileName] = useState<string | null>(null);
 
-  const selectedCategory = COMPANY_CATEGORIES.find((c) => c.id === categoryId);
+  const { fetchCategoriesLoading, allCategories } = useAppSelector(
+    (state) => state.category,
+  );
+
+  const categoryOptions: CategoryOption[] = (allCategories ?? []).map(
+    (cat: any) => ({
+      id: cat.id,
+      label: cat.description,
+    }),
+  );
+
+  const selectedCategory = categoryOptions.find((c) => c.id === categoryId);
+
+  useEffect(() => {
+    dispatch(fetchAdminCategories());
+  }, []);
 
   return (
     <div className="px-6 pb-6 flex flex-col gap-4">
@@ -57,19 +67,25 @@ const CompanyInformationStep = ({ onNext }: Props) => {
         />
         {categoryOpen && (
           <div className="border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm">
-            {COMPANY_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  dispatch(setCategoryId(cat.id));
-                  dispatch(setCompanyCategory(cat.label));
-                  setCategoryOpen(false);
-                }}
-                className="w-full text-left px-4 py-2.5 text-[13px] text-[#060606] hover:bg-[#f5f3ff] transition-colors"
-              >
-                {cat.label}
-              </button>
-            ))}
+            {fetchCategoriesLoading ? (
+              <p className="px-4 py-2.5 text-[13px] text-[#06060666]">
+                Loading...
+              </p>
+            ) : (
+              categoryOptions.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    dispatch(setCategoryId(cat.id));
+                    dispatch(setCompanyCategory(cat.label));
+                    setCategoryOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-[13px] text-[#060606] hover:bg-[#f5f3ff] transition-colors"
+                >
+                  {cat.label}
+                </button>
+              ))
+            )}
           </div>
         )}
       </div>

@@ -13,6 +13,8 @@ interface Props {
 const VerifyBusinessModal = ({ isOpen, onClose, firstName }: Props) => {
   const [step, setStep] = useState(1);
   const modalContentRef = useRef<HTMLDivElement>(null);
+  const cacFileRef = useRef<File | null>(null);
+  const utilityFileRef = useRef<File | null>(null);
 
   useEffect(() => {
     if (modalContentRef.current) {
@@ -36,9 +38,19 @@ const VerifyBusinessModal = ({ isOpen, onClose, firstName }: Props) => {
           <StepIndicator currentStep={step} />
         </div>
 
-        {step === 1 && <CompanyInformationStep onNext={() => setStep(2)} />}
+        {step === 1 && (
+          <CompanyInformationStep
+            onNext={(cacFile, utilityFile) => {
+              cacFileRef.current = cacFile;
+              utilityFileRef.current = utilityFile;
+              setStep(2);
+            }}
+          />
+        )}
         {step === 2 && (
           <DirectorInformationStep
+            cacFile={cacFileRef.current}
+            utilityFile={utilityFileRef.current}
             onBack={() => setStep(1)}
             onNext={() => setStep(3)}
           />

@@ -5,15 +5,14 @@ import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
 
 type IdTypeOption = {
-  id: string;
+  value: string;
   label: string;
 };
 
 const ID_TYPES: IdTypeOption[] = [
-  { id: "1", label: "National ID" },
-  { id: "2", label: "International Passport" },
-  { id: "3", label: "Driver's License" },
-  { id: "4", label: "Voter's Card" },
+  { value: "NationalId", label: "National ID" },
+  { value: "InternationalPassport", label: "International Passport" },
+  { value: "DriverLicense", label: "Driver's License" },
 ];
 
 interface DirectorFormProps {
@@ -42,7 +41,7 @@ const DirectorForm = ({
   const [idTypeOpen, setIdTypeOpen] = useState(false);
   const idCardRef = useRef<HTMLInputElement | null>(null);
 
-  const selectedIdType = ID_TYPES.find((t) => t.label === director.idType);
+  const selectedIdType = ID_TYPES.find((t) => t.value === director.idType);
 
   return (
     <div className="flex flex-col gap-4">
@@ -78,9 +77,9 @@ const DirectorForm = ({
           <div className="border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm">
             {ID_TYPES.map((type) => (
               <button
-                key={type.id}
+                key={type.value}
                 onClick={() => {
-                  dispatch(updateDirectorField(index, "idType", type.label));
+                  dispatch(updateDirectorField(index, "idType", type.value));
                   setIdTypeOpen(false);
                 }}
                 className="w-full text-left px-4 py-2.5 text-[13px] text-[#060606] hover:bg-[#f5f3ff] transition-colors"
