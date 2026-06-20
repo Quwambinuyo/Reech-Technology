@@ -10,7 +10,7 @@ import { customerTransactions } from "../../mock";
 import { billLine, wallet } from "../../assets";
 import { tabs } from "../../customer/partials";
 import PayBillCard from "../../customer/partials/PaybillCard";
-import SendPointCard from "../../customer/partials/SendpointCard";
+import SendPointFlow from "../../pages/payment/steps/SendpointFlow";
 import WithdrawCard from "../../customer/partials/WithdrawCard";
 import Modal from "../../layout/Modal";
 
@@ -124,7 +124,7 @@ const MakePayment = () => {
 
       {activeModal === "send" && (
         <Modal modal={activeModal === "send"} onClose={closeModal}>
-          <SendPointCard onClose={closeModal} />
+          <SendPointFlow onClose={closeModal} />
         </Modal>
       )}
       {activeModal === "bill" && (

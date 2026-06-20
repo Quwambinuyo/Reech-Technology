@@ -1,25 +1,36 @@
 import { useState } from "react";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { TbSend } from "react-icons/tb";
-import Logo from "../../assets/logo-s.png";
-import { CustomTextInput } from "../../components/CustomInput";
+import Logo from "../../../assets/logo-s.png";
+import { CustomTextInput } from "../../../components/CustomInput";
+import type { Recipient } from "./types";
+import { TRANSFER_FEE, CURRENT_BALANCE } from "./types";
 
 interface Props {
   onClose: () => void;
+  onNext: (recipient: Recipient, points: number, note: string) => void;
 }
 
-const TRANSFER_FEE = 2;
-
-const SendPointCard = ({ onClose }: Props) => {
-  const [recipient, setRecipient] = useState("");
+const SendPointStep = ({ onClose, onNext }: Props) => {
+  const [recipientInput, setRecipientInput] = useState("");
   const [points, setPoints] = useState("");
   const [note, setNote] = useState("");
 
   const pointsNum = points ? parseFloat(points) : 0;
   const totalDeduction = pointsNum > 0 ? pointsNum + TRANSFER_FEE : 0;
+  const remaining = CURRENT_BALANCE - totalDeduction;
+  const isValid =
+    recipientInput.trim() !== "" &&
+    pointsNum > 0 &&
+    pointsNum + TRANSFER_FEE <= CURRENT_BALANCE;
+
+  const handleNext = () => {
+    if (!isValid) return;
+    onNext({ id: recipientInput, username: recipientInput }, pointsNum, note);
+  };
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[406px] md:max-w-[576px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
+    <div className="bg-white rounded-2xl w-full max-w-[506px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
       <div className="px-5 pt-5 pb-4">
         <div className="flex justify-between items-start">
           <div>
@@ -27,7 +38,7 @@ const SendPointCard = ({ onClose }: Props) => {
               Send Points
             </h3>
             <p className="text-gray-400 text-[12px] font-ibmplex mt-0.5 max-w-[260px]">
-              Transfer loyalty points to another Reech user Instantly.
+              Transfer loyalty points to another Reech user instantly.
             </p>
           </div>
           <button
@@ -43,8 +54,8 @@ const SendPointCard = ({ onClose }: Props) => {
             id="recipient"
             label="Recipient Identifier (ID or Username)"
             placeholder="e.g. @alexmain or 15265378"
-            value={recipient}
-            handleChange={(e) => setRecipient(e.target.value)}
+            value={recipientInput}
+            handleChange={(e) => setRecipientInput(e.target.value)}
           />
 
           <div className="grid grid-cols-2 gap-3">
@@ -65,7 +76,7 @@ const SendPointCard = ({ onClose }: Props) => {
             />
           </div>
 
-          <div className="flex flex-col gap-2.5 mt-1">
+          <div className="flex flex-col gap-2.5">
             <div className="flex justify-between items-center">
               <p className="text-[12px] font-ibmplex text-gray-400">
                 Transfer Fee
@@ -74,7 +85,6 @@ const SendPointCard = ({ onClose }: Props) => {
                 -{TRANSFER_FEE} Points
               </p>
             </div>
-
             <div className="border-t border-gray-100 pt-3">
               <div className="flex justify-between items-start">
                 <p className="text-sm font-montserrat font-bold text-[#0D0D0D]">
@@ -92,9 +102,32 @@ const SendPointCard = ({ onClose }: Props) => {
               </div>
             </div>
           </div>
+
+          {pointsNum > 0 && (
+            <p className="text-[12px] font-ibmplex text-[#3D3D6B]">
+              Remaining after transfer:{" "}
+              <span
+                className={
+                  remaining < 0 ? "text-red-500 font-bold" : "font-bold"
+                }
+              >
+                {remaining.toLocaleString()} pts
+              </span>
+            </p>
+          )}
+
+          {totalDeduction > CURRENT_BALANCE && (
+            <p className="text-xs text-red-500 font-ibmplex">
+              Insufficient balance.
+            </p>
+          )}
         </div>
 
-        <button className="mt-5 w-full bg-[#4A148C]  transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2">
+        <button
+          onClick={handleNext}
+          disabled={!isValid}
+          className="mt-5 w-full bg-[#4A148C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2"
+        >
           <TbSend size={18} />
           Send Points
         </button>
@@ -112,4 +145,4 @@ const SendPointCard = ({ onClose }: Props) => {
   );
 };
 
-export default SendPointCard;
+export default SendPointStep;
