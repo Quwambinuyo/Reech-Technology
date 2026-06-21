@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { IoCloseCircleOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
+import { FaClock } from "react-icons/fa";
 import Logo from "../../../assets/logo-s.png";
 import StepBar from "./StepBar";
 import type { Merchant, Step } from "./types";
@@ -14,12 +15,11 @@ interface Props {
 }
 
 const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
-  const [otp] = useState(() =>
-    Array.from({ length: 6 }, () => Math.floor(Math.random() * 10).toString()),
-  );
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(OTP_EXPIRY_SECONDS);
   const [invalidated, setInvalidated] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
@@ -39,7 +39,37 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
   const isExpired = timeLeft === 0;
   const isDisabled = invalidated || isExpired;
 
-  const displayOtp = [...otp.slice(0, 3), "·", ...otp.slice(3)];
+  const handleChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const next = [...otp];
+    next[index] = value.slice(-1);
+    setOtp(next);
+    if (value && index < 5) inputRefs.current[index + 1]?.focus();
+  };
+
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
+    if (!pasted) return;
+    const next = [...otp];
+    pasted.split("").forEach((char, i) => {
+      next[i] = char;
+    });
+    setOtp(next);
+    inputRefs.current[Math.min(pasted.length, 5)]?.focus();
+  };
 
   const handleInvalidate = () => {
     setInvalidated(true);
@@ -95,23 +125,37 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
         <div
           className={`flex items-center justify-center gap-2 transition-opacity ${isDisabled ? "opacity-30" : ""}`}
         >
-          {displayOtp.map((char, i) =>
-            char === "·" ? (
-              <span
-                key={i}
-                className="text-[#4A148C] font-bold text-2xl mx-0.5"
-              >
-                ·
-              </span>
-            ) : (
+          {otp.map((digit, i) => (
+            <>
+              {i === 3 && (
+                <span
+                  key="dot"
+                  className="text-[#4A148C] font-bold text-2xl mx-0.5"
+                >
+                  ·
+                </span>
+              )}
               <div
                 key={i}
-                className="w-[46px] h-[52px] bg-[#1A0035] rounded-xl flex items-center justify-center text-white font-montserrat font-bold text-xl shadow-md"
+                className="w-[46px] h-[52px] bg-[#1A0035] rounded-xl flex items-center justify-center shadow-md"
               >
-                {char}
+                <input
+                  ref={(el) => {
+                    inputRefs.current[i] = el;
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  disabled={isDisabled}
+                  onChange={(e) => handleChange(i, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(i, e)}
+                  onPaste={handlePaste}
+                  className="w-full h-full bg-transparent text-center text-white font-montserrat font-bold text-xl outline-none caret-white"
+                />
               </div>
-            ),
-          )}
+            </>
+          ))}
         </div>
 
         <div className="flex items-center justify-center gap-1.5 mt-3 mb-4">
@@ -121,17 +165,7 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
             </p>
           ) : (
             <>
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#4A148C"
-                strokeWidth="2.5"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
+              <FaClock size={12} className="text-[#4A148C]" />
               <p className="text-[12px] font-ibmplex text-[#4A148C] font-semibold">
                 Expires in {mins}:{secs.toString().padStart(2, "0")}
               </p>

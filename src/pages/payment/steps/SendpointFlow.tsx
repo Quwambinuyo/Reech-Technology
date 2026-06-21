@@ -19,7 +19,8 @@ const SendPointFlow = ({ onClose }: Props) => {
     return (
       <SendPointStep
         onClose={onClose}
-        onNext={(_recipient: Recipient, _pts: number, _note: string) => {
+        onNext={(_recipient: Recipient, pts: number, _note: string) => {
+          setPoints(pts);
           setStep(1);
         }}
       />
@@ -43,6 +44,7 @@ const SendPointFlow = ({ onClose }: Props) => {
       <AmountStep
         onClose={onClose}
         merchant={merchant}
+        points={points}
         onBack={() => setStep(1)}
         onNext={(pts) => {
           setPoints(pts);
