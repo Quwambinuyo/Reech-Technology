@@ -15,6 +15,8 @@ import RevokeApiKeyModal from "./partial/RevokeApiKeyModal";
 import KeyDetailsModal from "./partial/KeyDetailsModal";
 import ApiKeysTable from "./partial/ApiKeyTable";
 import Button from "../../components/Button";
+import { initialApiKeys } from "../../mock";
+import RotateKeyModal from "./partial/RotateKeyModal";
 
 type ApiKey = {
   id: string;
@@ -28,49 +30,12 @@ type ApiKey = {
   lastUsed: string;
 };
 
-const initialApiKeys: ApiKey[] = [
-  {
-    id: "1",
-    keyName: "Production Live",
-    secretValue: "k_live••••••••••163f",
-    fullKey: "k_live_997811281558197816 3f",
-    created: "Oct 12, 2023",
-    status: "active",
-    createdBy: "James Dalton",
-    createdByInitials: "JD",
-    lastUsed: "2 minutes ago",
-  },
-  {
-    id: "2",
-    keyName: "E-commerce Web",
-    secretValue: "k_live••••••••••992a",
-    fullKey: "k_live_99781128155819788992a",
-    created: "Jan 04, 2024",
-    status: "active",
-    createdBy: "James Dalton",
-    createdByInitials: "JD",
-    lastUsed: "1 hour ago",
-  },
-  {
-    id: "3",
-    keyName: "Sandbox Test",
-    secretValue: "k_test••••••••••428x",
-    fullKey: "k_test_9978112815581978428x",
-    created: "Feb 15, 2024",
-    status: "inactive",
-    createdBy: "James Dalton",
-    createdByInitials: "JD",
-    lastUsed: "5 days ago",
-  },
-];
-
-type ActiveModal = "create" | "revoke" | "details" | null;
+type ActiveModal = "create" | "revoke" | "details" | "rotate" | null;
 
 const Profile = () => {
   const role = useRole();
   const [togglePhone, setTogglePhone] = useState(false);
   const [country, setCountry] = useState<CountryProps | null>(null);
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>(initialApiKeys);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [selectedKey, setSelectedKey] = useState<ApiKey | null>(null);
 
@@ -86,50 +51,6 @@ const Profile = () => {
   const onCountrySelect = (opt: any) => {
     setCountry(opt);
     setTogglePhone(false);
-  };
-
-  const handleGenerate = (name: string) => {
-    const newKey: ApiKey = {
-      id: String(Date.now()),
-      keyName: name,
-      secretValue: `k_live••••••••••${Math.random().toString(36).slice(-4)}`,
-      fullKey: `k_live_${Math.random().toString(36).slice(2, 18)}`,
-      created: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }),
-      status: "active",
-      createdBy: fullName || "You",
-      createdByInitials: (fullName || "YO").slice(0, 2).toUpperCase(),
-      lastUsed: "Just now",
-    };
-    setApiKeys((prev) => [...prev, newKey]);
-    setActiveModal(null);
-  };
-
-  const handleRevoke = () => {
-    if (!selectedKey) return;
-    setApiKeys((prev) => prev.filter((k) => k.id !== selectedKey.id));
-    setActiveModal(null);
-    setSelectedKey(null);
-  };
-
-  const handleRotate = () => {
-    if (!selectedKey) return;
-    setApiKeys((prev) =>
-      prev.map((k) =>
-        k.id === selectedKey.id
-          ? {
-              ...k,
-              fullKey: `k_live_${Math.random().toString(36).slice(2, 18)}`,
-              lastUsed: "Just now",
-            }
-          : k,
-      ),
-    );
-    setActiveModal(null);
-    setSelectedKey(null);
   };
 
   const closeModal = () => {
@@ -150,6 +71,7 @@ const Profile = () => {
               label="full name"
               id="fullName"
               value={fullName}
+              onChange={() => {}}
             />
             <ProfileInput
               type="email"
@@ -157,6 +79,7 @@ const Profile = () => {
               label="email address"
               id="email"
               value={email}
+              onChange={() => {}}
             />
             <ProfileInput
               type="tel"
@@ -168,6 +91,7 @@ const Profile = () => {
               onCountrySelect={onCountrySelect}
               selectedCountry={country}
               value="09067793929"
+              onChange={() => {}}
             />
             <PlainInput
               label="account type"
@@ -180,7 +104,7 @@ const Profile = () => {
       </div>
 
       {role === "BusinessAdmin" && (
-        <div className="mt-6 flex flex-col lg:flex-row gap-6 xl:gap-8 pb-6 lg:pb-7">
+        <div className="mt-6 flex flex-col lg:flex-row gap-6 xl:gap-8">
           <div className="w-full lg:w-[30%] xl:w-1/4">
             <h6 className="text-[#1E293B] font-semibold flex items-center gap-1">
               Account API
@@ -208,17 +132,20 @@ const Profile = () => {
             </div>
 
             <ApiKeysTable
-              apiKeys={apiKeys}
-              onRotate={(key) => {
+              apiKeys={initialApiKeys as ApiKey[]}
+              onDetail={(key) => {
                 setSelectedKey(key);
                 setActiveModal("details");
+              }}
+              onRotate={(key) => {
+                setSelectedKey(key);
+                setActiveModal("rotate");
               }}
               onRevoke={(key) => {
                 setSelectedKey(key);
                 setActiveModal("revoke");
               }}
             />
-
             <div className="flex items-start gap-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3.5">
               <PiShieldWarningBold
                 size={18}
@@ -239,7 +166,7 @@ const Profile = () => {
       )}
 
       <Modal modal={activeModal === "create"} onClose={closeModal}>
-        <CreateApiKeyModal onClose={closeModal} onGenerate={handleGenerate} />
+        <CreateApiKeyModal onClose={closeModal} onGenerate={closeModal} />
       </Modal>
 
       <Modal
@@ -249,7 +176,18 @@ const Profile = () => {
         <RevokeApiKeyModal
           secretValue={selectedKey?.secretValue ?? ""}
           onClose={closeModal}
-          onRevoke={handleRevoke}
+          onRevoke={closeModal}
+        />
+      </Modal>
+
+      <Modal
+        modal={activeModal === "rotate" && !!selectedKey}
+        onClose={closeModal}
+      >
+        <RotateKeyModal
+          apiKey={selectedKey!}
+          onClose={closeModal}
+          onRotate={closeModal}
         />
       </Modal>
 
@@ -265,7 +203,7 @@ const Profile = () => {
           createdDate={selectedKey?.created ?? ""}
           lastUsed={selectedKey?.lastUsed ?? ""}
           onClose={closeModal}
-          onRotate={handleRotate}
+          onRotate={closeModal}
         />
       </Modal>
     </div>
