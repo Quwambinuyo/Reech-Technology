@@ -20,7 +20,7 @@ const KeyDetailsModal = ({
   createdBy,
   createdByInitials,
   createdDate,
-  lastUsed,
+  // lastUsed,
   onClose,
   onRotate,
 }: Props) => {
@@ -91,12 +91,12 @@ const KeyDetailsModal = ({
             </p>
             <p className="text-sm text-[#1E293B] font-medium">{createdDate}</p>
           </div>
-          <div>
+          {/* <div>
             <p className="text-xs text-[#94A3B8] font-medium uppercase tracking-wider mb-1.5">
               Last Used
             </p>
             <p className="text-sm text-[#1E293B] font-medium">{lastUsed}</p>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-start gap-2.5 bg-orange-50 border border-orange-100 rounded-xl px-3.5 py-3">

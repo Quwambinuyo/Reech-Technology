@@ -30,7 +30,8 @@ const MENU_ACTIONS: MenuAction[] = [
   },
 ];
 
-const GRID = "repeat(3, 1fr) 120px 5px";
+const GRID =
+  "minmax(120px, 1fr) minmax(150px, 1fr) minmax(100px, 1fr) 120px 8px";
 
 const RowMenu = ({
   apiKey,
@@ -123,55 +124,59 @@ const ApiKeysTable = ({
   };
 
   return (
-    <div className="w-full">
-      <div
-        className="grid px-8 py-4 text-[#4A454F] bg-[#F1F4FB]"
-        style={{ gridTemplateColumns: GRID }}
-      >
-        {["Key Name", "Secret Value", "Created", "Status", ""].map((h) => (
-          <span
-            key={h}
-            className="text-[11px] font-semibold uppercase tracking-wider"
-          >
-            {h}
-          </span>
-        ))}
-      </div>
-
-      <div
-        className="divide-y divide-[#F1F5F9] overflow-y-auto hide-scroll"
-        style={{ maxHeight }}
-      >
-        {apiKeys.length === 0 ? (
-          <div className="py-8 text-center text-[12px] text-[#94A3B8]">
-            No API keys found.
-          </div>
-        ) : (
-          apiKeys.map((key) => (
-            <div
-              key={key.id}
-              className="grid items-center px-8 py-5"
-              style={{ gridTemplateColumns: GRID }}
+    <div className="w-full overflow-x-auto mt-5">
+      <div style={{ minWidth: "560px" }}>
+        <div
+          className="grid px-8 py-4 text-[#4A454F] bg-[#F1F4FB]"
+          style={{ gridTemplateColumns: GRID }}
+        >
+          {["Key Name", "Secret Value", "Created", "Status", ""].map((h) => (
+            <span
+              key={h}
+              className="text-[11px] font-semibold uppercase tracking-wider"
             >
-              <span className="text-[12px] text-[#1E293B]">{key.keyName}</span>
-              <span className="text-[12px] text-[#475569]">
-                {key.secretValue}
-              </span>
-              <span className="text-[12px] text-[#475569] whitespace-nowrap">
-                {key.created}
-              </span>
-              <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold w-fit ${key.status === "active" ? "bg-green-50 text-green-600" : "bg-[#F1F5F9] text-[#94A3B8]"}`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${key.status === "active" ? "bg-green-500" : "bg-[#94A3B8]"}`}
-                />
-                {key.status}
-              </span>
-              <RowMenu apiKey={key} onAction={handleAction} />
+              {h}
+            </span>
+          ))}
+        </div>
+
+        <div
+          className="divide-y divide-[#F1F5F9] overflow-y-auto hide-scroll"
+          style={{ maxHeight }}
+        >
+          {apiKeys.length === 0 ? (
+            <div className="py-8 text-center text-[12px] text-[#94A3B8]">
+              No API keys found.
             </div>
-          ))
-        )}
+          ) : (
+            apiKeys.map((key) => (
+              <div
+                key={key.id}
+                className="grid items-center px-8 py-5"
+                style={{ gridTemplateColumns: GRID }}
+              >
+                <span className="text-[12px] text-[#1E293B]">
+                  {key.keyName}
+                </span>
+                <span className="text-[12px] text-[#475569] font-mono">
+                  {key.secretValue}
+                </span>
+                <span className="text-[12px] text-[#475569] whitespace-nowrap">
+                  {key.created}
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold w-fit ${key.status === "active" ? "bg-green-50 text-green-600" : "bg-[#F1F5F9] text-[#94A3B8]"}`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${key.status === "active" ? "bg-green-500" : "bg-[#94A3B8]"}`}
+                  />
+                  {key.status}
+                </span>
+                <RowMenu apiKey={key} onAction={handleAction} />
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

@@ -104,9 +104,12 @@ const merchantLinks = [
     text: "transactions",
     icon: { active: ac_transaction, inactive: in_transaction },
   },
+  {
+    text: "receive payments",
+    icon: { active: ac_payment, inactive: in_payment },
+  },
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
-
 const adminLinks = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   {

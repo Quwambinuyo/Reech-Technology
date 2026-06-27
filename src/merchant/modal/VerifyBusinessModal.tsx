@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import Modal from "../../layout/Modal";
-import CompanyInformationStep from "../step/CompanyInformationStep";
-import DirectorInformationStep from "../step/DirectorInformationStep";
-import VerificationPendingStep from "../step/VerificationPendingStep";
+import CompanyInformationStep from "../merchantverificationstep/CompanyInformationStep";
+import DirectorInformationStep from "../merchantverificationstep/DirectorInformationStep";
+import VerificationPendingStep from "../merchantverificationstep/VerificationPendingStep";
 
 interface Props {
   isOpen: boolean;

@@ -27,6 +27,7 @@ import ManageMerchants from "../pages/manage-merchant";
 import ManageCategories from "../pages/categories";
 import AllCategories from "../pages/categories/AllCategories";
 import SingleMerchant from "../pages/manage-merchant/SingleMerchant";
+import ReceivePayments from "../merchant/ReceivePayments";
 
 export default function BaseRoutes() {
   const dispatch = useAppDispatch();
@@ -90,6 +91,7 @@ export default function BaseRoutes() {
                 path="/rewards-settings/user-ranks"
                 element={<AllUserRanks />}
               />
+              <Route path="/receive-payments" element={<ReceivePayments />} />
             </Route>
 
             <Route

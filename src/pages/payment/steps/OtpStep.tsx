@@ -4,6 +4,7 @@ import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { FaClock } from "react-icons/fa";
 import Logo from "../../../assets/logo-s.png";
 import StepBar from "./StepBar";
+import { OtpInput } from "../../../components/CustomInput";
 import type { Merchant, Step } from "./types";
 import { EXCHANGE_RATE, OTP_EXPIRY_SECONDS } from "./types";
 
@@ -38,6 +39,7 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
   const secs = timeLeft % 60;
   const isExpired = timeLeft === 0;
   const isDisabled = invalidated || isExpired;
+  const isFilled = otp.every((d) => d !== "");
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -123,7 +125,7 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
         </div>
 
         <div
-          className={`flex items-center justify-center gap-2 transition-opacity ${isDisabled ? "opacity-30" : ""}`}
+          className={`flex items-center justify-center gap-2.5 transition-opacity ${isDisabled ? "opacity-30" : ""}`}
         >
           {otp.map((digit, i) => (
             <>
@@ -135,25 +137,17 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
                   ·
                 </span>
               )}
-              <div
+              <OtpInput
                 key={i}
-                className="w-[46px] h-[52px] bg-[#1A0035] rounded-xl flex items-center justify-center shadow-md"
-              >
-                <input
-                  ref={(el) => {
-                    inputRefs.current[i] = el;
-                  }}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  disabled={isDisabled}
-                  onChange={(e) => handleChange(i, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(i, e)}
-                  onPaste={handlePaste}
-                  className="w-full h-full bg-transparent text-center text-white font-montserrat font-bold text-xl outline-none caret-white"
-                />
-              </div>
+                index={i}
+                digit={digit}
+                hasError={false}
+                inputRefs={inputRefs}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                onPaste={handlePaste}
+                disabled={isDisabled}
+              />
             </>
           ))}
         </div>
@@ -195,7 +189,8 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
           </button>
           <button
             onClick={onClose}
-            className="flex-1 bg-[#4A148C] text-white font-montserrat font-semibold rounded-4xl py-3.5 text-sm"
+            disabled={!isFilled}
+            className="flex-1 bg-[#4A148C] text-white font-montserrat font-semibold rounded-4xl py-3.5 text-sm disabled:opacity-40"
           >
             Done
           </button>
