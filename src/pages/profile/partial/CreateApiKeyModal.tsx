@@ -15,7 +15,7 @@ const CreateApiKeyModal = ({ onClose, onGenerate }: Props) => {
   const [permission, setPermission] = useState("Read & Write");
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[506px] mx-auto md:max-w-[606px] shadow-xl p-6">
+    <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] mx-auto md:max-w-[606px] shadow-xl p-6">
       <div className="flex justify-between items-start mb-3">
         <div>
           <h3 className="font-bold text-[#1E293B] text-lg">Create API Key</h3>
@@ -87,12 +87,20 @@ const CreateApiKeyModal = ({ onClose, onGenerate }: Props) => {
         </div>
       </div>
 
-      <div className="flex gap-3 mt-6">
-        <Button text="Cancel" onClick={onClose} />
+      <div className="flex flex-col  sm:flex-row gap-3 mt-6">
+        <Button
+          text="Cancel"
+          onClick={onClose}
+          colorBg="white"
+          fontSize="16px"
+          height="h-[50px]"
+        />
         <Button
           text="Generate Key"
           onClick={() => keyName.trim() && onGenerate(keyName, permission)}
           isDisabled={!keyName.trim()}
+          fontSize="16px"
+          height="h-[50px]"
         />
       </div>
     </div>

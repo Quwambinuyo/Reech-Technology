@@ -17,6 +17,7 @@ import ApiKeysTable from "./partial/ApiKeyTable";
 import Button from "../../components/Button";
 import { initialApiKeys } from "../../mock";
 import RotateKeyModal from "./partial/RotateKeyModal";
+import { LuCirclePlus } from "react-icons/lu";
 
 type ApiKey = {
   id: string;
@@ -115,7 +116,7 @@ const Profile = () => {
           </div>
 
           <div className="w-full lg:w-[70%] xl:w-3/4 border border-[#E2E8F0] bg-white rounded-2xl xl:rounded-3xl p-5 xl:p-6 flex flex-col gap-5">
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div>
                 <h4 className="text-[#1E293B] font-bold text-base">
                   API Credentials
@@ -125,12 +126,13 @@ const Profile = () => {
                 </p>
               </div>
               <Button
-                text="+ Create key"
+                icon={<LuCirclePlus size={20} />}
+                text="Create key"
                 onClick={() => setActiveModal("create")}
                 width="auto"
+                fontSize="text-[13px]"
               />
             </div>
-
             <ApiKeysTable
               apiKeys={initialApiKeys as ApiKey[]}
               onDetail={(key) => {

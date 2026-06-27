@@ -22,7 +22,7 @@ interface Props {
 
 const RotateKeyModal = ({ apiKey, onClose, onRotate }: Props) => {
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[506px] mx-auto md:max-w-[606px] shadow-xl p-6">
+    <div className="bg-white rounded-2xl w-full sm:max-w-[500px] max-w-[370px] mx-auto md:max-w-[606px] shadow-xl p-6">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-bold text-[#1E293B] text-lg">Rotate Key</h3>
@@ -38,16 +38,23 @@ const RotateKeyModal = ({ apiKey, onClose, onRotate }: Props) => {
         </button>
       </div>
 
-      <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-100 rounded-xl px-3.5 py-3 mb-6">
-        <PiWarningBold size={16} className="text-amber-500 mt-0.5 shrink-0" />
-        <p className="text-[12px] text-amber-600 leading-relaxed">
-          Critical Action:{" "}
-          <span className="font-bold">
+      <div
+        className="flex items-start h-[121px] gap-2.5 border border-amber-100 rounded-xl px-3.5 py-3.5 mb-6"
+        style={{
+          background: "linear-gradient(to right, #FFDCC1, #FFDCC5)",
+        }}
+      >
+        <PiWarningBold size={26} className="text-[#623F1D] mt-0.5 shrink-0" />
+        <div>
+          <p className="text-[13px] sm:text-[15px] text-[#623F1D] font-semibold mb-1">
+            Critical Action
+          </p>
+          <p className="sm:text-[14px] text-[12px] text-[#623F1D] leading-relaxed">
             Rotating your key will invalidate the old key immediately. Any
             integrations currently using the old key will stop working until
             updated.
-          </span>
-        </p>
+          </p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 mb-6">
@@ -63,9 +70,21 @@ const RotateKeyModal = ({ apiKey, onClose, onRotate }: Props) => {
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <Button text="Cancel" onClick={onClose} colorBg="white" />
-        <Button text="Rotate now" onClick={onRotate} />
+      <div className="flex gap-3 flex-col sm:flex-row">
+        <Button
+          text="Cancel"
+          onClick={onClose}
+          colorBg="white"
+          fontSize="16px"
+          height="h-[50px]"
+        />
+
+        <Button
+          text="Rotate now"
+          onClick={onRotate}
+          fontSize="16px"
+          height="h-[50px]"
+        />
       </div>
     </div>
   );
