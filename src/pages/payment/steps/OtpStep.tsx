@@ -7,6 +7,7 @@ import StepBar from "./StepBar";
 import { OtpInput } from "../../../components/CustomInput";
 import type { Merchant, Step } from "./types";
 import { EXCHANGE_RATE, OTP_EXPIRY_SECONDS } from "./types";
+import { TbRosetteDiscountCheckFilled } from "react-icons/tb";
 
 interface Props {
   onClose: () => void;
@@ -80,7 +81,7 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[506px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
+    <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
       <div className="px-5 pt-5 pb-4">
         <div className="flex justify-between items-start">
           <div>
@@ -121,11 +122,12 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
               </p>
             </div>
           </div>
-          <IoCheckmarkCircle size={22} className="text-[#4A148C]" />
+
+          <TbRosetteDiscountCheckFilled size={22} className="text-[#4A148C]" />
         </div>
 
         <div
-          className={`flex items-center justify-center gap-2.5 transition-opacity ${isDisabled ? "opacity-30" : ""}`}
+          className={`flex items-center justify-center gap-2 transition-opacity ${isDisabled ? "opacity-30" : ""}`}
         >
           {otp.map((digit, i) => (
             <>
@@ -179,18 +181,18 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
           </p>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="flex flex-col sm:flex-row gap-3 mt-6">
           <button
             onClick={handleInvalidate}
             disabled={isDisabled}
-            className="flex-1 border border-red-400 text-red-500 font-montserrat font-semibold rounded-4xl py-3.5 text-sm disabled:opacity-40"
+            className="flex-1 border shadow-sm border-red-400 text-red-500 font-montserrat font-semibold rounded-4xl py-3.5 text-[16px] disabled:opacity-40"
           >
             Invalidate this code
           </button>
           <button
             onClick={onClose}
             disabled={!isFilled}
-            className="flex-1 bg-[#4A148C] text-white font-montserrat font-semibold rounded-4xl py-3.5 text-sm disabled:opacity-40"
+            className="flex-1 bg-[#5617A2] shadow-sm text-white font-montserrat font-semibold rounded-4xl py-3.5 text-[16px] disabled:opacity-40"
           >
             Done
           </button>

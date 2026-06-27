@@ -38,7 +38,7 @@ const ReviewStep = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[506px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
+    <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
       <div className="px-5 pt-5 pb-4">
         <div className="flex justify-between items-start">
           <div>
@@ -110,16 +110,16 @@ const ReviewStep = ({
           </p>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="flex flex-col sm:flex-row gap-3 mt-6">
           <button
             onClick={onBack}
-            className="flex-1 border border-[#4A148C] text-[#4A148C] font-montserrat font-semibold rounded-4xl py-3.5 text-sm"
+            className="flex-1 border border-[#4A148C] text-[#4A148C] font-montserrat font-semibold rounded-4xl py-3.5 text-[16px]"
           >
             Back
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 bg-[#4A148C] text-white font-montserrat font-semibold rounded-4xl py-3.5 text-sm"
+            className="flex-1 bg-[#4A148C] text-white font-montserrat font-semibold rounded-4xl py-3.5 text-[16px]"
           >
             Review & Confirm
           </button>

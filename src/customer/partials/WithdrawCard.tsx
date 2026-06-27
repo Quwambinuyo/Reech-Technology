@@ -25,7 +25,7 @@ const WithdrawCard = ({ onClose }: Props) => {
   const totalPointsDeducted = points ? parseFloat(points) : 0;
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[460px] md:max-w-[576px] mx-auto shadow-xl overflow-hidden max-h-[90vh] flex flex-col border border-dashed border-[#D0D0F0]">
+    <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[576px] mx-auto shadow-xl overflow-hidden max-h-[90vh] flex flex-col border border-dashed border-[#D0D0F0]">
       <div className="px-5 pt-5 pb-2 flex justify-between items-start flex-shrink-0">
         <div>
           <h3 className="font-montserrat font-bold text-[#0D0D0D] text-lg">

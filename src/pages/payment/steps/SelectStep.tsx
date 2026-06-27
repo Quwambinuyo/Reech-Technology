@@ -60,7 +60,7 @@ const SelectStep = ({ onClose, onContinue }: Props) => {
   );
 
   return (
-    <div className="bg-white rounded-2xl max-h-[600px] w-full max-w-[506px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
+    <div className="bg-white rounded-2xl max-h-[600px] w-full max-w-[370px] sm:max-w-[500px]  md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
       <div className="px-5 pt-5 pb-4">
         <div className="flex justify-between items-start">
           <div>
@@ -123,13 +123,11 @@ const SelectStep = ({ onClose, onContinue }: Props) => {
                 <div
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
                     isSelected
-                      ? "border-[#4A148C] bg-[#4A148C]"
+                      ? "border-[#7542BB] bg-[#7542BB]"
                       : "border-[#D0D0F0]"
                   }`}
                 >
-                  {isSelected && (
-                    <div className="w-2 h-2 rounded-full bg-white" />
-                  )}
+                  {isSelected && <div className="w-2 h-2 rounded-full " />}
                 </div>
               </button>
             );
@@ -139,7 +137,7 @@ const SelectStep = ({ onClose, onContinue }: Props) => {
         <button
           onClick={() => selected && onContinue(selected)}
           disabled={!selected}
-          className="mt-5 w-full bg-[#4A148C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2"
+          className="mt-5 w-full bg-[#5617A2] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2"
         >
           <TbSend size={18} />
           Continue

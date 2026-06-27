@@ -5,6 +5,9 @@ import Logo from "../../../assets/logo-s.png";
 import { CustomTextInput } from "../../../components/CustomInput";
 import type { Recipient } from "./types";
 import { TRANSFER_FEE, CURRENT_BALANCE } from "./types";
+import { MdPersonSearch } from "react-icons/md";
+import { FaCoins } from "react-icons/fa6";
+import { formatInputNumber, formatNumber } from "../../../../src/utils";
 
 interface Props {
   onClose: () => void;
@@ -16,7 +19,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
   const [points, setPoints] = useState("");
   const [note, setNote] = useState("");
 
-  const pointsNum = points ? parseFloat(points) : 0;
+  const pointsNum = points ? parseFloat(points.replace(/,/g, "")) : 0;
   const totalDeduction = pointsNum > 0 ? pointsNum + TRANSFER_FEE : 0;
   const remaining = CURRENT_BALANCE - totalDeduction;
   const isValid =
@@ -30,7 +33,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[506px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
+    <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
       <div className="px-5 pt-5 pb-4">
         <div className="flex justify-between items-start">
           <div>
@@ -56,16 +59,23 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
             placeholder="e.g. @alexmain or 15265378"
             value={recipientInput}
             handleChange={(e) => setRecipientInput(e.target.value)}
+            bg="#F7F6FF"
+            focusBorderColor="#CCC4D166"
+            rounded="full"
+            icon={<MdPersonSearch size={20} />}
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <CustomTextInput
               id="points"
               label="Amount in Points"
-              type="number"
               placeholder="0.00"
               value={points}
-              handleChange={(e) => setPoints(e.target.value)}
+              handleChange={(e) => setPoints(formatInputNumber(e.target.value))}
+              bg="#F7F6FF"
+              borderColor="#E8E0FF"
+              focusBorderColor="#CCC4D166"
+              icon={<FaCoins />}
             />
             <CustomTextInput
               id="note"
@@ -73,16 +83,17 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
               placeholder="Lunch payout..."
               value={note}
               handleChange={(e) => setNote(e.target.value)}
+              bg="#F7F6FF"
+              borderColor="#E8E0FF"
+              focusBorderColor="#CCC4D166"
             />
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <div className="flex justify-between items-center">
-              <p className="text-[12px] font-ibmplex text-gray-400">
-                Transfer Fee
-              </p>
-              <p className="text-[12px] font-ibmplex font-semibold text-[#0D0D0D]">
-                -{TRANSFER_FEE} Points
+            <div className="flex text-[16px] justify-between items-center">
+              <p className="text-[#4A454F]">Transfer Fee</p>
+              <p className="font-ibmplex font-semibold text-[#0D0D0D]">
+                -{formatNumber(TRANSFER_FEE)} Points
               </p>
             </div>
             <div className="border-t border-gray-100 pt-3">
@@ -92,8 +103,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
                 </p>
                 <div className="text-right">
                   <p className="text-base font-montserrat font-bold text-[#4A148C]">
-                    {totalDeduction > 0 ? totalDeduction.toFixed(2) : "0.00"}{" "}
-                    Points
+                    {formatNumber(totalDeduction)} Points
                   </p>
                   <p className="text-[10px] font-ibmplex text-[#1A932E] font-semibold tracking-wide uppercase">
                     Estimated Instant
@@ -111,7 +121,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
                   remaining < 0 ? "text-red-500 font-bold" : "font-bold"
                 }
               >
-                {remaining.toLocaleString()} pts
+                {formatNumber(remaining)} pts
               </span>
             </p>
           )}
@@ -126,7 +136,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
         <button
           onClick={handleNext}
           disabled={!isValid}
-          className="mt-5 w-full bg-[#4A148C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2"
+          className="mt-5 w-full bg-[#5617A2] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2"
         >
           <TbSend size={18} />
           Send Points

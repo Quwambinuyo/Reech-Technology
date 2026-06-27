@@ -138,3 +138,23 @@ export const timeRangeOptions = [
   "Last Week",
   "Last Month",
 ];
+
+export const formatNumber = (value: string | number): string => {
+  const num =
+    typeof value === "string" ? parseFloat(value.replace(/,/g, "")) : value;
+
+  if (isNaN(num)) return "0.00";
+
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+export const formatInputNumber = (value: string): string => {
+  const raw = value.replace(/[^0-9.]/g, "");
+  const parts = raw.split(".");
+  if (parts.length > 2) return value;
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+};

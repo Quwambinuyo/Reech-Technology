@@ -4,6 +4,7 @@ import Logo from "../../../assets/logo-s.png";
 import StepBar from "./StepBar";
 import type { Merchant, Step } from "./types";
 import { CURRENT_BALANCE, EXCHANGE_RATE } from "./types";
+import { formatNumber } from "../../../../src/utils";
 
 interface Props {
   onClose: () => void;
@@ -19,7 +20,7 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
   const isValid = points > 0 && points <= CURRENT_BALANCE;
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[506px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
+    <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
       <div className="px-5 pt-5 pb-4">
         <div className="flex justify-between items-start">
           <div>
@@ -45,29 +46,26 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
         <StepBar current={2 as Step} />
 
         <div className="flex items-center justify-between bg-[#F7F6FF] border border-[#E8E0FF] rounded-xl px-5 py-5">
-          <span className="text-[#9E9EB8] font-montserrat font-semibold text-lg shrink-0">
+          <span className="text-[#35303d]  font-bold text-[24px] shrink-0">
             pts
           </span>
           <span className="text-right text-[#0D0D0D] font-montserrat font-bold text-2xl">
-            {points.toLocaleString()}
+            {formatNumber(points)}
           </span>
         </div>
 
         <div className="mt-4 bg-[#F7F6FF] border border-[#E8E0FF] rounded-xl px-4 py-3.5">
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[10px] font-ibmplex text-[#9E9EB8] uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-ibmplex text-[#4A454F] font-semibold uppercase tracking-wider mb-1">
                 Equivalent Value
               </p>
-              <p className="text-[22px] font-montserrat font-bold text-[#4A148C]">
-                ₦
-                {equivalent.toLocaleString("en-NG", {
-                  minimumFractionDigits: 2,
-                })}
+              <p className="text-[22px] font-montserrat font-bold text-[#7542BB]">
+                ₦{formatNumber(equivalent)}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-ibmplex text-[#9E9EB8] uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-semibold text-[#4A454F] uppercase tracking-wider mb-1">
                 Current Rate
               </p>
               <p className="text-xs font-ibmplex text-[#4A148C] font-semibold">
@@ -85,7 +83,7 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
           <p className="text-[12px] font-ibmplex text-[#3D3D6B] leading-relaxed">
             Your current balance is{" "}
             <span className="font-bold">
-              {CURRENT_BALANCE.toLocaleString()} pts
+              {formatNumber(CURRENT_BALANCE)} pts
             </span>
             .{" "}
             {points > 0 && (
@@ -96,7 +94,7 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
                     remaining < 0 ? "text-red-500 font-bold" : "font-bold"
                   }
                 >
-                  {remaining.toLocaleString()} pts
+                  {formatNumber(remaining)} pts
                 </span>
               </>
             )}
@@ -109,17 +107,17 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
           </p>
         )}
 
-        <div className="flex gap-3 mt-6">
+        <div className="flex flex-col sm:flex-row gap-3 mt-6">
           <button
             onClick={onBack}
-            className="flex-1 border border-[#4A148C] text-[#4A148C] font-montserrat font-semibold rounded-4xl py-3.5 text-sm"
+            className="flex-1 border border-[#4A148C] text-[#4A148C] font-montserrat font-semibold rounded-4xl py-3.5 text-[16px] shadow-sm"
           >
             Back
           </button>
           <button
             onClick={() => isValid && onNext(points)}
             disabled={!isValid}
-            className="flex-1 bg-[#4A148C] disabled:opacity-40 disabled:cursor-not-allowed text-white font-montserrat font-semibold rounded-4xl py-3.5 text-sm"
+            className="flex-1 max- bg-[#5617A2]  disabled:opacity-40 disabled:cursor-not-allowed shadow-md text-white font-montserrat font-semibold rounded-4xl py-3.5 text-[16px]"
           >
             Review & Confirm
           </button>

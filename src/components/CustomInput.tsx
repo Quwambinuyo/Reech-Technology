@@ -17,6 +17,11 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onBlur?: () => void;
   onFocus?: () => void;
   otherInputProps?: any;
+  bg?: string;
+  icon?: React.ReactElement;
+  borderColor?: string;
+  focusBorderColor?: string;
+  rounded?: "sm" | "md" | "lg" | "full";
 }
 
 type OtherInputProps = {
@@ -40,6 +45,13 @@ type OtpInputProps = {
   disabled?: boolean;
 };
 
+const roundedMap = {
+  sm: "rounded-sm",
+  md: "rounded-md",
+  lg: "rounded-lg",
+  full: "rounded-full",
+};
+
 export const CustomTextInput = ({
   id,
   label,
@@ -53,6 +65,11 @@ export const CustomTextInput = ({
   onBlur,
   onFocus,
   otherInputProps,
+  bg,
+  icon,
+  borderColor,
+  focusBorderColor,
+  rounded,
 }: TextInputProps) => {
   return (
     <div className="flex flex-col gap-1">
@@ -60,15 +77,32 @@ export const CustomTextInput = ({
         {label}
       </label>
       <div className="relative">
+        {icon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A8ADBD] flex items-center">
+            {icon}
+          </div>
+        )}
         <input
           id={id}
           type={togglePassword ? "text" : type || "text"}
           placeholder={placeholder}
-          className="border border-[#D9D9D9] px-3 py-2.5 rounded-xl placeholder:text-[#D9D9D9] placeholder:text-[15px] outline-none focus:border-2 focus:border-primary-purple w-full"
+          className={`border px-3 py-2.5 placeholder:text-[#D9D9D9] placeholder:text-[15px] outline-none focus:border-2 w-full ${
+            roundedMap[rounded ?? "md"]
+          } ${icon ? "pl-9" : ""}`}
+          style={{
+            backgroundColor: bg ?? "#ffffff",
+            borderColor: borderColor ?? "#D9D9D9",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = focusBorderColor ?? "#7C3AED";
+            onFocus?.();
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = borderColor ?? "#D9D9D9";
+            onBlur?.();
+          }}
           value={value}
           onChange={handleChange}
-          onBlur={onBlur}
-          onFocus={onFocus}
           {...otherInputProps}
         />
         {type === "password" && (
@@ -104,10 +138,7 @@ export const CustomRadioInput = ({
       id={id}
       name={name}
     />
-    <div
-      className={`custom-radio ${disabled && "!border-[#B8B8B8]"}
-			}`}
-    >
+    <div className={`custom-radio ${disabled && "!border-[#B8B8B8]"}`}>
       <div className={`${disabled && "!bg-[#B8B8B8]"}`}></div>
     </div>
   </div>
@@ -157,7 +188,7 @@ export const OtpInput = ({
     onChange={(e) => onChange(index, e.target.value)}
     onKeyDown={(e) => onKeyDown(index, e)}
     onPaste={onPaste}
-    className={`w-[52px] h-[56px] text-center text-[20px] font-medium rounded-lg outline-none transition-all border ${
+    className={`w-[50px] h-[56px] text-center text-[20px] font-medium rounded-lg outline-none transition-all border ${
       digit
         ? "border-violet-500 bg-white text-gray-900"
         : hasError
