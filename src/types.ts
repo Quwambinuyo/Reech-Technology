@@ -102,3 +102,11 @@ export interface ActivityPointProps {
   description: string;
   id: string;
 }
+
+export interface ApiKeyProps {
+  id: string;
+  name: string;
+  maskedKey: string;
+  status: string;
+  createdAt: string;
+}

@@ -1,6 +1,6 @@
 import { useRole } from "../../hooks/useRole";
-import { useState } from "react";
-import type { CountryProps } from "../../types";
+import { useState, useEffect } from "react";
+import type { CountryProps, ApiKeyProps } from "../../types";
 import ImageCard from "../profile/partial/ImageCard";
 import { MiniInfoCard } from "../profile/partial";
 import ProfileInput, {
@@ -8,39 +8,55 @@ import ProfileInput, {
   PlainInput,
 } from "../profile/partial/ProfileInputs";
 import { PiQuestionBold, PiShieldWarningBold } from "react-icons/pi";
-import { useAppSelector } from "../../redux/hooks";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import Modal from "../../layout/Modal";
 import CreateApiKeyModal from "./partial/CreateApiKeyModal";
 import RevokeApiKeyModal from "./partial/RevokeApiKeyModal";
 import KeyDetailsModal from "./partial/KeyDetailsModal";
 import ApiKeysTable from "./partial/ApiKeyTable";
 import Button from "../../components/Button";
-import { initialApiKeys } from "../../mock";
 import RotateKeyModal from "./partial/RotateKeyModal";
+import Spinner from "../../components/Spinner";
 import { LuCirclePlus } from "react-icons/lu";
-
-type ApiKey = {
-  id: string;
-  keyName: string;
-  secretValue: string;
-  fullKey: string;
-  created: string;
-  status: "active" | "inactive";
-  createdBy: string;
-  createdByInitials: string;
-  lastUsed: string;
-};
+import {
+  fetchApiKeys,
+  createApiKeys,
+  rotateApiKeys,
+  revokeApiKeys,
+} from "../../redux/profile/action";
 
 type ActiveModal = "create" | "revoke" | "details" | "rotate" | null;
 
+const getApiKeysArray = (allApiKeys: unknown): ApiKeyProps[] => {
+  if (!allApiKeys || typeof allApiKeys !== "object") return [];
+
+  const maybeResult = (allApiKeys as { result?: unknown }).result;
+  if (Array.isArray(maybeResult)) return maybeResult as ApiKeyProps[];
+
+  const maybeSingleKey = allApiKeys as Partial<ApiKeyProps>;
+  if (maybeSingleKey.id && maybeSingleKey.maskedKey) {
+    return [maybeSingleKey as ApiKeyProps];
+  }
+
+  return [];
+};
+
 const Profile = () => {
   const role = useRole();
+  const dispatch = useAppDispatch();
   const [togglePhone, setTogglePhone] = useState(false);
   const [country, setCountry] = useState<CountryProps | null>(null);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
-  const [selectedKey, setSelectedKey] = useState<ApiKey | null>(null);
+  const [selectedKey, setSelectedKey] = useState<ApiKeyProps | null>(null);
 
   const { currentUser } = useAppSelector((state) => state.auth);
+  const {
+    allApiKeys,
+    fetchApiKeysLoading,
+    createApiKeyLoading,
+    rotateApiKeyLoading,
+    revokeApiKeyLoading,
+  } = useAppSelector((state) => state.apiKey);
 
   const [form] = useState({
     fullName: `${currentUser?.firstName || ""} ${currentUser?.lastName || ""}`,
@@ -48,6 +64,12 @@ const Profile = () => {
   });
 
   const { fullName, email } = form;
+
+  useEffect(() => {
+    if (role === "BusinessAdmin") {
+      dispatch(fetchApiKeys());
+    }
+  }, [dispatch, role]);
 
   const onCountrySelect = (opt: any) => {
     setCountry(opt);
@@ -57,6 +79,32 @@ const Profile = () => {
   const closeModal = () => {
     setActiveModal(null);
     setSelectedKey(null);
+  };
+
+  const handleCreateApiKey = async (name: string) => {
+    const result = await dispatch(createApiKeys({ name }));
+    if (createApiKeys.fulfilled.match(result)) {
+      await dispatch(fetchApiKeys());
+      closeModal();
+    }
+  };
+
+  const handleRotateApiKey = async () => {
+    if (!selectedKey) return;
+    const result = await dispatch(rotateApiKeys(selectedKey.id));
+    if (rotateApiKeys.fulfilled.match(result)) {
+      await dispatch(fetchApiKeys());
+      closeModal();
+    }
+  };
+
+  const handleRevokeApiKey = async () => {
+    if (!selectedKey) return;
+    const result = await dispatch(revokeApiKeys(selectedKey.id));
+    if (revokeApiKeys.fulfilled.match(result)) {
+      await dispatch(fetchApiKeys());
+      closeModal();
+    }
   };
 
   return (
@@ -134,7 +182,8 @@ const Profile = () => {
               />
             </div>
             <ApiKeysTable
-              apiKeys={initialApiKeys as ApiKey[]}
+              apiKeys={getApiKeysArray(allApiKeys)}
+              loading={fetchApiKeysLoading}
               onDetail={(key) => {
                 setSelectedKey(key);
                 setActiveModal("details");
@@ -168,7 +217,10 @@ const Profile = () => {
       )}
 
       <Modal modal={activeModal === "create"} onClose={closeModal}>
-        <CreateApiKeyModal onClose={closeModal} onGenerate={closeModal} />
+        <CreateApiKeyModal
+          onClose={closeModal}
+          onGenerate={handleCreateApiKey}
+        />
       </Modal>
 
       <Modal
@@ -176,9 +228,9 @@ const Profile = () => {
         onClose={closeModal}
       >
         <RevokeApiKeyModal
-          secretValue={selectedKey?.secretValue ?? ""}
+          secretValue={selectedKey?.maskedKey ?? ""}
           onClose={closeModal}
-          onRevoke={closeModal}
+          onRevoke={handleRevokeApiKey}
         />
       </Modal>
 
@@ -189,7 +241,7 @@ const Profile = () => {
         <RotateKeyModal
           apiKey={selectedKey!}
           onClose={closeModal}
-          onRotate={closeModal}
+          onRotate={handleRotateApiKey}
         />
       </Modal>
 
@@ -198,15 +250,23 @@ const Profile = () => {
         onClose={closeModal}
       >
         <KeyDetailsModal
-          apiKey={selectedKey?.fullKey ?? ""}
+          apiKey={selectedKey?.maskedKey ?? ""}
           status={selectedKey?.status ?? "active"}
-          createdBy={selectedKey?.createdBy ?? ""}
-          createdByInitials={selectedKey?.createdByInitials ?? ""}
-          createdDate={selectedKey?.created ?? ""}
-          lastUsed={selectedKey?.lastUsed ?? ""}
+          createdDate={selectedKey?.createdAt ?? ""}
           onClose={closeModal}
           onRotate={closeModal}
         />
+      </Modal>
+
+      <Modal
+        modal={
+          fetchApiKeysLoading ||
+          createApiKeyLoading ||
+          rotateApiKeyLoading ||
+          revokeApiKeyLoading
+        }
+      >
+        <Spinner size="40px" />
       </Modal>
     </div>
   );

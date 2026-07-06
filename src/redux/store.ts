@@ -5,6 +5,7 @@ import { rewardReducer } from "./reward/reducer";
 import { authReducer } from "./auth/authReducer";
 import { categoryReducer } from "./category/reducer";
 import { merchantVerificationReducer } from "./merchantVerification/reducer";
+import { apiKeyReducer } from "./profile/reducer";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     reward: rewardReducer,
     category: categoryReducer,
     merchantVerification: merchantVerificationReducer,
+    apiKey: apiKeyReducer,
   },
 });
 

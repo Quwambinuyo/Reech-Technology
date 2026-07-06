@@ -46,6 +46,8 @@ const CompanyInformationStep = ({ onNext }: Props) => {
     }),
   );
 
+  // console.log(categoryOptions);
+
   const selectedCategory = categoryOptions.find((c) => c.id === categoryId);
 
   useEffect(() => {

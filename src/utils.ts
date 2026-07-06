@@ -158,3 +158,19 @@ export const formatInputNumber = (value: string): string => {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 };
+
+export const formatDateTime = (date: string | Date) => {
+  if (!date) return "-";
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  };
+
+  return new Date(date).toLocaleString("en-US", options);
+};

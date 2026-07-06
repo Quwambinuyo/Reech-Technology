@@ -1,21 +1,10 @@
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { PiWarningBold } from "react-icons/pi";
 import Button from "../../../components/Button";
-
-type ApiKey = {
-  id: string;
-  keyName: string;
-  secretValue: string;
-  fullKey: string;
-  created: string;
-  status: "active" | "inactive";
-  createdBy: string;
-  createdByInitials: string;
-  lastUsed: string;
-};
+import type { ApiKeyProps } from "../../../types";
 
 interface Props {
-  apiKey: ApiKey;
+  apiKey: ApiKeyProps;
   onClose: () => void;
   onRotate: () => void;
 }
@@ -61,12 +50,12 @@ const RotateKeyModal = ({ apiKey, onClose, onRotate }: Props) => {
         <div className="flex items-center justify-between">
           <span className="text-[12px] text-[#94A3B8]">Current key</span>
           <span className="text-[12px] font-mono text-[#1E293B] bg-[#F1F5F9] px-3 py-1 rounded-lg">
-            {apiKey.secretValue}
+            {apiKey.maskedKey}
           </span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-[12px] text-[#94A3B8]">Created</span>
-          <span className="text-[12px] text-[#1E293B]">{apiKey.created}</span>
+          <span className="text-[12px] text-[#1E293B]">{apiKey.createdAt}</span>
         </div>
       </div>
 

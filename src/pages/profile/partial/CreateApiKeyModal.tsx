@@ -5,14 +5,13 @@ import Button from "../../../components/Button";
 
 interface Props {
   onClose: () => void;
-  onGenerate: (name: string, permission: string) => void;
+  onGenerate: (name: string) => void;
 }
 
-const permissions = ["Read & Write", "Read Only", "Write Only"];
-
+// const permissions = ["Read & Write", "Read Only", "Write Only"];
 const CreateApiKeyModal = ({ onClose, onGenerate }: Props) => {
   const [keyName, setKeyName] = useState("");
-  const [permission, setPermission] = useState("Read & Write");
+  // const [permission, setPermission] = useState("Read & Write");
 
   return (
     <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] mx-auto md:max-w-[606px] shadow-xl p-6">
@@ -44,7 +43,7 @@ const CreateApiKeyModal = ({ onClose, onGenerate }: Props) => {
           />
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        {/* <div className="flex flex-col gap-1.5">
           <label className="text-sm text-[#1E293B] font-medium">
             Permissions
           </label>
@@ -73,7 +72,7 @@ const CreateApiKeyModal = ({ onClose, onGenerate }: Props) => {
               </svg>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex items-start gap-2.5 bg-[#EEF0FF] rounded-xl px-3.5 py-3">
           <HiOutlineInformationCircle
@@ -97,7 +96,7 @@ const CreateApiKeyModal = ({ onClose, onGenerate }: Props) => {
         />
         <Button
           text="Generate Key"
-          onClick={() => keyName.trim() && onGenerate(keyName, permission)}
+          onClick={() => keyName.trim() && onGenerate(keyName)}
           isDisabled={!keyName.trim()}
           fontSize="16px"
           height="h-[50px]"

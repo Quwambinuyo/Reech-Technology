@@ -2,14 +2,15 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { IoCopyOutline } from "react-icons/io5";
 import Button from "../../../components/Button";
+import { formatDateTime } from "../../../utils";
 
 interface Props {
   apiKey: string;
-  status: "active" | "inactive";
-  createdBy: string;
-  createdByInitials: string;
+  status: string;
+  createdBy?: string;
+  createdByInitials?: string;
   createdDate: string;
-  lastUsed: string;
+  lastUsed?: string;
   onClose: () => void;
   onRotate: () => void;
 }
@@ -17,8 +18,8 @@ interface Props {
 const KeyDetailsModal = ({
   apiKey,
   status,
-  createdBy,
-  createdByInitials,
+  createdBy = "—",
+  createdByInitials = "?",
   createdDate,
   // lastUsed,
   onClose,
@@ -63,13 +64,13 @@ const KeyDetailsModal = ({
             </p>
             <span
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                status === "active"
+                status === "Active"
                   ? "bg-green-50 text-green-600"
                   : "bg-[#F1F5F9] text-[#94A3B8]"
               }`}
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full ${status === "active" ? "bg-green-500" : "bg-[#94A3B8]"}`}
+                className={`w-1.5 h-1.5 rounded-full ${status === "Active" ? "bg-green-500" : "bg-[#94A3B8]"}`}
               />
               {status.toUpperCase()}
             </span>
@@ -89,7 +90,9 @@ const KeyDetailsModal = ({
             <p className="text-xs text-[#94A3B8] font-medium uppercase tracking-wider mb-1.5">
               Created Date
             </p>
-            <p className="text-sm text-[#1E293B] font-medium">{createdDate}</p>
+            <p className="text-sm text-[#1E293B] font-medium">
+              {formatDateTime(createdDate)}
+            </p>
           </div>
           {/* <div>
             <p className="text-xs text-[#94A3B8] font-medium uppercase tracking-wider mb-1.5">

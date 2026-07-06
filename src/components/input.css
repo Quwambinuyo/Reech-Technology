@@ -1,116 +1,116 @@
 .custom-radio-div {
-	position: relative;
-	width: 14px;
-	height: 14px;
+  position: relative;
+  width: 14px;
+  height: 14px;
 }
 
 .custom-radio {
-	position: absolute;
-	width: 14px;
-	height: 14px;
-	border-radius: 9999px;
-	border: 1px solid #c2d6fc;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-	padding: 1px;
-	transition: all 0.05s ease-in-out;
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 1px solid #c2d6fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1px;
+  transition: all 0.05s ease-in-out;
 }
 
 .custom-radio > div {
-	width: 8px;
-	height: 8px;
-	border-radius: 9999px;
-	transition: all 0.05s ease-in-out;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  transition: all 0.05s ease-in-out;
 }
 
 .custom-radio-div input {
-	position: absolute;
-	width: 14px;
-	height: 14px;
-	appearance: none;
-	z-index: 5;
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  appearance: none;
+  z-index: 5;
 }
 
 @media (min-width: 640px) {
-	.custom-radio {
-		width: 16px;
-		height: 16px;
-	}
-	.custom-radio-div input {
-		width: 16px;
-		height: 16px;
-	}
+  .custom-radio {
+    width: 16px;
+    height: 16px;
+  }
+  .custom-radio-div input {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .custom-radio-div input:checked ~ .custom-radio {
-	border-color: #320d5e;
+  border-color: #320d5e;
 }
 
 .custom-radio-div input:checked ~ .custom-radio div {
-	background: #320d5e;
+  background: #320d5e;
 }
 
 .custom-checkbox-div {
-	position: relative;
-	display: flex;
-	margin-top: -2px;
+  position: relative;
+  display: flex;
+  margin-top: -2px;
 }
 
 .custom-checkbox-div input {
-	width: 16px;
-	height: 16px;
-	appearance: none;
-	z-index: 2;
-	position: relative;
-	background-color: transparent;
+  width: 16px;
+  height: 16px;
+  appearance: none;
+  z-index: 2;
+  position: relative;
+  background-color: transparent;
 }
 
 .custom-checkbox-div input:checked ~ .custom-checkbox {
-	/* background: #320d5e; */
-	background: white;
-	border-color: black;
-	/* border-color: #320d5e; */
+  /* background: #320d5e; */
+  background: white;
+  border-color: black;
+  /* border-color: #320d5e; */
 }
 
 .custom-checkbox-div input:disabled ~ .custom-checkbox {
-	background: rgb(227, 225, 225);
-	border-color: rgb(227, 225, 225);
+  background: rgb(227, 225, 225);
+  border-color: rgb(227, 225, 225);
 }
 
 .custom-checkbox-div input:checked ~ .custom-checkbox div {
-	position: relative;
-	top: -2px;
-	width: 6px;
-	height: 11px;
-	/* border: solid #320d5e; */
-	/* border: solid white; */
-	border: solid black;
-	border-width: 0 2px 2px 0;
-	-webkit-transform: rotate(43deg);
-	-ms-transform: rotate(43deg);
-	transform: rotate(43deg);
+  position: relative;
+  top: -2px;
+  width: 6px;
+  height: 11px;
+  /* border: solid #320d5e; */
+  /* border: solid white; */
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(43deg);
+  -ms-transform: rotate(43deg);
+  transform: rotate(43deg);
 }
 
 .custom-checkbox {
-	width: 16px;
-	height: 16px;
-	position: absolute;
-	border-radius: 2px;
-	border: 1px solid black;
-	display: grid;
-	place-items: center;
-	border-radius: 2px;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  border-radius: 2px;
+  border: 1px solid black;
+  display: grid;
+  place-items: center;
+  border-radius: 2px;
 }
 
 @media (min-width: 640px) {
-	.custom-radio {
-		width: 16px;
-		height: 16px;
-	}
-	.custom-radio-div input {
-		width: 16px;
-		height: 16px;
-	}
+  .custom-radio {
+    width: 16px;
+    height: 16px;
+  }
+  .custom-radio-div input {
+    width: 16px;
+    height: 16px;
+  }
 }

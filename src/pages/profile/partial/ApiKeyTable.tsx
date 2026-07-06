@@ -1,18 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-
-type ApiKey = {
-  id: string;
-  keyName: string;
-  secretValue: string;
-  fullKey: string;
-  created: string;
-  status: "active" | "inactive";
-  createdBy: string;
-  createdByInitials: string;
-  lastUsed: string;
-};
+import type { ApiKeyProps } from "../../../types";
+import { formatDateTime } from "../../../utils";
 
 type MenuAction = {
   label: string;
@@ -31,14 +21,14 @@ const MENU_ACTIONS: MenuAction[] = [
 ];
 
 const GRID =
-  "minmax(120px, 1fr) minmax(150px, 1fr) minmax(100px, 1fr) 120px 8px";
+  "minmax(120px, 1fr) minmax(150px, 1fr) minmax(130px, 1fr) 120px 8px";
 
 const RowMenu = ({
   apiKey,
   onAction,
 }: {
-  apiKey: ApiKey;
-  onAction: (action: MenuAction["action"], key: ApiKey) => void;
+  apiKey: ApiKeyProps;
+  onAction: (action: MenuAction["action"], key: ApiKeyProps) => void;
 }) => {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -103,10 +93,11 @@ const RowMenu = ({
 };
 
 interface Props {
-  apiKeys: ApiKey[];
-  onDetail: (key: ApiKey) => void;
-  onRotate: (key: ApiKey) => void;
-  onRevoke: (key: ApiKey) => void;
+  apiKeys: ApiKeyProps[] | undefined | null;
+  onDetail: (key: ApiKeyProps) => void;
+  onRotate: (key: ApiKeyProps) => void;
+  onRevoke: (key: ApiKeyProps) => void;
+  loading?: boolean;
   maxHeight?: string;
 }
 
@@ -115,13 +106,18 @@ const ApiKeysTable = ({
   onDetail,
   onRotate,
   onRevoke,
+  loading = false,
   maxHeight = "320px",
 }: Props) => {
-  const handleAction = (action: MenuAction["action"], key: ApiKey) => {
+  const rows = apiKeys ?? [];
+
+  const handleAction = (action: MenuAction["action"], key: ApiKeyProps) => {
     if (action === "details") onDetail(key);
     if (action === "rotate") onRotate(key);
     if (action === "revoke") onRevoke(key);
   };
+
+  // console.log(apiKeys);
 
   return (
     <div className="w-full overflow-x-auto mt-5">
@@ -130,7 +126,7 @@ const ApiKeysTable = ({
           className="grid px-8 py-4 text-[#4A454F] bg-[#F1F4FB]"
           style={{ gridTemplateColumns: GRID }}
         >
-          {["Key Name", "Secret Value", "Created", "Status", ""].map((h) => (
+          {["Key Name", "Masked Key", "Created", "Status", ""].map((h) => (
             <span
               key={h}
               className="text-[11px] font-semibold uppercase tracking-wider"
@@ -144,31 +140,33 @@ const ApiKeysTable = ({
           className="divide-y divide-[#F1F5F9] overflow-y-auto hide-scroll"
           style={{ maxHeight }}
         >
-          {apiKeys.length === 0 ? (
+          {loading ? (
+            <div className="py-8 text-center text-[12px] text-[#94A3B8]">
+              Loading...
+            </div>
+          ) : rows.length === 0 ? (
             <div className="py-8 text-center text-[12px] text-[#94A3B8]">
               No API keys found.
             </div>
           ) : (
-            apiKeys.map((key) => (
+            rows.map((key) => (
               <div
                 key={key.id}
                 className="grid items-center px-8 py-5"
                 style={{ gridTemplateColumns: GRID }}
               >
-                <span className="text-[12px] text-[#1E293B]">
-                  {key.keyName}
-                </span>
+                <span className="text-[12px] text-[#1E293B]">{key.name}</span>
                 <span className="text-[12px] text-[#475569] font-mono">
-                  {key.secretValue}
+                  {key.maskedKey}
                 </span>
                 <span className="text-[12px] text-[#475569] whitespace-nowrap">
-                  {key.created}
+                  {formatDateTime(key.createdAt)}
                 </span>
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold w-fit ${key.status === "active" ? "bg-green-50 text-green-600" : "bg-[#F1F5F9] text-[#94A3B8]"}`}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold w-fit ${key.status === "Active" ? "bg-green-50 text-green-600" : "bg-[#F1F5F9] text-[#94A3B8]"}`}
                 >
                   <span
-                    className={`w-1.5 h-1.5 rounded-full ${key.status === "active" ? "bg-green-500" : "bg-[#94A3B8]"}`}
+                    className={`w-1.5 h-1.5 rounded-full ${key.status === "Active" ? "bg-green-500" : "bg-[#94A3B8]"}`}
                   />
                   {key.status}
                 </span>

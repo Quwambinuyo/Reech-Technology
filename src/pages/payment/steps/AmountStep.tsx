@@ -1,10 +1,10 @@
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { HiOutlineInformationCircle } from "react-icons/hi2";
 import Logo from "../../../assets/logo-s.png";
 import StepBar from "./StepBar";
 import type { Merchant, Step } from "./types";
 import { CURRENT_BALANCE, EXCHANGE_RATE } from "./types";
 import { formatNumber } from "../../../../src/utils";
+import { RiErrorWarningFill } from "react-icons/ri";
 
 interface Props {
   onClose: () => void;
@@ -76,9 +76,9 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
         </div>
 
         <div className="mt-3 flex items-start gap-2.5 bg-[#EEF0FF] rounded-xl px-4 py-3.5">
-          <HiOutlineInformationCircle
-            size={16}
-            className="text-[#4A148C] mt-0.5 shrink-0"
+          <RiErrorWarningFill
+            size={20}
+            className="text-[#7f669d] mt-0.5 shrink-0"
           />
           <p className="text-[12px] font-ibmplex text-[#3D3D6B] leading-relaxed">
             Your current balance is{" "}

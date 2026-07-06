@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { IoCloseCircleOutline, IoCheckmarkCircle } from "react-icons/io5";
+import { IoCloseCircleOutline } from "react-icons/io5";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { FaClock } from "react-icons/fa";
 import Logo from "../../../assets/logo-s.png";
@@ -7,7 +7,7 @@ import StepBar from "./StepBar";
 import { OtpInput } from "../../../components/CustomInput";
 import type { Merchant, Step } from "./types";
 import { EXCHANGE_RATE, OTP_EXPIRY_SECONDS } from "./types";
-import { TbRosetteDiscountCheckFilled } from "react-icons/tb";
+import { PiSealCheckBold } from "react-icons/pi";
 
 interface Props {
   onClose: () => void;
@@ -123,7 +123,7 @@ const OtpStep = ({ onClose, merchant, points, onInvalidate }: Props) => {
             </div>
           </div>
 
-          <TbRosetteDiscountCheckFilled size={22} className="text-[#4A148C]" />
+          <PiSealCheckBold size={22} className="text-[#4A148C]" />
         </div>
 
         <div
