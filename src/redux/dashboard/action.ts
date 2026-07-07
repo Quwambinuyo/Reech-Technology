@@ -70,24 +70,41 @@ export const fetchRewardPerformance = createAsyncThunk(
 
 export const fetchRecentTransactions = createAsyncThunk(
   "dashboard/fetchRecentTransactions",
-  async (_: void, { rejectWithValue }) => {
+  async (
+    params: {
+      pageNumber?: number;
+      pageSize?: number;
+      search?: string;
+    },
+    { rejectWithValue },
+  ) => {
     try {
       const response = await axiosInstance.get(
         `${baseURL}/businesses/dashboard/recent-transactions`,
+        {
+          params: {
+            PageNumber: params.pageNumber ?? 1,
+            PageSize: params.pageSize ?? 10,
+            Search: params.search ?? "",
+          },
+        },
       );
+
       if (response.data?.isSuccess) {
         return response.data?.data;
-      } else {
-        throw new Error("Failed to fetch recent transactions");
       }
+
+      throw new Error("Failed to fetch recent transactions");
     } catch (error: any) {
       console.log(error, error?.response?.status);
+
       if (error?.message === "Network Error") {
         toast.error("You are not connected to the internet.");
         return rejectWithValue("Network error");
       } else if (error?.response?.status === 401) {
-        toast.error("Authorization failed. Please login again,");
+        toast.error("Authorization failed. Please login again.");
         clearUserSession(tabId);
+
         setTimeout(() => {
           window.location.href = "/sign-in";
         }, 1000);
