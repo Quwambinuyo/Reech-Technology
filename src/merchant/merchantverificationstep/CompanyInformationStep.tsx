@@ -1,3 +1,4 @@
+// CompanyInformationStep.tsx
 import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -11,6 +12,7 @@ import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
 import Button from "../../components/Button";
 import { fetchAdminCategories } from "../../redux/category/actions";
+import { validateFile, FILE_ACCEPT_ATTR } from "../../filevalidation";
 
 interface Props {
   onNext: (cacFile: File | null, utilityFile: File | null) => void;
@@ -34,6 +36,8 @@ const CompanyInformationStep = ({ onNext }: Props) => {
   const utilityFile = useRef<File | null>(null);
   const [cacFileName, setCacFileName] = useState<string | null>(null);
   const [utilityFileName, setUtilityFileName] = useState<string | null>(null);
+  const [cacError, setCacError] = useState<string | null>(null);
+  const [utilityError, setUtilityError] = useState<string | null>(null);
 
   const { fetchCategoriesLoading, allCategories } = useAppSelector(
     (state) => state.category,
@@ -46,13 +50,13 @@ const CompanyInformationStep = ({ onNext }: Props) => {
     }),
   );
 
-  // console.log(categoryOptions);
-
   const selectedCategory = categoryOptions.find((c) => c.id === categoryId);
 
   useEffect(() => {
     dispatch(fetchAdminCategories());
   }, []);
+
+  const canSubmit = !cacError && !utilityError;
 
   return (
     <div className="px-6 pb-6 flex flex-col gap-4">
@@ -105,9 +109,11 @@ const CompanyInformationStep = ({ onNext }: Props) => {
         <FileUploadBox
           inputRef={cacRef}
           fileName={cacFileName}
-          onFileChange={(file) => {
-            cacFile.current = file;
-            setCacFileName(file?.name ?? null);
+          error={cacError}
+          onFileChange={(file, error) => {
+            cacFile.current = error ? null : file;
+            setCacFileName(error ? null : (file?.name ?? null));
+            setCacError(error);
           }}
         />
       </div>
@@ -133,9 +139,11 @@ const CompanyInformationStep = ({ onNext }: Props) => {
         <FileUploadBox
           inputRef={utilityRef}
           fileName={utilityFileName}
-          onFileChange={(file) => {
-            utilityFile.current = file;
-            setUtilityFileName(file?.name ?? null);
+          error={utilityError}
+          onFileChange={(file, error) => {
+            utilityFile.current = error ? null : file;
+            setUtilityFileName(error ? null : (file?.name ?? null));
+            setUtilityError(error);
           }}
         />
       </div>
@@ -143,6 +151,7 @@ const CompanyInformationStep = ({ onNext }: Props) => {
       <Button
         text="Next"
         onClick={() => onNext(cacFile.current, utilityFile.current)}
+        isDisabled={!canSubmit}
       />
     </div>
   );
@@ -151,31 +160,53 @@ const CompanyInformationStep = ({ onNext }: Props) => {
 interface FileUploadBoxProps {
   inputRef: React.RefObject<HTMLInputElement | null>;
   fileName: string | null;
-  onFileChange: (file: File | null) => void;
+  error: string | null;
+  onFileChange: (file: File | null, error: string | null) => void;
 }
 
 const FileUploadBox = ({
   inputRef,
   fileName,
+  error,
   onFileChange,
-}: FileUploadBoxProps) => (
-  <div className="border border-dashed border-[#D9D9D9] rounded-xl px-4 py-4 flex items-center gap-4">
-    <input
-      ref={inputRef}
-      type="file"
-      className="hidden"
-      onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
-    />
-    <button
-      onClick={() => inputRef.current?.click()}
-      className="border border-[#4A3FA0] text-[#4A3FA0] text-[13px] font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-    >
-      {fileName ? "Change file" : "Upload files..."}
-    </button>
-    <p className="text-[#06060666] text-[13px]">
-      {fileName ?? "Drop files here"}
-    </p>
-  </div>
-);
+}: FileUploadBoxProps) => {
+  const handleFile = (file: File | null) => {
+    const validationError = validateFile(file);
+    if (validationError) {
+      onFileChange(null, validationError);
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
+    onFileChange(file, null);
+  };
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div
+        className={`border border-dashed rounded-xl px-4 py-4 flex items-center gap-4 ${
+          error ? "border-red-400" : "border-[#D9D9D9]"
+        }`}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept={FILE_ACCEPT_ATTR}
+          className="hidden"
+          onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+        />
+        <button
+          onClick={() => inputRef.current?.click()}
+          className="border border-[#4A3FA0] text-[#4A3FA0] text-[13px] font-medium px-4 py-2 rounded-lg whitespace-nowrap"
+        >
+          {fileName ? "Change file" : "Upload files..."}
+        </button>
+        <p className="text-[#06060666] text-[13px]">
+          {fileName ?? "Drop files here"}
+        </p>
+      </div>
+      {error && <p className="text-red-500 text-[12px]">{error}</p>}
+    </div>
+  );
+};
 
 export default CompanyInformationStep;

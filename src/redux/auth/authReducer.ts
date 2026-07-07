@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   createHolderAccount,
   fetchCountries,
@@ -49,6 +49,11 @@ const authSlice = createSlice({
       state.forgotPasswordLoading = false;
       state.forgotPasswordError = "";
       state.forgotPasswordSuccess = null;
+    },
+    onUpdateBusinessStatus: (state, action: PayloadAction<string>) => {
+      if (state.currentUser?.business) {
+        state.currentUser.business.status = action.payload;
+      }
     },
   },
   extraReducers(builder) {
@@ -121,6 +126,7 @@ export const {
   onToggleLandingHamburger,
   onToggleMobileSidebar,
   onLogout,
+  onUpdateBusinessStatus,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

@@ -15,7 +15,6 @@ const VerificationPendingStep = ({ onClose }: Props) => {
     dispatch(resetMerchantVerification());
     onClose();
     navigate("/dashboard");
-    window.location.reload();
   };
 
   return (

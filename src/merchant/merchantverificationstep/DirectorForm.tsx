@@ -1,8 +1,10 @@
+// DirectorForm.tsx
 import { useRef, useState } from "react";
 import { useAppDispatch } from "../../redux/hooks";
 import { updateDirectorField } from "../../redux/merchantVerification/reducer";
 import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
+import { validateFile, FILE_ACCEPT_ATTR } from "../../filevalidation";
 
 type IdTypeOption = {
   value: string;
@@ -26,7 +28,7 @@ interface DirectorFormProps {
   showRemove: boolean;
   idCardFileName: string | null;
   onRemove: () => void;
-  onIdCardChange: (file: File | null) => void;
+  onIdCardChange: (file: File | null, error: string | null) => void;
 }
 
 const DirectorForm = ({
@@ -39,9 +41,22 @@ const DirectorForm = ({
 }: DirectorFormProps) => {
   const dispatch = useAppDispatch();
   const [idTypeOpen, setIdTypeOpen] = useState(false);
+  const [idCardError, setIdCardError] = useState<string | null>(null);
   const idCardRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIdType = ID_TYPES.find((t) => t.value === director.idType);
+
+  const handleIdCardFile = (file: File | null) => {
+    const validationError = validateFile(file);
+    if (validationError) {
+      setIdCardError(validationError);
+      onIdCardChange(null, validationError);
+      if (idCardRef.current) idCardRef.current.value = "";
+      return;
+    }
+    setIdCardError(null);
+    onIdCardChange(file, null);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -93,12 +108,17 @@ const DirectorForm = ({
 
       <div className="flex flex-col gap-1">
         <p className="text-sm md:text-[14.5px]">Upload ID Card</p>
-        <div className="border border-dashed border-[#D9D9D9] rounded-xl px-4 py-4 flex items-center gap-4">
+        <div
+          className={`border border-dashed rounded-xl px-4 py-4 flex items-center gap-4 ${
+            idCardError ? "border-red-400" : "border-[#D9D9D9]"
+          }`}
+        >
           <input
             ref={idCardRef}
             type="file"
+            accept={FILE_ACCEPT_ATTR}
             className="hidden"
-            onChange={(e) => onIdCardChange(e.target.files?.[0] ?? null)}
+            onChange={(e) => handleIdCardFile(e.target.files?.[0] ?? null)}
           />
           <button
             onClick={() => idCardRef.current?.click()}
@@ -110,6 +130,9 @@ const DirectorForm = ({
             {idCardFileName ?? "Drop files here"}
           </p>
         </div>
+        {idCardError && (
+          <p className="text-red-500 text-[12px]">{idCardError}</p>
+        )}
       </div>
 
       <CustomTextInput

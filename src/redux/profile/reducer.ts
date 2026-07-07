@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import {
   fetchApiKeys,
   createApiKeys,
@@ -22,7 +22,6 @@ type ApiKeyProps = {
 };
 
 interface ApiKeyReducerProps {
-  toggleCreateApiKey: boolean;
   fetchApiKeysLoading: boolean;
   allApiKeys: ApiKeyResponse;
   fetchApiKeysError: string;
@@ -30,18 +29,15 @@ interface ApiKeyReducerProps {
   createApiKeyLoading: boolean;
   createApiKeySuccess: any;
   createApiKeyError: string;
-  toggleRotateApiKey: string;
   rotateApiKeyLoading: boolean;
   rotateApiKeySuccess: any;
   rotateApiKeyError: string;
-  toggleRevokeApiKey: string;
   revokeApiKeyLoading: boolean;
   revokeApiKeySuccess: any;
   revokeApiKeyError: string;
 }
 
 const initialState: ApiKeyReducerProps = {
-  toggleCreateApiKey: false,
   fetchApiKeysLoading: false,
   allApiKeys: {
     pageNumber: 1,
@@ -54,11 +50,9 @@ const initialState: ApiKeyReducerProps = {
   createApiKeyLoading: false,
   createApiKeySuccess: null,
   createApiKeyError: "",
-  toggleRotateApiKey: "",
   rotateApiKeyLoading: false,
   rotateApiKeySuccess: null,
   rotateApiKeyError: "",
-  toggleRevokeApiKey: "",
   revokeApiKeyLoading: false,
   revokeApiKeySuccess: null,
   revokeApiKeyError: "",
@@ -67,23 +61,7 @@ const initialState: ApiKeyReducerProps = {
 const apiKeySlice = createSlice({
   name: "apiKey",
   initialState,
-  reducers: {
-    onToggleCreateApiKey: (state) => {
-      state.toggleCreateApiKey = !state.toggleCreateApiKey;
-    },
-    onToggleRotateApiKey: (
-      state,
-      action: PayloadAction<string | undefined>,
-    ) => {
-      state.toggleRotateApiKey = action.payload || "";
-    },
-    onToggleRevokeApiKey: (
-      state,
-      action: PayloadAction<string | undefined>,
-    ) => {
-      state.toggleRevokeApiKey = action.payload || "";
-    },
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
       .addCase(fetchApiKeys.pending, (state) => {
@@ -112,9 +90,6 @@ const apiKeySlice = createSlice({
       .addCase(createApiKeys.fulfilled, (state, action) => {
         state.createApiKeyLoading = false;
         state.createApiKeySuccess = action.payload;
-        state.toggleCreateApiKey = false;
-        state.allApiKeys.result.unshift(action.payload);
-        state.allApiKeys.totalCount += 1;
       })
       .addCase(createApiKeys.rejected, (state, action) => {
         state.createApiKeyLoading = false;
@@ -128,7 +103,6 @@ const apiKeySlice = createSlice({
       .addCase(rotateApiKeys.fulfilled, (state, action) => {
         state.rotateApiKeyLoading = false;
         state.rotateApiKeySuccess = action.payload;
-        state.toggleRotateApiKey = "";
       })
       .addCase(rotateApiKeys.rejected, (state, action) => {
         state.rotateApiKeyLoading = false;
@@ -142,7 +116,6 @@ const apiKeySlice = createSlice({
       .addCase(revokeApiKeys.fulfilled, (state, action) => {
         state.revokeApiKeyLoading = false;
         state.revokeApiKeySuccess = action.payload;
-        state.toggleRevokeApiKey = "";
       })
       .addCase(revokeApiKeys.rejected, (state, action) => {
         state.revokeApiKeyLoading = false;
@@ -151,11 +124,5 @@ const apiKeySlice = createSlice({
       });
   },
 });
-
-export const {
-  onToggleCreateApiKey,
-  onToggleRotateApiKey,
-  onToggleRevokeApiKey,
-} = apiKeySlice.actions;
 
 export const apiKeyReducer = apiKeySlice.reducer;

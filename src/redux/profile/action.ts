@@ -43,28 +43,41 @@ export const createApiKeys = createAsyncThunk(
   ) => {
     try {
       const response = await axiosInstance.post(`${baseURL}/api-keys`, reqBody);
+
       if (response.data?.isSuccess) {
         toast.success("API Key has been created successfully");
         return response.data?.data;
       } else {
-        throw new Error("Failed to create api key");
+        throw new Error(response.data?.message || "Failed to create API key");
       }
     } catch (error: any) {
       console.log(error);
+
       if (error?.message === "Network Error") {
         toast.error("You are not connected to the internet.");
         return rejectWithValue("Network error");
-      } else if (error?.response?.status === 401) {
-        toast.error("Authorization failed. Please login again,");
+      }
+
+      if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again.");
         clearUserSession(tabId);
+
         setTimeout(() => {
           window.location.href = "/sign-in";
         }, 1000);
+
         return rejectWithValue("Unauthorized");
-      } else {
-        toast.error(error?.response?.data?.error || error?.message);
-        return rejectWithValue(error?.message || error?.response?.data?.error);
       }
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Something went wrong";
+
+      toast.error(errorMessage);
+
+      return rejectWithValue(errorMessage);
     }
   },
 );

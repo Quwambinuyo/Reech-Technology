@@ -102,6 +102,7 @@ const Profile = () => {
     if (!selectedKey) return;
     const result = await dispatch(revokeApiKeys(selectedKey.id));
     if (revokeApiKeys.fulfilled.match(result)) {
+      window.location.reload();
       await dispatch(fetchApiKeys());
       closeModal();
     }
@@ -254,7 +255,7 @@ const Profile = () => {
           status={selectedKey?.status ?? "active"}
           createdDate={selectedKey?.createdAt ?? ""}
           onClose={closeModal}
-          onRotate={closeModal}
+          onRotate={handleRotateApiKey}
         />
       </Modal>
 

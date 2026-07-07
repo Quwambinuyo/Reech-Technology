@@ -29,20 +29,43 @@ const DirectorInformationStep = ({
   const [idCardFileNames, setIdCardFileNames] = useState<(string | null)[]>(
     directors.map(() => null),
   );
+  const [idCardErrors, setIdCardErrors] = useState<(string | null)[]>(
+    directors.map(() => null),
+  );
+
+  const hasFileErrors = idCardErrors.some((error) => error !== null);
+
+  const allDirectorsFilled = directors.every(
+    (director, index) =>
+      director.fullName.trim() !== "" &&
+      director.idType.trim() !== "" &&
+      director.emailAddress.trim() !== "" &&
+      director.phoneNumber.trim() !== "" &&
+      idCardFiles.current[index] != null,
+  );
+
+  const isFormComplete =
+    cacFile != null && utilityFile != null && allDirectorsFilled;
+
+  const canSubmit = isFormComplete && !hasFileErrors && !isSubmitting;
 
   const handleAddDirector = () => {
     dispatch(addDirector());
     idCardFiles.current.push(null);
     setIdCardFileNames((prev) => [...prev, null]);
+    setIdCardErrors((prev) => [...prev, null]);
   };
 
   const handleRemoveDirector = (index: number) => {
     dispatch(removeDirector(index));
     idCardFiles.current.splice(index, 1);
     setIdCardFileNames((prev) => prev.filter((_, i) => i !== index));
+    setIdCardErrors((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
+    if (!canSubmit) return;
+
     const payload = {
       ...fullState,
       cacDocuments: cacFile,
@@ -72,11 +95,16 @@ const DirectorInformationStep = ({
           showRemove={directors.length > 1}
           idCardFileName={idCardFileNames[index] ?? null}
           onRemove={() => handleRemoveDirector(index)}
-          onIdCardChange={(file) => {
-            idCardFiles.current[index] = file;
+          onIdCardChange={(file, error) => {
+            idCardFiles.current[index] = error ? null : file;
             setIdCardFileNames((prev) => {
               const updated = [...prev];
-              updated[index] = file?.name ?? null;
+              updated[index] = error ? null : (file?.name ?? null);
+              return updated;
+            });
+            setIdCardErrors((prev) => {
+              const updated = [...prev];
+              updated[index] = error;
               return updated;
             });
           }}
@@ -90,7 +118,7 @@ const DirectorInformationStep = ({
       <Button
         text={isSubmitting ? "Submitting..." : "Submit Company Registration"}
         onClick={handleSubmit}
-        isDisabled={isSubmitting}
+        isDisabled={!canSubmit}
       />
 
       <button

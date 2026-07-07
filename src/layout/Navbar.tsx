@@ -14,6 +14,8 @@ const Navbar = () => {
 
   const { currentUser } = useAppSelector((state) => state.auth);
 
+  // console.log(currentUser);
+
   const displayPath = pathname.split("/")[1].replace("-", " ");
   const userName = `${currentUser?.firstName || ""} ${currentUser?.lastName || ""}`;
 

@@ -1,13 +1,19 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance, baseURL } from "../../components/api";
 import { toast } from "react-toastify";
-import { clearUserSession, getOrCreateTabId } from "../../utils";
+import {
+  clearUserSession,
+  getOrCreateTabId,
+  saveUserToStorage,
+} from "../../utils";
+import { onUpdateBusinessStatus } from "../auth/authReducer";
+import type { RootState } from "../store";
 
 const tabId = getOrCreateTabId();
 
 export const submitMerchantVerification = createAsyncThunk(
   "verify/businesses/info",
-  async (info: any, { rejectWithValue }) => {
+  async (info: any, { dispatch, getState, rejectWithValue }) => {
     try {
       const formData = new FormData();
 
@@ -28,7 +34,6 @@ export const submitMerchantVerification = createAsyncThunk(
       if (info.utilityBill) {
         formData.append("UtilityBill", info.utilityBill, info.utilityBill.name);
       }
-      console.log(info?.cacDocuments);
 
       info.directors.forEach((director: any, index: number) => {
         formData.append(`Directors[${index}].FullName`, director.fullName);
@@ -58,6 +63,24 @@ export const submitMerchantVerification = createAsyncThunk(
 
       if (response.data?.isSuccess) {
         toast.success("Business verification submitted successfully");
+
+        dispatch(onUpdateBusinessStatus("Pending"));
+
+        const state = getState() as RootState;
+        const currentUser = state.auth.currentUser;
+
+        if (currentUser) {
+          const updatedUser = {
+            ...currentUser,
+            business: {
+              id: currentUser.business?.id ?? "",
+              name: currentUser.business?.name ?? "",
+              status: "Pending",
+            },
+          };
+          saveUserToStorage(updatedUser, tabId, true);
+        }
+
         return response.data?.data;
       } else {
         throw new Error("Failed to submit business verification");
