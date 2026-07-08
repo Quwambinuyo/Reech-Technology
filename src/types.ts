@@ -29,7 +29,13 @@ export type ActivityBasedProp = {
   description: string;
 };
 
-export type PointEquivalentProp = { id: number; points: number };
+export type PointEquivalentProp = {
+  id: string;
+  points: number;
+  amount: number;
+  currencyCode: string;
+  currencySymbol: string;
+};
 
 export type UserProps = {
   name: string;

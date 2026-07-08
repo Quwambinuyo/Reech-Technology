@@ -15,20 +15,20 @@ interface DashboardChartsProps {
     delayed: number;
     ongoing: number;
   };
-  rewardPerformance: RewardPerformanceItem[];
+  rewardPerformance?: RewardPerformanceItem[];
 }
 
 const DashboardCharts = ({
   doughnutValues,
   rewardPerformance,
 }: DashboardChartsProps) => {
-  const labels = rewardPerformance.map((item) => item.label);
-  const earnedData = rewardPerformance.map((item) => item.pointsEarned);
-  const redeemedData = rewardPerformance.map(
+  const labels = rewardPerformance?.map((item) => item.label);
+  const earnedData = rewardPerformance?.map((item) => item.pointsEarned);
+  const redeemedData = rewardPerformance?.map(
     (item) => -Math.abs(item.pointsRedeemed),
   );
 
-  const totalPoints = rewardPerformance.reduce(
+  const totalPoints = rewardPerformance?.reduce(
     (sum, item) => sum + item.pointsEarned,
     0,
   );
@@ -136,7 +136,7 @@ const DashboardCharts = ({
         <h4>Reward Performance</h4>
 
         <div className="border border-[#F1F1F1] bg-white px-2 py-3 sm:p-3 md:p-4 mt-4">
-          <h3 className="mb-4">{totalPoints.toLocaleString()} Points</h3>
+          <h3 className="mb-4">{totalPoints?.toLocaleString()} Points</h3>
           <div className="h-[240px]">
             <Line data={data} options={options} />
           </div>
@@ -147,6 +147,7 @@ const DashboardCharts = ({
           </div>
         </div>
       </div>
+
       <div className="xl:col-span-2 bg-white p-3 sm:p-4 rounded-xl">
         <div className="flex-between">
           <h4 className="text-[#060606]">Overall Point Progress</h4>

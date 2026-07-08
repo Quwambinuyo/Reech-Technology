@@ -1,8 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import logo from "../assets/reech-single.png";
-import { IoMenuOutline } from "react-icons/io5";
-import { AiOutlineClose } from "react-icons/ai";
 import { onToggleMobileSidebar } from "../redux/auth/authReducer";
 
 import { toast } from "react-toastify";
@@ -160,14 +158,24 @@ export const MobileNavbar = () => {
           )}
 
           <button
-            className="text-primary-purple"
+            className="relative w-8 z-[3009] h-8 flex flex-col justify-center items-center gap-[6px] text-primary-purple"
             onClick={() => dispatch(onToggleMobileSidebar())}
           >
-            {toggleMobileSidebar ? (
-              <AiOutlineClose size={24} />
-            ) : (
-              <IoMenuOutline size={32} />
-            )}
+            <span
+              className={`block h-[2.5px] w-7 bg-primary-purple rounded-full transition-transform duration-300 ${
+                toggleMobileSidebar ? "translate-y-[8.5px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`block h-[2.5px] w-7 bg-primary-purple rounded-full transition-opacity duration-300 ${
+                toggleMobileSidebar ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <span
+              className={`block h-[2.5px] w-7 bg-primary-purple rounded-full transition-transform duration-300 ${
+                toggleMobileSidebar ? "-translate-y-[8.5px] -rotate-45" : ""
+              }`}
+            />
           </button>
         </div>
       </div>

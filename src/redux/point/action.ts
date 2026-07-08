@@ -166,7 +166,10 @@ export const fetchPointConversions = createAsyncThunk(
 
 export const createPointConversions = createAsyncThunk(
   "point/createPointConversions",
-  async (reqBody: { points: number }, { rejectWithValue }) => {
+  async (
+    reqBody: { points: number; amount: number; currencyId: string },
+    { rejectWithValue },
+  ) => {
     try {
       const response = await axiosInstance.post(
         `${baseURL}/point-conversions`,
@@ -196,7 +199,6 @@ export const createPointConversions = createAsyncThunk(
     }
   },
 );
-
 export const editPointConversions = createAsyncThunk(
   "point/editPointConversions",
   async (reqBody: { info: any; id: string }, { rejectWithValue }) => {

@@ -11,11 +11,13 @@ import ActivityPointCard from "./partial/ActivityPointCard";
 import ConfirmAction from "../components/ConfirmAction";
 import { FetchActivityPointLoading } from "./partial";
 import Empty from "../components/Empty";
-import { pointToNaira } from "../mock";
 import Modal from "../layout/Modal";
 import {
   deleteActivityPoints,
   fetchActivityPoints,
+  fetchPointConversions,
+  createPointConversions,
+  editPointConversions,
 } from "../redux/point/action";
 import {
   onToggleCreateActivityPoint,
@@ -41,6 +43,13 @@ const PointUpload = () => {
     deleteActivityPointSuccess,
     toggleDeleteActivityPoint,
     toggleEditPointConversion,
+    fetchPointConversionsLoading,
+    allPointConversions,
+    createPointConversionSuccess,
+    createPointConversionLoading,
+    editPointConversionSuccess,
+    editPointConversionLoading,
+    deletePointConversionSuccess,
   } = useAppSelector((state) => state.point);
 
   const onCreateNewActivity = () => dispatch(onToggleCreateActivityPoint());
@@ -53,12 +62,41 @@ const PointUpload = () => {
     dispatch(deleteActivityPoints(toggleDeleteActivityPoint));
   };
 
+  const onCreatePointConversion = (
+    points: number,
+    amount: number,
+    currencyId: string,
+  ) => {
+    dispatch(createPointConversions({ points, amount, currencyId }));
+  };
+
+  const onEditPointConversion = (
+    points: number,
+    amount: number,
+    currencyId: string,
+  ) => {
+    dispatch(
+      editPointConversions({
+        id: String(toggleEditPointConversion?.id ?? ""),
+        info: { points, amount, currencyId },
+      }),
+    );
+  };
+
   useEffect(() => {
     dispatch(fetchActivityPoints());
   }, [
     createActivityPointSuccesss,
     editActivityPointSuccess,
     deleteActivityPointSuccess,
+  ]);
+
+  useEffect(() => {
+    dispatch(fetchPointConversions());
+  }, [
+    createPointConversionSuccess,
+    editPointConversionSuccess,
+    deletePointConversionSuccess,
   ]);
 
   return (
@@ -81,13 +119,21 @@ const PointUpload = () => {
       </Modal>
 
       <Modal modal={toggleCreatePointConversion}>
-        <NewPointConversionForm onClose={onCreateNewConversion} context="new" />
+        <NewPointConversionForm
+          onClose={onCreateNewConversion}
+          context="new"
+          onSubmit={onCreatePointConversion}
+          isLoading={createPointConversionLoading}
+        />
       </Modal>
 
       <Modal modal={!!toggleEditPointConversion}>
         <NewPointConversionForm
           onClose={onCloseEditConversion}
           context="edit"
+          onSubmit={onEditPointConversion}
+          isLoading={editPointConversionLoading}
+          initialPoints={toggleEditPointConversion?.points}
         />
       </Modal>
 
@@ -143,25 +189,37 @@ const PointUpload = () => {
           <div className="flex justify-between items-center gap-6 xl:gap-8">
             <SeeAllBtn
               onClick={() => navigate("/upload-points/point-conversion")}
+              isDisabled={fetchPointConversionsLoading}
             />
             <MiniCreateButton
               text="create new"
               onClick={onCreateNewConversion}
+              isDisabled={fetchPointConversionsLoading}
             />
           </div>
         </div>
 
         <div className="mt-5 lg:mt-6 overflow-x-auto min-h-[350px]">
-          <div className="gap-5 font-montserrat font-semibold text-sm grid grid-cols-10 px-5 md:px-6 xl:px-8 min-w-[700px]">
-            <p className="col-span-3">Points Required</p>
-            <p className="col-span-4 flex-center">Equivalent in ₦</p>
-            <p className="col-span-3 text-center">Action</p>
-          </div>
-          <div className="mt-4">
-            {pointToNaira.slice(0, 6).map((act) => (
-              <PointEquivalentCard pointEqui={act} key={act.id} />
-            ))}
-          </div>
+          {fetchPointConversionsLoading ? (
+            <FetchActivityPointLoading />
+          ) : allPointConversions?.result?.length > 0 ? (
+            <>
+              <div className="gap-5 font-montserrat font-semibold text-sm grid grid-cols-10 px-5 md:px-6 xl:px-8 min-w-[700px]">
+                <p className="col-span-3">Points Required</p>
+                <p className="col-span-4 flex-center">Equivalent in ₦</p>
+                <p className="col-span-3 text-center">Action</p>
+              </div>
+              <div className="mt-4">
+                {allPointConversions?.result?.slice(0, 6).map((act) => (
+                  <PointEquivalentCard pointEqui={act} key={act.id} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="h-[300px] xl:h-[300px]">
+              <Empty text="No Point Conversion has been created yet" />
+            </div>
+          )}
         </div>
       </section>
     </>

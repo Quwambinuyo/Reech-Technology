@@ -34,16 +34,22 @@ const TransactionCard = ({
       </div>
 
       <p className="col-span-3 flex items-center">
-        ₦{transaction.amount.toLocaleString()}
+        ₦{(transaction.amount ?? 0).toLocaleString()}
       </p>
 
       <p className="col-span-4 flex-center gap-2 text-sm">
-        <span>{moment(transaction.time).format("DD/MM/YYYY")}</span>
-        <span>{moment(transaction.time).format("h:mm A")}</span>
+        <span>
+          {transaction.time
+            ? moment(transaction.time).format("DD/MM/YYYY")
+            : "--"}
+        </span>
+        <span>
+          {transaction.time ? moment(transaction.time).format("h:mm A") : "--"}
+        </span>
       </p>
 
       <p className="col-span-3 flex-center">
-        {transaction.points.toLocaleString()} points
+        {(transaction.points ?? 0).toLocaleString()} points
       </p>
 
       <div className="col-span-3 text-center">

@@ -3,11 +3,9 @@ import AllMerchantTrx from "../../merchant/AllMerchantTrx";
 import { useRole } from "../../hooks/useRole";
 
 const AllTransactions = () => {
-	const currentUserRole = useRole();
+  const currentUserRole = useRole();
 
-	return (
-		<>{currentUserRole === "User" ? <AllCustomerTrx /> : <AllMerchantTrx />}</>
-	);
+  return currentUserRole === "User" ? <AllCustomerTrx /> : <AllMerchantTrx />;
 };
 
 export default AllTransactions;

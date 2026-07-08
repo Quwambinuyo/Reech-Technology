@@ -12,16 +12,16 @@ import {
   fetchRecentTransactions,
   fetchDashboardOverview,
 } from "../redux/dashboard/action";
-import Spinner from "../components/Spinner";
-import EmptyState from "../components/EmptyState";
+import Skeleton from "../merchant/skeleton/transactionSkeleton/Skeleton";
+import Empty from "../components/Empty";
 
 const MerchantTransactions = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(10);
-  const [search, setSearch] = useState("");
 
+  const [pageNumber] = useState(1);
+  const [pageSize] = useState(10);
+  const [search] = useState("");
   const [activeTab, setActiveTab] = useState("All");
 
   const { recentTransactions, loading, overview } = useAppSelector(
@@ -57,6 +57,10 @@ const MerchantTransactions = () => {
     return recentTransactions.result;
   };
 
+  if (loading.overview || loading.recentTransactions) {
+    return <Skeleton />;
+  }
+
   return (
     <div className="mt-7">
       <section className="overflow-x-auto hide-scroll">
@@ -64,50 +68,37 @@ const MerchantTransactions = () => {
           <DashboardCard
             icon={pointBalance}
             title="total customers"
-            value={
-              loading.overview
-                ? "..."
-                : (overview?.totalCustomers.value.toLocaleString() ?? "0")
-            }
+            value={overview?.totalCustomers.value.toLocaleString() ?? "0"}
             context="user"
             info={{
               percentage: overview?.totalCustomers.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
             icon={redeemedPoint}
             title="total points issued"
-            value={
-              loading.overview
-                ? "..."
-                : (overview?.totalPointsIssued.value.toLocaleString() ?? "0")
-            }
+            value={overview?.totalPointsIssued.value.toLocaleString() ?? "0"}
             context="point"
             info={{
               percentage: overview?.totalPointsIssued.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
             icon={rank}
             title="total redemptions"
-            value={
-              loading.overview
-                ? "..."
-                : (overview?.totalRedemptions.value.toLocaleString() ?? "0")
-            }
+            value={overview?.totalRedemptions.value.toLocaleString() ?? "0"}
             context="point"
             info={{
               percentage: overview?.totalRedemptions.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
             icon={pointSpent}
             title="total spent"
-            value={
-              loading.overview
-                ? "..."
-                : (overview?.totalSpent.value.toLocaleString() ?? "0")
-            }
+            value={overview?.totalSpent.value.toLocaleString() ?? "0"}
             info={{
               percentage: overview?.totalSpent.percentageChange ?? 0,
             }}
@@ -157,20 +148,15 @@ const MerchantTransactions = () => {
 
           <div className="px-2 py-4 lg:py-5 lg:px-3 min-h-[250px] min-w-[1000px]">
             <div className="grid gap-2">
-              {loading.recentTransactions ? (
-                <div className="flex-center py-16">
-                  <Spinner size="20px" />
+              {selectedTransactions().length === 0 ? (
+                <div className="h-[300px] xl:h-[300px]">
+                  <Empty text="No Transaction has been made yet" />
                 </div>
-              ) : selectedTransactions().length === 0 ? (
-                <EmptyState
-                  title="No transactions found"
-                  description="There are currently no transactions available for this category."
-                />
               ) : (
                 selectedTransactions().map((transaction) => (
                   <TransactionCard
-                    transaction={transaction}
                     key={transaction.id}
+                    transaction={transaction}
                   />
                 ))
               )}

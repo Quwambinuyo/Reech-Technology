@@ -20,6 +20,7 @@ import { onLogout } from "../redux/auth/authReducer";
 import { useAppDispatch } from "../redux/hooks";
 import { toast } from "react-toastify";
 import { clearUserSession, getOrCreateTabId } from "../utils";
+import { onToggleMobileSidebar } from "../redux/auth/authReducer";
 
 const Sidebar = () => {
   const { pathname } = useLocation();
@@ -83,7 +84,7 @@ const Sidebar = () => {
 
 export default Sidebar;
 
-const customerLinks = [
+export const customerLinks = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   { text: "make payments", icon: { active: ac_payment, inactive: in_payment } },
   {
@@ -93,7 +94,7 @@ const customerLinks = [
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
 
-const merchantLinks = [
+export const merchantLinks = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   { text: "upload points", icon: { active: ac_payment, inactive: in_payment } },
   {
@@ -110,7 +111,7 @@ const merchantLinks = [
   },
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
-const adminLinks = [
+export const adminLinks = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   {
     text: "manage categories",
@@ -127,7 +128,7 @@ const adminLinks = [
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
 
-type SidebarLinkProps = {
+export type SidebarLinkProps = {
   text: string;
   icon: { active: string; inactive: string };
 };
@@ -140,10 +141,12 @@ const SidebarLink = ({
   isActive: boolean;
 }) => {
   const path = link.text.replace(" ", "-");
+  const dispatch = useAppDispatch();
 
   return (
     <Link
       to={`/${path}`}
+      onClick={() => dispatch(onToggleMobileSidebar())}
       className={`flex items-center gap-2 xl:gap-3 capitalize px-4 xl:px-5 py-3.5 xl:py-4 text-sm xl:text-[14.5px] text-nowrap ${
         isActive
           ? "bg-white text-primary-purple rounded-[30px] font-medium"
@@ -159,13 +162,30 @@ const SidebarLink = ({
     </Link>
   );
 };
-export const MobileSidebarWrapper = () => {
-  return (
-    <div className="fixed bg-primary-purple z-50  top-[60px] left-0 w-[230px] bottom-0 md:hidden flex flex-col">
-      <div className="overflow-y-auto flex-1 p-6 hide-scroll">
-        <p className="text-white">Text side bar... will change soon</p>
-        <Sidebar />
-      </div>
-    </div>
-  );
-};
+
+// export const MobileSidebarWrapper = () => {
+//   const dispatch = useAppDispatch();
+
+//   useEffect(() => {
+//     const originalOverflow = document.body.style.overflow;
+//     document.body.style.overflow = "hidden";
+
+//     return () => {
+//       document.body.style.overflow = originalOverflow;
+//     };
+//   }, []);
+
+//   const closeSidebar = () => dispatch(onToggleMobileSidebar());
+
+//   return (
+//     <>
+//       <div onClick={closeSidebar} className="fixed inset-0  z-40 md:hidden" />
+//       <div className="fixed bg-primary-purple z-50 top-[60px] left-0 w-[230px] bottom-0 md:hidden flex flex-col">
+//         <div className="overflow-y-auto flex-1 p-6 hide-scroll">
+//           {/* <p className="text-white">Text side bar... will change soon</p> */}
+//           <Sidebar />
+//         </div>
+//       </div>
+//     </>
+//   );
+// };

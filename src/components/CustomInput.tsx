@@ -188,7 +188,7 @@ export const OtpInput = ({
     onChange={(e) => onChange(index, e.target.value)}
     onKeyDown={(e) => onKeyDown(index, e)}
     onPaste={onPaste}
-    className={`w-[50px] h-[56px] text-center text-[20px] font-medium rounded-lg outline-none transition-all border ${
+    className={`w-[45px] md:w-[50px] h-[56px] text-center text-[20px] font-medium rounded-lg outline-none transition-all border ${
       digit
         ? "border-violet-500 bg-white text-gray-900"
         : hasError
