@@ -84,10 +84,10 @@ export const MiniDropDown = ({
   const displayValue = selectedOption || internalSelected;
 
   return (
-    <div className="text-[#060606] relative" ref={dropdownRef}>
+    <div className="text-[#060606] relative " ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-white flex items-center gap-3 px-4 py-3 rounded-[25px] text-sm xl:text-[14.5px]"
+        className="bg-white flex items-center min-w-[150px] justify-center  gap-3 px-4 py-3 rounded-[25px] text-sm xl:text-[14.5px]"
       >
         <span>{displayValue}</span>
         <IoIosArrowDown

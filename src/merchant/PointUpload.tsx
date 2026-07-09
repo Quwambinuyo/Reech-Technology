@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaQuestion } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +12,7 @@ import ConfirmAction from "../components/ConfirmAction";
 import { FetchActivityPointLoading } from "./partial";
 import Empty from "../components/Empty";
 import Modal from "../layout/Modal";
+import { Pagination } from "../components/Pagination";
 import {
   deleteActivityPoints,
   fetchActivityPoints,
@@ -30,6 +31,11 @@ import {
 const PointUpload = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const [activityPageNumber, setActivityPageNumber] = useState(1);
+  const [activityPageSize] = useState(6);
+  const [conversionPageNumber, setConversionPageNumber] = useState(1);
+  const [conversionPageSize] = useState(6);
 
   const {
     toggleCreateActivityPoint,
@@ -84,16 +90,32 @@ const PointUpload = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchActivityPoints());
+    dispatch(
+      fetchActivityPoints({
+        pageNumber: activityPageNumber,
+        pageSize: activityPageSize,
+      }),
+    );
   }, [
+    dispatch,
+    activityPageNumber,
+    activityPageSize,
     createActivityPointSuccesss,
     editActivityPointSuccess,
     deleteActivityPointSuccess,
   ]);
 
   useEffect(() => {
-    dispatch(fetchPointConversions());
+    dispatch(
+      fetchPointConversions({
+        pageNumber: conversionPageNumber,
+        pageSize: conversionPageSize,
+      }),
+    );
   }, [
+    dispatch,
+    conversionPageNumber,
+    conversionPageSize,
     createPointConversionSuccess,
     editPointConversionSuccess,
     deletePointConversionSuccess,
@@ -168,7 +190,7 @@ const PointUpload = () => {
                 <p className="col-span-2">Action</p>
               </div>
               <div className="mt-4">
-                {allActivityPoints?.result?.slice(0, 6).map((act) => (
+                {allActivityPoints?.result?.map((act) => (
                   <ActivityPointCard act={act} key={act.id} />
                 ))}
               </div>
@@ -179,6 +201,16 @@ const PointUpload = () => {
             </div>
           )}
         </div>
+
+        {allActivityPoints && (
+          <Pagination
+            currentPage={allActivityPoints.pageNumber}
+            totalPages={allActivityPoints.totalPages}
+            totalCount={allActivityPoints.totalCount}
+            pageSize={activityPageSize}
+            onPageChange={setActivityPageNumber}
+          />
+        )}
       </section>
 
       <section className="bg-[#FFFFFFCC] rounded-2xl py-4 lg:py-5 px-3 lg:px-4 mt-6">
@@ -210,7 +242,7 @@ const PointUpload = () => {
                 <p className="col-span-3 text-center">Action</p>
               </div>
               <div className="mt-4">
-                {allPointConversions?.result?.slice(0, 6).map((act) => (
+                {allPointConversions?.result.map((act) => (
                   <PointEquivalentCard pointEqui={act} key={act.id} />
                 ))}
               </div>
@@ -221,6 +253,16 @@ const PointUpload = () => {
             </div>
           )}
         </div>
+
+        {allPointConversions && (
+          <Pagination
+            currentPage={allPointConversions.pageNumber}
+            totalPages={allPointConversions.totalPages}
+            totalCount={allPointConversions.totalCount}
+            pageSize={conversionPageSize}
+            onPageChange={setConversionPageNumber}
+          />
+        )}
       </section>
     </>
   );

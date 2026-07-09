@@ -9,7 +9,12 @@ import {
   fetchRewardPerformance,
 } from "../redux/dashboard/action";
 
-const MerchantDashboard = () => {
+type MerchantDashboardProps = {
+  startDate: Date;
+  endDate: Date;
+};
+
+const MerchantDashboard = ({ startDate, endDate }: MerchantDashboardProps) => {
   const completed = 26;
   const delayed = 35;
   const ongoing = 35;
@@ -22,9 +27,14 @@ const MerchantDashboard = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchDashboardOverview());
+    dispatch(
+      fetchDashboardOverview({
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      }),
+    );
     dispatch(fetchRewardPerformance(rewardPeriod));
-  }, [dispatch, rewardPeriod]);
+  }, [dispatch, rewardPeriod, startDate, endDate]);
 
   const doughnutValues = { completed, delayed, ongoing };
 

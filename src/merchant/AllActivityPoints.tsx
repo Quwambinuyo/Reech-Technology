@@ -10,99 +10,99 @@ import { FetchActivityPointLoading } from "./partial";
 import Empty from "../components/Empty";
 import Modal from "../layout/Modal";
 import {
-	onToggleCreateActivityPoint,
-	onToggleDeleteActivityPoint,
-	onToggleEditActivityPoint,
+  onToggleCreateActivityPoint,
+  onToggleDeleteActivityPoint,
+  onToggleEditActivityPoint,
 } from "../redux/point/reducer";
 import {
-	deleteActivityPoints,
-	fetchActivityPoints,
+  deleteActivityPoints,
+  fetchActivityPoints,
 } from "../redux/point/action";
 
 const AllActivityPoints = () => {
-	const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-	const {
-		toggleCreateActivityPoint,
-		fetchActivityPointsLoading,
-		allActivityPoints,
-		createActivityPointSuccesss,
-		toggleEditActivityPoint,
-		editActivityPointSuccess,
-		deleteActivityPointLoading,
-		deleteActivityPointSuccess,
-		toggleDeleteActivityPoint,
-	} = useAppSelector((state) => state.point);
+  const {
+    toggleCreateActivityPoint,
+    fetchActivityPointsLoading,
+    allActivityPoints,
+    createActivityPointSuccesss,
+    toggleEditActivityPoint,
+    editActivityPointSuccess,
+    deleteActivityPointLoading,
+    deleteActivityPointSuccess,
+    toggleDeleteActivityPoint,
+  } = useAppSelector((state) => state.point);
 
-	const onCreateNewActivity = () => dispatch(onToggleCreateActivityPoint());
-	const onEditNewActivity = () => dispatch(onToggleEditActivityPoint());
+  const onCreateNewActivity = () => dispatch(onToggleCreateActivityPoint());
+  const onEditNewActivity = () => dispatch(onToggleEditActivityPoint());
 
-	const onDeleteActivityPoint = () => {
-		dispatch(deleteActivityPoints(toggleDeleteActivityPoint));
-	};
+  const onDeleteActivityPoint = () => {
+    dispatch(deleteActivityPoints(toggleDeleteActivityPoint));
+  };
 
-	useEffect(() => {
-		dispatch(fetchActivityPoints());
-	}, [
-		createActivityPointSuccesss,
-		editActivityPointSuccess,
-		deleteActivityPointSuccess,
-	]);
+  useEffect(() => {
+    dispatch(fetchActivityPoints({ pageNumber: 1, pageSize: 10, search: "" }));
+  }, [
+    createActivityPointSuccesss,
+    editActivityPointSuccess,
+    deleteActivityPointSuccess,
+  ]);
 
-	return (
-		<>
-			<Modal modal={!!toggleDeleteActivityPoint}>
-				<ConfirmAction
-					onClose={() => dispatch(onToggleDeleteActivityPoint(""))}
-					action="delete"
-					loading={deleteActivityPointLoading}
-					onConfirmAction={onDeleteActivityPoint}
-				/>
-			</Modal>
+  return (
+    <>
+      <Modal modal={!!toggleDeleteActivityPoint}>
+        <ConfirmAction
+          onClose={() => dispatch(onToggleDeleteActivityPoint(""))}
+          action="delete"
+          loading={deleteActivityPointLoading}
+          onConfirmAction={onDeleteActivityPoint}
+        />
+      </Modal>
 
-			<Modal modal={!!toggleEditActivityPoint}>
-				<NewActivityPointForm onClose={onEditNewActivity} context="edit" />
-			</Modal>
+      <Modal modal={!!toggleEditActivityPoint}>
+        <NewActivityPointForm onClose={onEditNewActivity} context="edit" />
+      </Modal>
 
-			<Modal modal={toggleCreateActivityPoint}>
-				<NewActivityPointForm onClose={onCreateNewActivity} context="new" />
-			</Modal>
+      <Modal modal={toggleCreateActivityPoint}>
+        <NewActivityPointForm onClose={onCreateNewActivity} context="new" />
+      </Modal>
 
-			<div className="bg-[#FFFFFFCC] rounded-2xl py-4 lg:py-5 px-3 lg:px-4">
-				<section className="flex-between gap-3">
-					<h4 className="text-light-black sm:text-lg flex items-center gap-1">
-						Activity Based Points <FaQuestion color="#4A148C" size={15} />
-					</h4>
+      <div className="bg-[#FFFFFFCC] rounded-2xl py-4 lg:py-5 px-3 lg:px-4">
+        <section className="flex-between gap-3">
+          <h4 className="text-light-black sm:text-lg flex items-center gap-1">
+            Activity Based Points <FaQuestion color="#4A148C" size={15} />
+          </h4>
 
-					<MiniCreateButton text="create new" onClick={onCreateNewActivity} />
-				</section>
+          <MiniCreateButton text="create new" onClick={onCreateNewActivity} />
+        </section>
 
-				<section className="mt-5 lg:mt-6 overflow-x-auto min-h-[350px]">
-					{fetchActivityPointsLoading ? (
-						<FetchActivityPointLoading />
-					) : allActivityPoints?.result?.length > 0 ? (
-						<>
-							<div className="grid grid-cols-10 gap-5 font-montserrat font-semibold text-sm min-w-[800px]">
-								<p className="col-span-3">Activity Name</p>
-								<p className="col-span-2">Points</p>
-								<p className="col-span-3">Description</p>
-								<p className="col-span-2">Action</p>
-							</div>
-							<div className="mt-4">
-								{allActivityPoints?.result?.slice(0, 6).map((act) => (
-									<ActivityPointCard act={act} key={act.id} />
-								))}
-							</div>
-						</>
-					) : (
-						<div className="h-[300px] xl:h-[300px]">
-							<Empty text="No Activity point has been created yet" />
-						</div>
-					)}
-				</section>
-			</div>
-		</>
-	);
+        <section className="mt-5 lg:mt-6 overflow-x-auto min-h-[350px]">
+          {fetchActivityPointsLoading ? (
+            <FetchActivityPointLoading />
+          ) : allActivityPoints?.result?.length > 0 ? (
+            <>
+              <div className="grid grid-cols-10 gap-5 font-montserrat font-semibold text-sm min-w-[800px]">
+                <p className="col-span-3">Activity Name</p>
+                <p className="col-span-2">Points</p>
+                <p className="col-span-3">Description</p>
+                <p className="col-span-2">Action</p>
+              </div>
+              <div className="mt-4">
+                {allActivityPoints?.result?.slice(0, 6).map((act) => (
+                  <ActivityPointCard act={act} key={act.id} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="h-[300px] xl:h-[300px]">
+              <Empty text="No Activity point has been created yet" />
+            </div>
+          )}
+        </section>
+      </div>
+    </>
+  );
 };
 
 export default AllActivityPoints;

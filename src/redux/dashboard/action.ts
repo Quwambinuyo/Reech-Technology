@@ -7,10 +7,14 @@ const tabId = getOrCreateTabId();
 
 export const fetchDashboardOverview = createAsyncThunk(
   "dashboard/fetchDashboardOverview",
-  async (_: void, { rejectWithValue }) => {
+  async (
+    reqBody: { startDate: string; endDate: string },
+    { rejectWithValue },
+  ) => {
     try {
       const response = await axiosInstance.get(
         `${baseURL}/businesses/dashboard/overview`,
+        { params: reqBody },
       );
       if (response.data?.isSuccess) {
         return response.data?.data;

@@ -133,11 +133,46 @@ export function clearUserSession(tabId: string) {
 }
 
 export const timeRangeOptions = [
-  "Last Month",
+  "Today",
   "Yesterday",
   "Last Week",
   "Last Month",
 ];
+
+export function getDateRangeFromOption(option: string) {
+  const endDate = new Date();
+  const startDate = new Date();
+
+  if (option === "Today") {
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(23, 59, 59, 999);
+    return { startDate, endDate };
+  }
+
+  if (option === "Yesterday") {
+    startDate.setUTCDate(startDate.getUTCDate() - 1);
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCDate(endDate.getUTCDate() - 1);
+    endDate.setUTCHours(23, 59, 59, 999);
+    return { startDate, endDate };
+  }
+
+  if (option === "Last Week") {
+    startDate.setUTCDate(startDate.getUTCDate() - 7);
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(23, 59, 59, 999);
+    return { startDate, endDate };
+  }
+
+  if (option === "Last Month") {
+    startDate.setUTCMonth(startDate.getUTCMonth() - 1);
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(23, 59, 59, 999);
+    return { startDate, endDate };
+  }
+
+  return { startDate, endDate };
+}
 
 export const formatNumber = (value: string | number): string => {
   const num =

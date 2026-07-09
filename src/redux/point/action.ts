@@ -7,9 +7,14 @@ const tabId = getOrCreateTabId();
 
 export const fetchActivityPoints = createAsyncThunk(
   "point/fetchActivityPoints",
-  async (_, { rejectWithValue }) => {
+  async (
+    reqBody: { pageNumber?: number; pageSize?: number; search?: string } = {},
+    { rejectWithValue },
+  ) => {
     try {
-      const response = await axiosInstance.get(`${baseURL}/activity-points`);
+      const response = await axiosInstance.get(`${baseURL}/activity-points`, {
+        params: reqBody,
+      });
       if (response.data?.isSuccess) {
         return response.data?.data;
       } else {
@@ -137,9 +142,14 @@ export const deleteActivityPoints = createAsyncThunk(
 
 export const fetchPointConversions = createAsyncThunk(
   "point/fetchPointConversions",
-  async (_, { rejectWithValue }) => {
+  async (
+    reqBody: { pageNumber?: number; pageSize?: number; search?: string } = {},
+    { rejectWithValue },
+  ) => {
     try {
-      const response = await axiosInstance.get(`${baseURL}/point-conversions`);
+      const response = await axiosInstance.get(`${baseURL}/point-conversions`, {
+        params: reqBody,
+      });
       if (response.data?.isSuccess) {
         return response.data?.data;
       } else {
@@ -163,7 +173,6 @@ export const fetchPointConversions = createAsyncThunk(
     }
   },
 );
-
 export const createPointConversions = createAsyncThunk(
   "point/createPointConversions",
   async (
@@ -179,7 +188,9 @@ export const createPointConversions = createAsyncThunk(
         toast.success("Point Conversion has been created successfully");
         return response.data?.data;
       } else {
-        throw new Error("Failed to create point conversion");
+        throw new Error(
+          response.data?.message || "Failed to create point conversion",
+        );
       }
     } catch (error: any) {
       console.log(error);
@@ -193,8 +204,12 @@ export const createPointConversions = createAsyncThunk(
           window.location.href = "/sign-in";
         }, 1000);
       } else {
-        toast.error(error?.response?.data?.error || error?.message);
-        return rejectWithValue(error?.message || error?.response?.data?.error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message;
+        toast.error(errorMessage);
+        return rejectWithValue(errorMessage);
       }
     }
   },
