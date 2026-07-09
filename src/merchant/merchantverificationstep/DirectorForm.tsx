@@ -1,7 +1,7 @@
 // DirectorForm.tsx
 import { useRef, useState } from "react";
 import { useAppDispatch } from "../../redux/hooks";
-import { updateDirectorField } from "../../redux/merchantVerification/reducer";
+import { updateDirectorField } from "../../redux/merchant/reducer";
 import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
 import { validateFile, FILE_ACCEPT_ATTR } from "../../filevalidation";

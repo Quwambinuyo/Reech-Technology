@@ -1,10 +1,7 @@
 import { useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  addDirector,
-  removeDirector,
-} from "../../redux/merchantVerification/reducer";
-import { submitMerchantVerification } from "../../redux/merchantVerification/action";
+import { addDirector, removeDirector } from "../../redux/merchant/reducer";
+import { submitMerchantVerification } from "../../redux/merchant/action";
 import Button from "../../components/Button";
 import DirectorForm from "./DirectorForm";
 
@@ -22,7 +19,7 @@ const DirectorInformationStep = ({
   utilityFile,
 }: Props) => {
   const dispatch = useAppDispatch();
-  const fullState = useAppSelector((state) => state.merchantVerification);
+  const fullState = useAppSelector((state) => state.merchant);
   const { directors, isSubmitting, submitError } = fullState;
 
   const idCardFiles = useRef<(File | null)[]>(directors.map(() => null));

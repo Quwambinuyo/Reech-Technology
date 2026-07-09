@@ -4,7 +4,7 @@ import { pointReducer } from "./point/reducer";
 import { rewardReducer } from "./reward/reducer";
 import { authReducer } from "./auth/authReducer";
 import { categoryReducer } from "./category/reducer";
-import { merchantVerificationReducer } from "./merchantVerification/reducer";
+import { merchantReducer } from "./merchant/reducer";
 import { apiKeyReducer } from "./profile/reducer";
 import { dashboardReducer } from "./dashboard/reducer";
 import { currencyReducer } from "./currency/reducer";
@@ -16,7 +16,7 @@ export const store = configureStore({
     point: pointReducer,
     reward: rewardReducer,
     category: categoryReducer,
-    merchantVerification: merchantVerificationReducer,
+    merchant: merchantReducer,
     apiKey: apiKeyReducer,
     dashboard: dashboardReducer,
     currency: currencyReducer,

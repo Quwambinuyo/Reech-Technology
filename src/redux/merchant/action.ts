@@ -11,6 +11,58 @@ import type { RootState } from "../store";
 
 const tabId = getOrCreateTabId();
 
+export type Business = {
+  id: string;
+  name: string;
+  address: string;
+  landmark: string;
+};
+
+type FetchBusinessesResponse = {
+  result: Business[];
+  pageNumber: number;
+  totalPages: number;
+  totalCount: number;
+};
+
+type FetchBusinessesParams = {
+  pageNumber?: number;
+  pageSize?: number;
+  search?: string;
+};
+
+export const fetchBusinesses = createAsyncThunk(
+  "businesses/fetchBusinesses",
+  async (params: FetchBusinessesParams, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`${baseURL}/businesses`, {
+        params,
+      });
+
+      if (response.data?.isSuccess) {
+        return response.data?.data as FetchBusinessesResponse;
+      } else {
+        throw new Error("Failed to fetch businesses");
+      }
+    } catch (error: any) {
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again,");
+        clearUserSession(tabId);
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+        return rejectWithValue("Unauthorized");
+      } else {
+        toast.error(error?.response?.data?.error || error?.message);
+        return rejectWithValue(error?.response?.data?.error || error?.message);
+      }
+    }
+  },
+);
+
 export const submitMerchantVerification = createAsyncThunk(
   "verify/businesses/info",
   async (info: any, { dispatch, getState, rejectWithValue }) => {

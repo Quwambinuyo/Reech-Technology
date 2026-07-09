@@ -23,9 +23,9 @@ const TransactionCard = ({
   return (
     <div
       className="grid font-ibmplex font-semibold text-neutral-900 gap-4 text-sm xl:text-[14.5px] odd:bg-[#F5F6FF] p-4"
-      style={{ gridTemplateColumns: "repeat(19, 1fr)" }}
+      style={{ gridTemplateColumns: "repeat(20, 1fr)" }}
     >
-      <div className="col-span-4">
+      <div className="col-span-5">
         <CustomerInfo
           imgUrl={transaction.profilePicture || customerImg}
           name={transaction.name}

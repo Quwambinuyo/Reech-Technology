@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../redux/hooks";
-import { resetMerchantVerification } from "../../redux/merchantVerification/reducer";
+import { resetMerchantVerification } from "../../redux/merchant/reducer";
 import Button from "../../components/Button";
 
 interface Props {

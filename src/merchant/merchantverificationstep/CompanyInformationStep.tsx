@@ -1,4 +1,3 @@
-// CompanyInformationStep.tsx
 import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -7,7 +6,7 @@ import {
   setAddress,
   setLandmark,
   setCompanyCategory,
-} from "../../redux/merchantVerification/reducer";
+} from "../../redux/merchant/reducer";
 import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
 import Button from "../../components/Button";
@@ -26,7 +25,7 @@ type CategoryOption = {
 const CompanyInformationStep = ({ onNext }: Props) => {
   const dispatch = useAppDispatch();
   const { categoryId, companyName, address, landmark } = useAppSelector(
-    (state) => state.merchantVerification,
+    (state) => state.merchant,
   );
 
   const [categoryOpen, setCategoryOpen] = useState(false);

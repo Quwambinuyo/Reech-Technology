@@ -1,5 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { submitMerchantVerification } from "./action";
+import {
+  submitMerchantVerification,
+  fetchBusinesses,
+  type Business,
+} from "./action";
 
 type DirectorProps = {
   fullName: string;
@@ -22,6 +26,12 @@ type MerchantVerificationState = {
   submitError: string;
   networkError: string;
   isSuccess: boolean;
+  businesses: Business[];
+  businessesPageNumber: number;
+  businessesTotalPages: number;
+  businessesTotalCount: number;
+  isFetchingBusinesses: boolean;
+  fetchBusinessesError: string;
 };
 
 const createEmptyDirector = (): DirectorProps => ({
@@ -45,9 +55,15 @@ const initialState: MerchantVerificationState = {
   submitError: "",
   networkError: "",
   isSuccess: false,
+  businesses: [],
+  businessesPageNumber: 0,
+  businessesTotalPages: 0,
+  businessesTotalCount: 0,
+  isFetchingBusinesses: false,
+  fetchBusinessesError: "",
 };
 
-const merchantVerificationSlice = createSlice({
+const merchantSlice = createSlice({
   name: "merchantVerification",
   initialState,
   reducers: {
@@ -135,6 +151,21 @@ const merchantVerificationSlice = createSlice({
         const error = action.payload as string;
         state.networkError = error?.includes("Network") ? "Network Error" : "";
         state.submitError = error?.includes("Network") ? "" : error;
+      })
+      .addCase(fetchBusinesses.pending, (state) => {
+        state.isFetchingBusinesses = true;
+        state.fetchBusinessesError = "";
+      })
+      .addCase(fetchBusinesses.fulfilled, (state, action) => {
+        state.isFetchingBusinesses = false;
+        state.businesses = action.payload.result;
+        state.businessesPageNumber = action.payload.pageNumber;
+        state.businessesTotalPages = action.payload.totalPages;
+        state.businessesTotalCount = action.payload.totalCount;
+      })
+      .addCase(fetchBusinesses.rejected, (state, action) => {
+        state.isFetchingBusinesses = false;
+        state.fetchBusinessesError = action.payload as string;
       });
   },
 });
@@ -152,6 +183,6 @@ export const {
   updateDirectorField,
   setDirectorIdCard,
   resetMerchantVerification,
-} = merchantVerificationSlice.actions;
+} = merchantSlice.actions;
 
-export const merchantVerificationReducer = merchantVerificationSlice.reducer;
+export const merchantReducer = merchantSlice.reducer;

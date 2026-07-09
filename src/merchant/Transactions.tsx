@@ -130,9 +130,9 @@ const MerchantTransactions = () => {
         <div className="overflow-x-auto mt-4">
           <div
             className="font-montserrat grid gap-3 font-semibold text-sm px-2 min-w-[1000px]"
-            style={{ gridTemplateColumns: "repeat(19, 1fr)" }}
+            style={{ gridTemplateColumns: "repeat(20, 1fr)" }}
           >
-            <p className="col-span-4 ml-5">Name</p>
+            <p className="col-span-5 ml-5">Name</p>
             <p className="col-span-3">Amount</p>
             <p className="col-span-4 text-center">Date/Time</p>
             <p className="col-span-3 text-center">Point Earned</p>
