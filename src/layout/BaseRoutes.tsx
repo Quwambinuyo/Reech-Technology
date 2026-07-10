@@ -50,11 +50,6 @@ export default function BaseRoutes() {
     return false;
   };
 
-  console.log({
-    authNetworkError,
-    categoryNetworkError,
-    show: showNetworkError(),
-  });
   useEffect(() => {
     if (allCountries.length > 0) return;
 

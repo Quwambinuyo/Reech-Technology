@@ -84,8 +84,10 @@ const Profile = () => {
   const handleCreateApiKey = async (name: string) => {
     const result = await dispatch(createApiKeys({ name }));
     if (createApiKeys.fulfilled.match(result)) {
+      const newKey = result.payload as ApiKeyProps;
       await dispatch(fetchApiKeys());
-      closeModal();
+      setSelectedKey(newKey);
+      setActiveModal("details");
     }
   };
 
@@ -93,8 +95,10 @@ const Profile = () => {
     if (!selectedKey) return;
     const result = await dispatch(rotateApiKeys(selectedKey.id));
     if (rotateApiKeys.fulfilled.match(result)) {
+      const rotatedKey = result.payload as ApiKeyProps;
       await dispatch(fetchApiKeys());
-      closeModal();
+      setSelectedKey(rotatedKey);
+      setActiveModal("details");
     }
   };
 
@@ -252,6 +256,7 @@ const Profile = () => {
       >
         <KeyDetailsModal
           apiKey={selectedKey?.maskedKey ?? ""}
+          plainKey={selectedKey?.plainKey}
           status={selectedKey?.status ?? "active"}
           createdDate={selectedKey?.createdAt ?? ""}
           onClose={closeModal}
