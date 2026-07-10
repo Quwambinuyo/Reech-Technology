@@ -7,7 +7,7 @@ import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
 import Navbar, { MobileNavbar } from "./Navbar";
 import Modal from "./Modal";
-import MerchantTransactionDetails from "../merchant/partial/MerchantTransactionDetails";
+// import MerchantTransactionDetails from "../merchant/partial/MerchantTransactionDetails";
 
 const LayoutWrapper = () => {
   const { pathname } = useLocation();

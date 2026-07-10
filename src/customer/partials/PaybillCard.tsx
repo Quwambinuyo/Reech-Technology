@@ -10,8 +10,8 @@ interface Props {
 }
 
 const PayBillCard = ({ onClose }: Props) => {
-  const [category, setCategory] = useState("");
-  const [biller, setBiller] = useState("");
+  const [category] = useState("");
+  const [biller] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [amount, setAmount] = useState("");
 

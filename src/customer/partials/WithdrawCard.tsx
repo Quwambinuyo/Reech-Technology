@@ -14,7 +14,7 @@ interface Props {
 const PTS_TO_USD = 100;
 
 const WithdrawCard = ({ onClose }: Props) => {
-  const [bank, setBank] = useState("");
+  const [bank] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [points, setPoints] = useState("");
 

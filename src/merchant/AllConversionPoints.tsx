@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaQuestion } from "react-icons/fa6";
 
 import {
@@ -37,6 +37,10 @@ const AllConversionPoints = () => {
   const onCloseEditConversion = () =>
     dispatch(onToggleEditPointConversion(null));
 
+  const [pageNumber] = useState(1);
+  const [pageSize] = useState(10);
+  const [search] = useState("");
+
   const onCreatePointConversion = (
     points: number,
     amount: number,
@@ -59,7 +63,13 @@ const AllConversionPoints = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchPointConversions());
+    dispatch(
+      fetchPointConversions({
+        pageNumber,
+        pageSize,
+        search,
+      }),
+    );
   }, [
     createPointConversionSuccess,
     editPointConversionSuccess,
