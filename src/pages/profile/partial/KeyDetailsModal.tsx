@@ -3,6 +3,7 @@ import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { IoCopyOutline } from "react-icons/io5";
 import Button from "../../../components/Button";
 import { formatDateTime } from "../../../utils";
+import { toast } from "react-toastify";
 
 interface Props {
   apiKey: string;
@@ -27,6 +28,7 @@ const KeyDetailsModal = ({
 }: Props) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(apiKey);
+    toast.success("API key copied to clipboard");
   };
 
   return (

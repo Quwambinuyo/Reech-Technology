@@ -15,7 +15,15 @@ import {
 import Skeleton from "../merchant/skeleton/transactionSkeleton/Skeleton";
 import Empty from "../components/Empty";
 
-const MerchantTransactions = () => {
+type MerchantTransactionProps = {
+  startDate: Date | null;
+  endDate: Date;
+};
+
+const MerchantTransactions = ({
+  startDate,
+  endDate,
+}: MerchantTransactionProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -29,7 +37,12 @@ const MerchantTransactions = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchDashboardOverview());
+    dispatch(
+      fetchDashboardOverview({
+        startDate: startDate ? startDate.toISOString() : null,
+        endDate: endDate.toISOString(),
+      }),
+    );
     dispatch(
       fetchRecentTransactions({
         pageNumber,
@@ -37,7 +50,7 @@ const MerchantTransactions = () => {
         search,
       }),
     );
-  }, [dispatch, pageNumber, pageSize, search]);
+  }, [dispatch, pageNumber, pageSize, search, startDate, endDate]);
 
   const selectedTransactions = () => {
     if (!recentTransactions?.result) return [];

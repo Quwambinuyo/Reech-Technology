@@ -8,7 +8,7 @@ const tabId = getOrCreateTabId();
 export const fetchDashboardOverview = createAsyncThunk(
   "dashboard/fetchDashboardOverview",
   async (
-    reqBody: { startDate: string; endDate: string },
+    reqBody: { startDate: string | null; endDate: string },
     { rejectWithValue },
   ) => {
     try {

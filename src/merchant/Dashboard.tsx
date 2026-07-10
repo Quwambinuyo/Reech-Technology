@@ -10,7 +10,7 @@ import {
 } from "../redux/dashboard/action";
 
 type MerchantDashboardProps = {
-  startDate: Date;
+  startDate: Date | null;
   endDate: Date;
 };
 
@@ -29,7 +29,7 @@ const MerchantDashboard = ({ startDate, endDate }: MerchantDashboardProps) => {
   useEffect(() => {
     dispatch(
       fetchDashboardOverview({
-        startDate: startDate.toISOString(),
+        startDate: startDate ? startDate.toISOString() : null,
         endDate: endDate.toISOString(),
       }),
     );

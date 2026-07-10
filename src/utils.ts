@@ -137,9 +137,13 @@ export const timeRangeOptions = [
   "Yesterday",
   "Last Week",
   "Last Month",
+  "All",
 ];
 
-export function getDateRangeFromOption(option: string) {
+export function getDateRangeFromOption(option: string): {
+  startDate: Date | null;
+  endDate: Date;
+} {
   const endDate = new Date();
   const startDate = new Date();
 
@@ -169,6 +173,11 @@ export function getDateRangeFromOption(option: string) {
     startDate.setUTCHours(0, 0, 0, 0);
     endDate.setUTCHours(23, 59, 59, 999);
     return { startDate, endDate };
+  }
+
+  if (option === "All") {
+    endDate.setUTCHours(23, 59, 59, 999);
+    return { startDate: null, endDate };
   }
 
   return { startDate, endDate };
