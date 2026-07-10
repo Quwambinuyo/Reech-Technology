@@ -107,7 +107,7 @@ const MobileSidebar = () => {
         <div className="px-4 pb-6">
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 capitalize px-4 py-3.5 text-sm bg-white text-red-600 rounded-[20px] font-medium w-full"
+            className="flex items-center justify-center gap-2 capitalize px-4 py-5 text-sm bg-white text-red-600 rounded-[20px] font-medium w-full"
           >
             <FiLogOut size={18} />
             <span>logout</span>
@@ -135,9 +135,9 @@ const MobileSidebarLink = ({
     <Link
       to={`/${path}`}
       onClick={onNavigate}
-      className={`flex items-center gap-2.5 capitalize px-3 h-[60px] text-sm w-full ${
+      className={`flex items-center gap-2.5 capitalize px-3  h-[60px] text-sm w-full ${
         isActive
-          ? "bg-white text-primary-purple rounded-[20px] font-medium"
+          ? "bg-white text-primary-purple justify-center rounded-[20px] font-medium"
           : "text-white"
       }`}
     >
