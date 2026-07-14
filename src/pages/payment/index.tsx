@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TbSend } from "react-icons/tb";
 import { LuUpload } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
@@ -6,27 +6,73 @@ import { HiArrowUpRight } from "react-icons/hi2";
 
 import TransactionCard from "../../customer/partials/TransactionCard";
 import TabSelector from "../../components/TabSelector";
-import { customerTransactions } from "../../mock";
 import { billLine, wallet } from "../../assets";
 import { tabs } from "../../customer/partials";
 import PayBillCard from "../../customer/partials/PaybillCard";
 import SendPointFlow from "../../pages/payment/steps/SendpointFlow";
 import WithdrawCard from "../../customer/partials/WithdrawCard";
 import Modal from "../../layout/Modal";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import {
+  fetchCustomerDashboardOverview,
+  fetchCustomerRecentTransactions,
+} from "../../redux/dashboard/action";
+import Spinner from "../../components/Spinner";
+import Empty from "../../components/Empty";
+import { Pagination } from "../../components/Pagination";
+import { timeRangeOptions, getDateRangeFromOption } from "../../utils";
 
 const MakePayment = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [activeTab, setActiveTab] = useState("All");
   const [activeModal, setActiveModal] = useState<
     "send" | "bill" | "withdraw" | null
   >(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize] = useState(8);
+  const [selectedRange] = useState(timeRangeOptions[0]);
 
-  const selectedTransactions = customerTransactions.slice(0, 8).filter((a) => {
+  const { startDate, endDate } = useMemo(() => {
+    const range = getDateRangeFromOption(selectedRange);
+    return {
+      startDate: range?.startDate ?? null,
+      endDate: range?.endDate ?? new Date(),
+    };
+  }, [selectedRange]);
+
+  const { customerOverview, customerRecentTransactions, loading } =
+    useAppSelector((state) => state.dashboard);
+
+  useEffect(() => {
+    dispatch(
+      fetchCustomerDashboardOverview({
+        startDate: startDate ? startDate.toISOString() : null,
+        endDate: endDate.toISOString(),
+      }),
+    );
+  }, [dispatch, startDate, endDate]);
+
+  useEffect(() => {
+    dispatch(
+      fetchCustomerRecentTransactions({
+        pageNumber,
+        pageSize,
+        search: "",
+        startDate: startDate ? startDate.toISOString() : null,
+        endDate: endDate.toISOString(),
+      }),
+    );
+  }, [dispatch, pageNumber, pageSize, startDate, endDate]);
+
+  const transactions = customerRecentTransactions?.result ?? [];
+
+  const selectedTransactions = transactions.filter((a) => {
     if (activeTab === "All") {
-      return customerTransactions.slice(0, 8);
+      return true;
     }
-    return activeTab.toLowerCase().includes(a.type);
+    return activeTab.toLowerCase().includes(a.isDebit ? "debit" : "credit");
   });
 
   const closeModal = () => setActiveModal(null);
@@ -44,14 +90,15 @@ const MakePayment = () => {
             </p>
             <div className="flex gap-1.5">
               <h4 className="text-[#030649] font-semibold uppercase text-xl lg:text-2xl xl:text-3xl">
-                78,000.12
+                {customerOverview?.pointBalance.value.toLocaleString() ?? "0"}
               </h4>
               <p className="text-sm font-normal">Points</p>
             </div>
             <div className="flex items-center gap-1">
               <HiArrowUpRight color="#1A932E" />
               <p className="text-[#060606] text-xs">
-                12% increase from last month
+                {customerOverview?.pointBalance.percentageChange ?? 0}% increase
+                from last month
               </p>
             </div>
           </div>
@@ -113,13 +160,36 @@ const MakePayment = () => {
             <p className="col-span-2">Action</p>
           </div>
           <div className="bg-[#F5F6FF] mt-3 px-2 py-4 lg:py-5 lg:px-3 min-h-[250px] min-w-[1000px]">
-            <div className="grid gap-8">
-              {selectedTransactions.map((transaction, i) => (
-                <TransactionCard transaction={transaction} key={i} />
-              ))}
-            </div>
+            {loading.customerRecentTransactions ? (
+              <div className="flex items-center justify-center h-[200px]">
+                <Spinner size="32px" borderWidth="4px" />
+              </div>
+            ) : selectedTransactions.length === 0 ? (
+              <div className="h-[200px]">
+                <Empty text="No Transaction has been made yet" />
+              </div>
+            ) : (
+              <div className="grid gap-8">
+                {selectedTransactions.map((transaction) => (
+                  <TransactionCard
+                    transaction={transaction}
+                    key={transaction.id}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
+
+        {customerRecentTransactions && (
+          <Pagination
+            currentPage={customerRecentTransactions.pageNumber}
+            totalPages={customerRecentTransactions.totalPages}
+            totalCount={customerRecentTransactions.totalCount}
+            pageSize={pageSize}
+            onPageChange={setPageNumber}
+          />
+        )}
       </section>
 
       {activeModal === "send" && (

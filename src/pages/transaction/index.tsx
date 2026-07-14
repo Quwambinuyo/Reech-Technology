@@ -8,7 +8,10 @@ import { getDateRangeFromOption, timeRangeOptions } from "../../utils";
 const Transaction = () => {
   const currentUserRole = useRole();
   const [selectedRange, setSelectedRange] = useState(timeRangeOptions[0]);
-  const { startDate, endDate } = getDateRangeFromOption(selectedRange);
+
+  const range = getDateRangeFromOption(selectedRange);
+  const startDate = range?.startDate ?? null;
+  const endDate = range?.endDate ?? new Date();
 
   return (
     <div>
@@ -26,7 +29,7 @@ const Transaction = () => {
       ) : currentUserRole === "BusinessAdmin" ? (
         <MerchantTransactions startDate={startDate} endDate={endDate} />
       ) : (
-        <CustomerTransactions />
+        <CustomerTransactions startDate={startDate} endDate={endDate} />
       )}
     </div>
   );

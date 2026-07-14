@@ -79,6 +79,8 @@ export const fetchRecentTransactions = createAsyncThunk(
       pageNumber?: number;
       pageSize?: number;
       search?: string;
+      startDate?: string | null;
+      endDate?: string;
     },
     { rejectWithValue },
   ) => {
@@ -162,6 +164,8 @@ export const fetchCustomerRecentTransactions = createAsyncThunk(
       pageNumber?: number;
       pageSize?: number;
       search?: string;
+      startDate?: string | null;
+      endDate?: string;
     },
     { rejectWithValue },
   ) => {
@@ -173,6 +177,8 @@ export const fetchCustomerRecentTransactions = createAsyncThunk(
             PageNumber: params.pageNumber ?? 1,
             PageSize: params.pageSize ?? 10,
             Search: params.search ?? "",
+            StartDate: params.startDate ?? null,
+            EndDate: params.endDate,
           },
         },
       );

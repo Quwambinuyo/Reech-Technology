@@ -48,6 +48,8 @@ const MerchantTransactions = ({
         pageNumber,
         pageSize,
         search,
+        startDate: startDate ? startDate.toISOString() : null,
+        endDate: endDate.toISOString(),
       }),
     );
   }, [dispatch, pageNumber, pageSize, search, startDate, endDate]);

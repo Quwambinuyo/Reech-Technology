@@ -16,7 +16,15 @@ import Skeleton from "../merchant/skeleton/transactionSkeleton/Skeleton";
 import Empty from "../components/Empty";
 import { Pagination } from "../components/Pagination";
 
-const CustomerTransactions = () => {
+type CustomerTransactionsProps = {
+  startDate: Date | null;
+  endDate: Date;
+};
+
+const CustomerTransactions = ({
+  startDate,
+  endDate,
+}: CustomerTransactionsProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -30,11 +38,11 @@ const CustomerTransactions = () => {
   useEffect(() => {
     dispatch(
       fetchCustomerDashboardOverview({
-        startDate: null,
-        endDate: new Date().toISOString(),
+        startDate: startDate ? startDate.toISOString() : null,
+        endDate: endDate.toISOString(),
       }),
     );
-  }, [dispatch]);
+  }, [dispatch, startDate, endDate]);
 
   useEffect(() => {
     dispatch(
@@ -42,9 +50,11 @@ const CustomerTransactions = () => {
         pageNumber,
         pageSize,
         search: "",
+        startDate: startDate ? startDate.toISOString() : null,
+        endDate: endDate.toISOString(),
       }),
     );
-  }, [dispatch, pageNumber, pageSize]);
+  }, [dispatch, pageNumber, pageSize, startDate, endDate]);
 
   const transactions = customerRecentTransactions?.result ?? [];
 
