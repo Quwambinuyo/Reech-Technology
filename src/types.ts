@@ -117,3 +117,15 @@ export interface ApiKeyProps {
   createdAt: string;
   status?: string;
 }
+
+export interface CustomerTransactionProps {
+  id: string;
+  businessId: string;
+  businessName: string;
+  businessLogo: string;
+  amount: number;
+  points: number;
+  isDebit: boolean;
+  status: string;
+  time: string;
+}

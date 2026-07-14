@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { DashboardCard } from "../pages/dashboard/partials";
@@ -6,22 +6,52 @@ import TransactionCard from "./partials/TransactionCard";
 import TabSelector from "../components/TabSelector";
 import pointBalance from "../assets/balance.png";
 import redeemedPoint from "../assets/point.png";
-import { customerTransactions } from "../mock";
 import pointSpent from "../assets/spent.png";
 import rank from "../assets/rank.png";
 import { tabs } from "./partials";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import {
+  fetchCustomerDashboardOverview,
+  fetchCustomerRecentTransactions,
+} from "../redux/dashboard/action";
+import Skeleton from "../merchant/skeleton/dashboardSkeleton/Skeleton";
 
-const CustomerDashboard = () => {
+type CustomerDashboardProps = {
+  startDate: Date | null;
+  endDate: Date;
+};
+
+const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [activeTab, setActiveTab] = useState("All");
 
-  const selectedTransactions = customerTransactions.slice(0, 8).filter((a) => {
+  const { customerOverview, customerRecentTransactions, loading } =
+    useAppSelector((state) => state.dashboard);
+
+  useEffect(() => {
+    dispatch(
+      fetchCustomerDashboardOverview({
+        startDate: startDate ? startDate.toISOString() : null,
+        endDate: endDate.toISOString(),
+      }),
+    );
+    dispatch(fetchCustomerRecentTransactions({ pageNumber: 1, pageSize: 8 }));
+  }, [dispatch, startDate, endDate]);
+
+  const transactions = customerRecentTransactions?.result ?? [];
+
+  const selectedTransactions = transactions.filter((a) => {
     if (activeTab === "All") {
-      return customerTransactions.slice(0, 8);
+      return true;
     }
-    return activeTab.toLowerCase().includes(a.type);
+    return activeTab.toLowerCase().includes(a.isDebit ? "debit" : "credit");
   });
+
+  if (loading.customerOverview) {
+    return <Skeleton />;
+  }
 
   return (
     <div className="mt-7">
@@ -30,23 +60,46 @@ const CustomerDashboard = () => {
           <DashboardCard
             icon={pointBalance}
             title="point balance"
-            value="78,000.12"
+            value={customerOverview?.pointBalance.value.toLocaleString() ?? "0"}
             context="point"
-            info={{ percentage: 12 }}
+            info={{
+              percentage: customerOverview?.pointBalance.percentageChange ?? 0,
+            }}
           />
           <DashboardCard
             icon={pointSpent}
             title="total points spent"
-            value="20,400"
+            value={
+              customerOverview?.totalPointsSpent.value.toLocaleString() ?? "0"
+            }
             context="point"
+            info={{
+              percentage:
+                customerOverview?.totalPointsSpent.percentageChange ?? 0,
+            }}
           />
-          <DashboardCard icon={rank} title="highest rank" value="pro member" />
+          <DashboardCard
+            icon={rank}
+            title="total transactions"
+            value={
+              customerOverview?.totalTransactions.value.toLocaleString() ?? "0"
+            }
+            info={{
+              percentage:
+                customerOverview?.totalTransactions.percentageChange ?? 0,
+            }}
+          />
           <DashboardCard
             icon={redeemedPoint}
             title="redeemed points"
-            value="10,300"
+            value={
+              customerOverview?.redeemedPoints.value.toLocaleString() ?? "0"
+            }
             context="point"
-            info={{ percentage: 2 }}
+            info={{
+              percentage:
+                customerOverview?.redeemedPoints.percentageChange ?? 0,
+            }}
           />
         </div>
       </section>
@@ -80,11 +133,18 @@ const CustomerDashboard = () => {
             <p className="col-span-2">Action</p>
           </div>
           <div className="bg-[#F5F6FF] mt-3 px-2 py-4 lg:py-5 lg:px-3 min-h-[250px] min-w-[1000px]">
-            <div className="grid gap-8 ">
-              {selectedTransactions.map((transaction, i) => (
-                <TransactionCard transaction={transaction} key={i} />
-              ))}
-            </div>
+            {loading.customerRecentTransactions ? (
+              <Skeleton />
+            ) : (
+              <div className="grid gap-8">
+                {selectedTransactions.map((transaction) => (
+                  <TransactionCard
+                    transaction={transaction}
+                    key={transaction.id}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

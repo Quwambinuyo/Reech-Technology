@@ -10,7 +10,9 @@ const Dashboard = () => {
   const currentUserRole = useRole();
   const [selectedRange, setSelectedRange] = useState(timeRangeOptions[0]);
 
-  const { startDate, endDate } = getDateRangeFromOption(selectedRange);
+  const range = getDateRangeFromOption(selectedRange);
+  const startDate = range?.startDate ?? null;
+  const endDate = range?.endDate ?? new Date();
 
   return (
     <div>
@@ -28,7 +30,7 @@ const Dashboard = () => {
       ) : currentUserRole === "BusinessAdmin" ? (
         <MerchantDashboard startDate={startDate} endDate={endDate} />
       ) : (
-        <CustomerDashboard />
+        <CustomerDashboard startDate={startDate} endDate={endDate} />
       )}
     </div>
   );
