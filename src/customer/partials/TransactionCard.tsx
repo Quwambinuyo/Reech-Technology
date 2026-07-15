@@ -41,7 +41,8 @@ const TransactionCard = ({
         <p className="truncate">{transaction.businessName}</p>
       </div>
       <p className="col-span-3 flex items-center">
-        {transaction.isDebit ? "-" : "+"} {transaction.points} Points
+        {transaction.isDebit ? "-" : "+"} {transaction.points.toLocaleString()}{" "}
+        Points
       </p>
       <div className="col-span-3 flex items-center">
         <StatusDisplay status={transaction.status} />

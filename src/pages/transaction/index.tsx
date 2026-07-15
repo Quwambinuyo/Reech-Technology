@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { MiniDropDown } from "../../components/CustomSelect";
 import CustomerTransactions from "../../customer/Transactions";
 import { useRole } from "../../hooks/useRole";
@@ -9,9 +9,13 @@ const Transaction = () => {
   const currentUserRole = useRole();
   const [selectedRange, setSelectedRange] = useState(timeRangeOptions[0]);
 
-  const range = getDateRangeFromOption(selectedRange);
-  const startDate = range?.startDate ?? null;
-  const endDate = range?.endDate ?? new Date();
+  const { startDate, endDate } = useMemo(() => {
+    const range = getDateRangeFromOption(selectedRange);
+    return {
+      startDate: range?.startDate ?? null,
+      endDate: range?.endDate ?? new Date(),
+    };
+  }, [selectedRange]);
 
   return (
     <div>

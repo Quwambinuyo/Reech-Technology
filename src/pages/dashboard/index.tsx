@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AdminDashboard from "../../admin/Dashboard";
 import { MiniDropDown } from "../../components/CustomSelect";
 import CustomerDashboard from "../../customer/Dashboard";
@@ -10,9 +10,13 @@ const Dashboard = () => {
   const currentUserRole = useRole();
   const [selectedRange, setSelectedRange] = useState(timeRangeOptions[0]);
 
-  const range = getDateRangeFromOption(selectedRange);
-  const startDate = range?.startDate ?? null;
-  const endDate = range?.endDate ?? new Date();
+  const { startDate, endDate } = useMemo(() => {
+    const range = getDateRangeFromOption(selectedRange);
+    return {
+      startDate: range?.startDate ?? null,
+      endDate: range?.endDate ?? new Date(),
+    };
+  }, [selectedRange]);
 
   return (
     <div>

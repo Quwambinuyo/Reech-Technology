@@ -37,7 +37,13 @@ const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
         endDate: endDate.toISOString(),
       }),
     );
-    dispatch(fetchCustomerRecentTransactions({ pageNumber: 1, pageSize: 8 }));
+
+    dispatch(
+      fetchCustomerRecentTransactions({
+        pageNumber: 1,
+        pageSize: 8,
+      }),
+    );
   }, [dispatch, startDate, endDate]);
 
   const transactions = customerRecentTransactions?.result ?? [];
@@ -46,6 +52,7 @@ const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
     if (activeTab === "All") {
       return true;
     }
+
     return activeTab.toLowerCase().includes(a.isDebit ? "debit" : "credit");
   });
 
@@ -60,41 +67,38 @@ const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
           <DashboardCard
             icon={pointBalance}
             title="point balance"
-            value={customerOverview?.pointBalance.value.toLocaleString() ?? "0"}
+            value={customerOverview?.pointBalance.value ?? 0}
             context="point"
             info={{
               percentage: customerOverview?.pointBalance.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
             icon={pointSpent}
             title="total points spent"
-            value={
-              customerOverview?.totalPointsSpent.value.toLocaleString() ?? "0"
-            }
+            value={customerOverview?.totalPointsSpent.value ?? 0}
             context="point"
             info={{
               percentage:
                 customerOverview?.totalPointsSpent.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
             icon={rank}
             title="total transactions"
-            value={
-              customerOverview?.totalTransactions.value.toLocaleString() ?? "0"
-            }
+            value={customerOverview?.totalTransactions.value ?? 0}
             info={{
               percentage:
                 customerOverview?.totalTransactions.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
             icon={redeemedPoint}
             title="redeemed points"
-            value={
-              customerOverview?.redeemedPoints.value.toLocaleString() ?? "0"
-            }
+            value={customerOverview?.redeemedPoints.value ?? 0}
             context="point"
             info={{
               percentage:
@@ -109,6 +113,7 @@ const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
           <h5 className="text-light-black font-medium lg:text-lg">
             Recent Transactions
           </h5>
+
           <button
             className="text-sm text-[#4A148C]"
             onClick={() => navigate("/transactions/all")}
@@ -116,11 +121,13 @@ const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
             See All
           </button>
         </div>
+
         <TabSelector
           options={tabs}
           activeTab={activeTab}
           onSelect={setActiveTab}
         />
+
         <div className="overflow-x-auto">
           <div
             className="font-montserrat grid gap-3 font-semibold text-sm px-2 min-w-[1000px]"
@@ -132,6 +139,7 @@ const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
             <p className="col-span-3">Date/Time</p>
             <p className="col-span-2">Action</p>
           </div>
+
           <div className="bg-[#F5F6FF] mt-3 px-2 py-4 lg:py-5 lg:px-3 min-h-[250px] min-w-[1000px]">
             {loading.customerRecentTransactions ? (
               <Skeleton />
@@ -139,8 +147,8 @@ const CustomerDashboard = ({ startDate, endDate }: CustomerDashboardProps) => {
               <div className="grid gap-8">
                 {selectedTransactions.map((transaction) => (
                   <TransactionCard
-                    transaction={transaction}
                     key={transaction.id}
+                    transaction={transaction}
                   />
                 ))}
               </div>

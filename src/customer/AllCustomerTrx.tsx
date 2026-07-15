@@ -16,7 +16,7 @@ const AllCustomerTrx = () => {
   const dispatch = useAppDispatch();
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(20);
+  const [pageSize] = useState(10);
   const [search] = useState("");
   const [activeTab, setActiveTab] = useState(state?.filter || "All");
 

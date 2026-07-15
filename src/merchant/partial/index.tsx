@@ -56,8 +56,8 @@ const ActivityPointSkeleton = () => (
       <Skeleton className="md:h-[24px] !rounded-md !w-full" baseColor="" />
     </div>
     <div className="col-span-2 grid grid-cols-2 gap-3.5">
-      <Skeleton className="h-[38px] !rounded-md rounded-md" baseColor="" />
-      <Skeleton className="h-[38px] !rounded-md rounded-md" baseColor="" />
+      <Skeleton className="h-[38px]  rounded-md" baseColor="" />
+      <Skeleton className="h-[38px]  rounded-md" baseColor="" />
     </div>
   </div>
 );

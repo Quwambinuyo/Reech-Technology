@@ -14,7 +14,6 @@ import {
 } from "../redux/dashboard/action";
 import Skeleton from "../merchant/skeleton/transactionSkeleton/Skeleton";
 import Empty from "../components/Empty";
-import { Pagination } from "../components/Pagination";
 
 type CustomerTransactionsProps = {
   startDate: Date | null;
@@ -29,8 +28,8 @@ const CustomerTransactions = ({
   const dispatch = useAppDispatch();
 
   const [activeTab, setActiveTab] = useState("All");
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(8);
+  const [pageNumber] = useState(1);
+  const [pageSize] = useState(10);
 
   const { customerOverview, customerRecentTransactions, loading } =
     useAppSelector((state) => state.dashboard);
@@ -76,41 +75,38 @@ const CustomerTransactions = ({
           <DashboardCard
             icon={pointBalance}
             title="point balance"
-            value={customerOverview?.pointBalance.value.toLocaleString() ?? "0"}
+            value={customerOverview?.pointBalance.value ?? 0}
             context="point"
             info={{
               percentage: customerOverview?.pointBalance.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
             icon={pointSpent}
             title="total points spent"
-            value={
-              customerOverview?.totalPointsSpent.value.toLocaleString() ?? "0"
-            }
+            value={customerOverview?.totalPointsSpent.value ?? 0}
             context="point"
             info={{
               percentage:
                 customerOverview?.totalPointsSpent.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
-            icon={redeemedPoint}
+            icon={rank}
             title="total transactions"
-            value={
-              customerOverview?.totalTransactions.value.toLocaleString() ?? "0"
-            }
+            value={customerOverview?.totalTransactions.value ?? 0}
             info={{
               percentage:
                 customerOverview?.totalTransactions.percentageChange ?? 0,
             }}
           />
+
           <DashboardCard
-            icon={rank}
+            icon={redeemedPoint}
             title="redeemed points"
-            value={
-              customerOverview?.redeemedPoints.value.toLocaleString() ?? "0"
-            }
+            value={customerOverview?.redeemedPoints.value ?? 0}
             context="point"
             info={{
               percentage:
@@ -162,16 +158,6 @@ const CustomerTransactions = ({
             )}
           </div>
         </div>
-
-        {customerRecentTransactions && (
-          <Pagination
-            currentPage={customerRecentTransactions.pageNumber}
-            totalPages={customerRecentTransactions.totalPages}
-            totalCount={customerRecentTransactions.totalCount}
-            pageSize={pageSize}
-            onPageChange={setPageNumber}
-          />
-        )}
       </section>
     </div>
   );

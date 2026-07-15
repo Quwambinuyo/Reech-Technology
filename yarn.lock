@@ -1069,6 +1069,11 @@ country-list-with-dial-code-and-flag@^5.1.1:
   resolved "https://registry.yarnpkg.com/country-list-with-dial-code-and-flag/-/country-list-with-dial-code-and-flag-5.1.1.tgz#6232f14ad73c4c790a94829814c105dfc2916ec9"
   integrity sha512-dj93ztplLEV2svD4+oOKTnR+8+cQSNf8kB051w+kYIoxcW6K0BPLgWYqwJjEpvoee60FTBufmi7jvcLPEgfpjg==
 
+countup.js@^2.8.0:
+  version "2.10.1"
+  resolved "https://registry.npmjs.org/countup.js/-/countup.js-2.10.1.tgz#94b67c994e933e73a551a78ecdf88f434544612a"
+  integrity sha512-UHW/BsPDgVZfN919D4iu2HPv+jJxZUuaR3EhT0ScFZaD446GiQtkMTgOnOyJXdA2AewdlyUk9UvERlTHTbVpcw==
+
 cross-spawn@^7.0.6:
   version "7.0.6"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.6.tgz#8a58fe78f00dcd70c370451759dfbfaf03e8ee9f"
@@ -1867,6 +1872,13 @@ react-chartjs-2@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-5.3.1.tgz#2b29995ce8b07f5c95c6ea3696838569e88453aa"
   integrity sha512-h5IPXKg9EXpjoBzUfyWJvllMjG2mQ4EiuHQFhms/AjUm0XSZHhyRy2xVmLXHKrtcdrPO4mnGqRtYoD0vp95A0A==
+
+react-countup@^6.5.3:
+  version "6.5.3"
+  resolved "https://registry.npmjs.org/react-countup/-/react-countup-6.5.3.tgz#e892aa3eab2d6ba9c3cdba30bf4ed6764826d848"
+  integrity sha512-udnqVQitxC7QWADSPDOxVWULkLvKUWrDapn5i53HE4DPRVgs+Y5rr4bo25qEl8jSh+0l2cToJgGMx+clxPM3+w==
+  dependencies:
+    countup.js "^2.8.0"
 
 react-dom@^19.1.1:
   version "19.1.1"
