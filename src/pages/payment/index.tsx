@@ -112,13 +112,8 @@ const MakePayment = () => {
               )}
 
               <p className="text-[#060606] text-xs">
-                <CountUp
-                  end={Math.abs(percentage)}
-                  duration={1.5}
-                  decimals={1}
-                  preserveValue
-                />
-                % {percentage >= 0 ? "increase" : "decrease"} from last month
+                {Math.abs(percentage).toFixed(1)}%{" "}
+                {percentage >= 0 ? "increase" : "decrease"} from last month
               </p>
             </div>
           </div>

@@ -49,7 +49,7 @@ const MerchantDashboard = ({ startDate, endDate }: MerchantDashboardProps) => {
           <DashboardCard
             icon={pointBalance}
             title="total customers"
-            value={overview?.totalCustomers.value.toLocaleString() ?? "0"}
+            value={overview?.totalCustomers.value ?? 0}
             context="user"
             info={{
               percentage: overview?.totalCustomers.percentageChange ?? 0,
@@ -59,7 +59,7 @@ const MerchantDashboard = ({ startDate, endDate }: MerchantDashboardProps) => {
           <DashboardCard
             icon={redeemedPoint}
             title="total points issued"
-            value={overview?.totalPointsIssued.value.toLocaleString() ?? "0"}
+            value={overview?.totalPointsIssued.value ?? 0}
             context="point"
             info={{
               percentage: overview?.totalPointsIssued.percentageChange ?? 0,
@@ -69,7 +69,7 @@ const MerchantDashboard = ({ startDate, endDate }: MerchantDashboardProps) => {
           <DashboardCard
             icon={rank}
             title="total redemptions"
-            value={overview?.totalRedemptions.value.toLocaleString() ?? "0"}
+            value={overview?.totalRedemptions.value ?? 0}
             context="point"
             info={{
               percentage: overview?.totalRedemptions.percentageChange ?? 0,
@@ -79,7 +79,7 @@ const MerchantDashboard = ({ startDate, endDate }: MerchantDashboardProps) => {
           <DashboardCard
             icon={pointSpent}
             title="total spent"
-            value={overview?.totalSpent.value.toLocaleString() ?? "0"}
+            value={overview?.totalSpent.value ?? 0}
             info={{
               percentage: overview?.totalSpent.percentageChange ?? 0,
             }}
