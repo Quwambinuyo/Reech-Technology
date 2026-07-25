@@ -74,7 +74,7 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl h-[600px] max-h-[90vh] w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl border border-dashed border-[#D0D0F0] p-6 flex flex-col gap-5">
+    <div className="bg-white rounded-2xl h-auto max-h-[70vh] md:h-[650px] md:max-h-[70vh] w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl border border-dashed border-[#D0D0F0] p-6 flex flex-col gap-5">
       <div className="flex items-start justify-between shrink-0">
         <div className="flex flex-col gap-1">
           <h3 className="text-[#030649] text-lg font-semibold">
@@ -91,8 +91,8 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto hide-scroll flex flex-col gap-4">
-        <div className="flex items-center gap-2.5 md:gap-3">
+      <div className="flex-1 md:overflow-y-auto hide-scroll flex flex-col gap-4">
+        <div className="flex items-center gap-2.5 md:gap-3 justify-center">
           {digitsArr.map((digit, index) => (
             <OtpInput
               key={index}

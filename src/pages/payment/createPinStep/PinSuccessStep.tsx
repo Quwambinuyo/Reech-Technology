@@ -33,8 +33,8 @@ const PinSuccessStep = ({ onComplete }: Props) => {
       </button>
 
       <div className="flex-center gap-1.5 opacity-80">
-        <img src={logo} alt="reech" className="w-4 h-4" />
-        <span className="text-[#030649] text-sm font-semibold">reech</span>
+        <img src={logo} alt="reech" className="w-[40px]" />
+        <span className="text-[#030649] text-sm font-semibold">Reech</span>
       </div>
     </div>
   );

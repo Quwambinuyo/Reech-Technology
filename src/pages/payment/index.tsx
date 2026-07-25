@@ -129,7 +129,7 @@ const MakePayment = () => {
             <span className="flex-center h-11 w-11 rounded-full bg-[#F0F1FE]">
               <TbSend size={20} />
             </span>
-            <p className="text-[13px] lg:text-sm font-medium">Send Points</p>
+            <p className="text-[13px] lg:text-sm font-medium">Send Credit</p>
           </button>
 
           <button
