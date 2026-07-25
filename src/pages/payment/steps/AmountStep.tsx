@@ -5,6 +5,7 @@ import type { Merchant, Step } from "./types";
 import { CURRENT_BALANCE, EXCHANGE_RATE } from "./types";
 import { formatNumber } from "../../../../src/utils";
 import { RiErrorWarningFill } from "react-icons/ri";
+import { reechCurrency } from "../../../assets";
 
 interface Props {
   onClose: () => void;
@@ -46,9 +47,7 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
         <StepBar current={2 as Step} />
 
         <div className="flex items-center justify-between bg-[#F7F6FF] border border-[#E8E0FF] rounded-xl px-5 py-5">
-          <span className="text-[#35303d]  font-bold text-[24px] shrink-0">
-            pts
-          </span>
+          <img src={reechCurrency} alt="currency" />
           <span className="text-right text-[#0D0D0D] font-montserrat font-bold text-2xl">
             {formatNumber(points)}
           </span>
@@ -68,9 +67,10 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
               <p className="text-[10px] font-semibold text-[#4A454F] uppercase tracking-wider mb-1">
                 Current Rate
               </p>
-              <p className="text-xs font-ibmplex text-[#4A148C] font-semibold">
-                1 pt = ₦1
-              </p>
+              <div className="flex items-center justify-end gap-1 text-xs font-ibmplex text-[#4A148C] font-semibold">
+                <img src={reechCurrency} alt="" className="w-3.5 h-3.5" />
+                <span>1 = ₦1</span>
+              </div>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
           <p className="text-[12px] font-ibmplex text-[#3D3D6B] leading-relaxed">
             Your current balance is{" "}
             <span className="font-bold">
-              {formatNumber(CURRENT_BALANCE)} pts
+              {formatNumber(CURRENT_BALANCE)} credits
             </span>
             .{" "}
             {points > 0 && (
@@ -94,7 +94,7 @@ const AmountStep = ({ onClose, merchant, points, onBack, onNext }: Props) => {
                     remaining < 0 ? "text-red-500 font-bold" : "font-bold"
                   }
                 >
-                  {formatNumber(remaining)} pts
+                  {formatNumber(remaining)} credits
                 </span>
               </>
             )}

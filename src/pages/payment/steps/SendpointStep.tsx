@@ -38,7 +38,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-montserrat font-bold text-[#0D0D0D] text-lg">
-              Send Points
+              Send Credits
             </h3>
             <p className="text-gray-400 text-[12px] font-ibmplex mt-0.5 max-w-[260px]">
               Transfer loyalty points to another Reech user instantly.
@@ -93,7 +93,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
             <div className="flex text-[16px] justify-between items-center">
               <p className="text-[#4A454F]">Transfer Fee</p>
               <p className="font-ibmplex font-semibold text-[#0D0D0D]">
-                -{formatNumber(TRANSFER_FEE)} Points
+                -{formatNumber(TRANSFER_FEE)} Credits
               </p>
             </div>
             <div className="border-t border-gray-100 pt-3">
@@ -103,7 +103,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
                 </p>
                 <div className="text-right">
                   <p className="text-base font-montserrat font-bold text-[#4A148C]">
-                    {formatNumber(totalDeduction)} Points
+                    {formatNumber(totalDeduction)} Credits
                   </p>
                   <p className="text-[10px] font-ibmplex text-[#1A932E] font-semibold tracking-wide uppercase">
                     Estimated Instant
@@ -121,7 +121,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
                   remaining < 0 ? "text-red-500 font-bold" : "font-bold"
                 }
               >
-                {formatNumber(remaining)} pts
+                {formatNumber(remaining)} Credits
               </span>
             </p>
           )}
@@ -139,7 +139,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
           className="mt-5 w-full bg-[#5617A2] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-white font-montserrat font-semibold rounded-4xl py-4 flex items-center justify-center gap-2"
         >
           <TbSend size={18} />
-          Send Points
+          Send Credits
         </button>
       </div>
 
@@ -147,7 +147,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
         <div className="flex items-center">
           <img src={Logo} alt="logo" className="w-[40px]" />
           <span className="font-poppins font-medium text-[#000000] -ml-1 text-sm">
-            reech
+            Reech
           </span>
         </div>
       </div>

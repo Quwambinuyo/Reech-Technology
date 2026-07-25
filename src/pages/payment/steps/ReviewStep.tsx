@@ -24,7 +24,7 @@ const ReviewStep = ({
 
   const rows = [
     { label: "Merchant", value: merchant.name, isChip: true },
-    { label: "Points sending", value: `${points.toLocaleString()} pts` },
+    { label: "Points sending", value: `${points.toLocaleString()} credits` },
     {
       label: "Equivalent value",
       value: `₦${equivalent.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`,
@@ -32,7 +32,7 @@ const ReviewStep = ({
     },
     {
       label: "Deduction from balance",
-      value: `-${points.toLocaleString()} pts`,
+      value: `-${points.toLocaleString()} credits`,
       red: true,
     },
   ];
@@ -43,7 +43,7 @@ const ReviewStep = ({
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-montserrat font-bold text-[#0D0D0D] text-lg">
-              Send Points
+              Send Credits
             </h3>
             <p className="text-gray-400 text-[12px] font-ibmplex mt-0.5">
               Review the details before generating your OTP.
