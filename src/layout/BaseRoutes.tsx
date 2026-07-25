@@ -28,21 +28,16 @@ import ManageCategories from "../pages/categories";
 import AllCategories from "../pages/categories/AllCategories";
 import SingleMerchant from "../pages/manage-merchant/SingleMerchant";
 import ReceivePayments from "../merchant/ReceivePayments";
+import AuthVerify from "../pages/auth/AuthVerify";
 
 export default function BaseRoutes() {
   const dispatch = useAppDispatch();
 
-  const {
-    authNetworkError,
-    allCountries,
-    // currentUser,
-    landingPageHamburgerToggle,
-  } = useAppSelector((state) => state.auth);
+  const { authNetworkError, allCountries, landingPageHamburgerToggle } =
+    useAppSelector((state) => state.auth);
 
   const { categoryNetworkError } = useAppSelector((state) => state.category);
 
-  // const currentUserRole = currentUser?.roles[0];
-  // console.log(currentUserRole);
   const showNetworkError = () => {
     if (authNetworkError || categoryNetworkError) {
       return true;
@@ -67,6 +62,7 @@ export default function BaseRoutes() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/auth/verify" element={<AuthVerify />} />
 
         <Route element={<PrivateRoute />}>
           <Route element={<LayoutWrapper />}>
@@ -121,7 +117,6 @@ export default function BaseRoutes() {
           </Route>
         </Route>
       </Routes>
-      {/* </Router> */}
     </>
   );
 }

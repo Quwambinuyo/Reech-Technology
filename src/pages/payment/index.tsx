@@ -2,16 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import CountUp from "react-countup";
 import { TbSend } from "react-icons/tb";
 import { LuUpload } from "react-icons/lu";
+import { RiShieldKeyholeLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { HiArrowDownLeft, HiArrowUpRight } from "react-icons/hi2";
 
 import TransactionCard from "../../customer/partials/TransactionCard";
 import TabSelector from "../../components/TabSelector";
-import { billLine, wallet } from "../../assets";
+import { billLine, wallet, reechCurrency } from "../../assets";
 import { tabs } from "../../customer/partials";
 import PayBillCard from "../../customer/partials/PaybillCard";
 import SendPointFlow from "../../pages/payment/steps/SendpointFlow";
 import WithdrawCard from "../../customer/partials/WithdrawCard";
+import CreatePinFlow from "../../pages/payment/createPinStep/CreatePinFlow";
 import Modal from "../../layout/Modal";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -28,7 +30,7 @@ const MakePayment = () => {
 
   const [activeTab, setActiveTab] = useState("All");
   const [activeModal, setActiveModal] = useState<
-    "send" | "bill" | "withdraw" | null
+    "send" | "bill" | "withdraw" | "pin" | null
   >(null);
   const [pageNumber] = useState(1);
   const [pageSize] = useState(10);
@@ -89,11 +91,12 @@ const MakePayment = () => {
 
           <div className="flex flex-col gap-3">
             <p className="text-[#797979] capitalize text-[15px]">
-              point balance
+              Reech Credit Balance
             </p>
 
             <div className="flex gap-1.5">
-              <h4 className="text-[#030649] font-semibold uppercase text-xl lg:text-2xl xl:text-3xl">
+              <h4 className="text-[#030649] gap-2 flex font-semibold uppercase text-xl lg:text-2xl xl:text-3xl">
+                <img src={reechCurrency} alt="Currency" className="w-6 h-6" />
                 <CountUp
                   end={customerOverview?.pointBalance.value ?? 0}
                   duration={2}
@@ -101,7 +104,6 @@ const MakePayment = () => {
                   preserveValue
                 />
               </h4>
-              <p className="text-sm font-normal">Points</p>
             </div>
 
             <div className="flex items-center gap-1">
@@ -148,6 +150,16 @@ const MakePayment = () => {
               <LuUpload size={20} />
             </span>
             <p className="text-[13px] lg:text-sm font-medium">Withdraw</p>
+          </button>
+
+          <button
+            onClick={() => setActiveModal("pin")}
+            className="flex-1 flex flex-col items-center gap-2.5 py-4 lg:py-5 rounded-xl bg-white border border-[#F0F1FE] hover:bg-[#F5F3FF] hover:border-[#E8E3FF] active:scale-[0.97] transition-all duration-150"
+          >
+            <span className="flex-center h-11 w-11 rounded-full bg-[#F0F1FE]">
+              <RiShieldKeyholeLine size={20} />
+            </span>
+            <p className="text-[13px] lg:text-sm font-medium">Set PIN</p>
           </button>
         </div>
       </section>
@@ -222,6 +234,17 @@ const MakePayment = () => {
       {activeModal === "withdraw" && (
         <Modal modal={activeModal === "withdraw"} onClose={closeModal}>
           <WithdrawCard onClose={closeModal} />
+        </Modal>
+      )}
+
+      {activeModal === "pin" && (
+        <Modal modal={activeModal === "pin"} onClose={closeModal}>
+          <CreatePinFlow
+            onClose={closeModal}
+            onComplete={(pin) => {
+              console.log("PIN created:", pin);
+            }}
+          />
         </Modal>
       )}
     </>

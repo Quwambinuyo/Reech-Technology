@@ -126,7 +126,7 @@ const ApiKeysTable = ({
           className="grid px-8 py-4 text-[#4A454F] bg-[#F1F4FB]"
           style={{ gridTemplateColumns: GRID }}
         >
-          {["Key Name", "Masked Key", "Created", "Status", ""].map((h) => (
+          {["Key Name", "Secret Value", "Created", "Status", ""].map((h) => (
             <span
               key={h}
               className="text-[11px] font-semibold uppercase tracking-wider"

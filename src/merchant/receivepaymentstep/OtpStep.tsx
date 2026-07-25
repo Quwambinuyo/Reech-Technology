@@ -1,7 +1,7 @@
 import type { KeyboardEvent, ClipboardEvent, MutableRefObject } from "react";
 import { FiShield, FiInfo } from "react-icons/fi";
-import { LuHash } from "react-icons/lu";
 import { OtpInput } from "../../components/CustomInput";
+import { MdOutline123 } from "react-icons/md";
 
 export type OtpStepProps = {
   otp: string[];
@@ -25,7 +25,7 @@ const OtpStep = ({
   <div>
     <div className="flex items-center justify-center mb-5">
       <div className="w-[52px] h-[52px] rounded-xl bg-violet-100 flex items-center justify-center">
-        <LuHash size={26} className="text-violet-600" />
+        <MdOutline123 size={56} className="text-violet-600" />
       </div>
     </div>
 

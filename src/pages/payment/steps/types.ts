@@ -17,3 +17,9 @@ export const EXCHANGE_RATE = 1;
 export const CURRENT_BALANCE = 2450;
 export const OTP_EXPIRY_SECONDS = 300;
 export const TRANSFER_FEE = 2;
+
+export type PinFlowStep = 0 | 1 | 2 | 3;
+
+export interface PinFlowResult {
+  pin: string;
+}

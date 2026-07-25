@@ -14,22 +14,24 @@ import in_reward from "../assets/ac-task.png";
 import copyIcon from "../assets/copy-icon.png";
 import customerImg from "../assets/customer.png";
 import docImage from "../assets/doc-file.png";
+import reechCurrency from "../assets/ReechCurrency.png";
 
 export {
-	pointBalance,
-	pointSpent,
-	rank,
-	redeemedPoint,
-	wallet,
-	billLine,
-	profileImg,
-	mailIcon,
-	personIcon,
-	uploadIcon,
-	commentImg,
-	ac_reward,
-	in_reward,
-	copyIcon,
-	customerImg,
-	docImage,
+  pointBalance,
+  pointSpent,
+  rank,
+  redeemedPoint,
+  wallet,
+  billLine,
+  profileImg,
+  mailIcon,
+  personIcon,
+  uploadIcon,
+  commentImg,
+  ac_reward,
+  in_reward,
+  copyIcon,
+  customerImg,
+  docImage,
+  reechCurrency,
 };
