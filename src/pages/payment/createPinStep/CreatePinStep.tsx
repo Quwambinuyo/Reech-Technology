@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import type { ClipboardEvent, KeyboardEvent } from "react";
 import { IoClose, IoInformationCircleOutline } from "react-icons/io5";
 import logo from "../../../assets/logo-s.png";
 import { OtpInput } from "../../../components/CustomInput";
+import { sanitizeDigits } from "../../../../src/utils";
 
 interface Props {
   onClose: () => void;
@@ -24,7 +24,7 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
   }, []);
 
   const handleChange = (index: number, raw: string) => {
-    const digit = raw.replace(/\D/g, "").slice(-1);
+    const digit = sanitizeDigits(raw).slice(-1);
     const next = digitsArr.slice();
     next[index] = digit;
     setDigitsArr(next);
@@ -38,31 +38,6 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
     }
   };
 
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !digitsArr[index] && index > 0) {
-      const next = digitsArr.slice();
-      next[index - 1] = "";
-      setDigitsArr(next);
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "");
-    if (!pasted) {
-      return;
-    }
-    e.preventDefault();
-    const next = pasted
-      .slice(0, PIN_LENGTH)
-      .split("")
-      .concat(Array(PIN_LENGTH).fill(""))
-      .slice(0, PIN_LENGTH);
-    setDigitsArr(next);
-    const focusIndex = Math.min(pasted.length, PIN_LENGTH - 1);
-    inputRefs.current[focusIndex]?.focus();
-  };
-
   const handleContinue = () => {
     const pin = digitsArr.join("");
     if (pin.length !== PIN_LENGTH) {
@@ -74,7 +49,7 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl h-auto max-h-[70vh] md:h-[650px] md:max-h-[70vh] w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl border border-dashed border-[#D0D0F0] p-6 flex flex-col gap-5">
+    <div className="bg-white rounded-2xl h-auto max-h-[80vh] md:h-[650px] md:max-h-[70vh] w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl border border-dashed border-[#D0D0F0] p-6 flex flex-col gap-5">
       <div className="flex items-start justify-between shrink-0">
         <div className="flex flex-col gap-1">
           <h3 className="text-[#030649] text-lg font-semibold">
@@ -101,8 +76,6 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
               hasError={!!error}
               inputRefs={inputRefs}
               onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              onPaste={handlePaste}
             />
           ))}
         </div>

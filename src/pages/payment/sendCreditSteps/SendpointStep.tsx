@@ -70,6 +70,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
               id="points"
               label="Amount in Points"
               placeholder="0.00"
+              numeric
               value={points}
               handleChange={(e) => setPoints(formatInputNumber(e.target.value))}
               bg="#F7F6FF"

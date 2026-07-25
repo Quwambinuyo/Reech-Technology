@@ -218,3 +218,5 @@ export const formatDateTime = (date: string | Date) => {
 
   return new Date(date).toLocaleString("en-US", options);
 };
+
+export const sanitizeDigits = (value: string) => value.replace(/\D/g, "");

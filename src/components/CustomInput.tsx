@@ -22,6 +22,7 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   borderColor?: string;
   focusBorderColor?: string;
   rounded?: "sm" | "md" | "lg" | "full";
+  numeric?: boolean;
 }
 
 type OtherInputProps = {
@@ -40,8 +41,8 @@ type OtpInputProps = {
   hasError: boolean;
   inputRefs: MutableRefObject<(HTMLInputElement | null)[]>;
   onChange: (index: number, value: string) => void;
-  onKeyDown: (index: number, e: KeyboardEvent<HTMLInputElement>) => void;
-  onPaste: (e: ClipboardEvent<HTMLInputElement>) => void;
+  onKeyDown?: (index: number, e: KeyboardEvent<HTMLInputElement>) => void;
+  onPaste?: (e: ClipboardEvent<HTMLInputElement>) => void;
   disabled?: boolean;
 };
 
@@ -70,6 +71,7 @@ export const CustomTextInput = ({
   borderColor,
   focusBorderColor,
   rounded,
+  numeric,
 }: TextInputProps) => {
   return (
     <div className="flex flex-col gap-1">
@@ -85,6 +87,7 @@ export const CustomTextInput = ({
         <input
           id={id}
           type={togglePassword ? "text" : type || "text"}
+          inputMode={numeric ? "decimal" : undefined}
           placeholder={placeholder}
           className={`border px-3 py-2.5 placeholder:text-[#D9D9D9] placeholder:text-[15px] outline-none focus:border-2 w-full ${
             roundedMap[rounded ?? "md"]
@@ -186,7 +189,7 @@ export const OtpInput = ({
     value={digit}
     disabled={disabled}
     onChange={(e) => onChange(index, e.target.value)}
-    onKeyDown={(e) => onKeyDown(index, e)}
+    onKeyDown={(e) => onKeyDown?.(index, e)}
     onPaste={onPaste}
     className={`w-[45px] md:w-[50px] h-[56px] text-center text-[20px] font-medium rounded-lg outline-none transition-all border ${
       digit

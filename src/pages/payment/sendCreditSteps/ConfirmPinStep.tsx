@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import type { ClipboardEvent, KeyboardEvent } from "react";
+import type { ClipboardEvent } from "react";
 import { IoClose, IoInformationCircleOutline } from "react-icons/io5";
 import logo from "../../../assets/logo-s.png";
 import { OtpInput } from "../../../components/CustomInput";
+import { sanitizeDigits } from "../../../../src/utils";
 
 interface Props {
   onClose: () => void;
@@ -24,7 +25,7 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm }: Props) => {
   }, []);
 
   const handleChange = (index: number, raw: string) => {
-    const digit = raw.replace(/\D/g, "").slice(-1);
+    const digit = sanitizeDigits(raw).slice(-1);
     const next = digitsArr.slice();
     next[index] = digit;
     setDigitsArr(next);
@@ -38,17 +39,8 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm }: Props) => {
     }
   };
 
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !digitsArr[index] && index > 0) {
-      const next = digitsArr.slice();
-      next[index - 1] = "";
-      setDigitsArr(next);
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "");
+    const pasted = sanitizeDigits(e.clipboardData.getData("text"));
     if (!pasted) {
       return;
     }
@@ -103,7 +95,6 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm }: Props) => {
               hasError={!!error}
               inputRefs={inputRefs}
               onChange={handleChange}
-              onKeyDown={handleKeyDown}
               onPaste={handlePaste}
             />
           ))}

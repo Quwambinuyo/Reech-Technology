@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import type { ClipboardEvent, KeyboardEvent } from "react";
 import { IoClose, IoInformationCircleOutline } from "react-icons/io5";
 import logo from "../../../assets/logo-s.png";
 import { OtpInput } from "../../../components/CustomInput";
+import { sanitizeDigits } from "../../../../src/utils";
 
 interface Props {
   onClose: () => void;
@@ -25,7 +25,7 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm, originalPin }: Props) => {
   }, []);
 
   const handleChange = (index: number, raw: string) => {
-    const digit = raw.replace(/\D/g, "").slice(-1);
+    const digit = sanitizeDigits(raw).slice(-1);
     const next = digitsArr.slice();
     next[index] = digit;
     setDigitsArr(next);
@@ -37,31 +37,6 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm, originalPin }: Props) => {
     if (digit && index < PIN_LENGTH - 1) {
       inputRefs.current[index + 1]?.focus();
     }
-  };
-
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !digitsArr[index] && index > 0) {
-      const next = digitsArr.slice();
-      next[index - 1] = "";
-      setDigitsArr(next);
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "");
-    if (!pasted) {
-      return;
-    }
-    e.preventDefault();
-    const next = pasted
-      .slice(0, PIN_LENGTH)
-      .split("")
-      .concat(Array(PIN_LENGTH).fill(""))
-      .slice(0, PIN_LENGTH);
-    setDigitsArr(next);
-    const focusIndex = Math.min(pasted.length, PIN_LENGTH - 1);
-    inputRefs.current[focusIndex]?.focus();
   };
 
   const handleContinue = () => {
@@ -108,8 +83,6 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm, originalPin }: Props) => {
               hasError={!!error}
               inputRefs={inputRefs}
               onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              onPaste={handlePaste}
             />
           ))}
         </div>
