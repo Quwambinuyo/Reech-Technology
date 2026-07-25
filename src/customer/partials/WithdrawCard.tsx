@@ -6,6 +6,7 @@ import { BsLightningChargeFill } from "react-icons/bs";
 import Logo from "../../assets/logo-s.png";
 import { CustomSelect } from "../../components/CustomSelect";
 import { CustomTextInput } from "../../components/CustomInput";
+import { reechCurrency } from "../../assets";
 
 interface Props {
   onClose: () => void;
@@ -60,7 +61,9 @@ const WithdrawCard = ({ onClose }: Props) => {
           />
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm md:text-[14.5px]">Amount in Points</label>
+            <label className="text-sm md:text-[14.5px]">
+              Amount in Credits
+            </label>
             <div className="border border-[#D9D9D9] px-3 py-2.5 rounded-xl w-full flex items-center justify-between gap-2">
               <input
                 type="number"
@@ -69,9 +72,11 @@ const WithdrawCard = ({ onClose }: Props) => {
                 placeholder="0.00"
                 className="flex-1 outline-none border-none bg-transparent text-[15px] placeholder:text-[#D9D9D9] text-[#0D0D0D]"
               />
-              <span className="text-xs font-ibmplex font-bold bg-[#EDDCFF] p-1 text-[#B582FE] flex-shrink-0">
-                PTS
-              </span>
+
+              <img src={reechCurrency} alt="" className="w-[20px]" />
+              {/* <span className="text-xs font-ibmplex font-bold bg-[#EDDCFF] p-1 text-[#B582FE] flex-shrink-0">
+                Credit
+              </span> */}
             </div>
           </div>
 
@@ -87,8 +92,9 @@ const WithdrawCard = ({ onClose }: Props) => {
                 ${cashEquivalent}
               </p>
             </div>
-            <p className="text-[12px] font-ibmplex font-semibold text-[#4A148C]">
-              {PTS_TO_USD} PTS = $1.00
+            <p className="text-[12px] font-ibmplex flex items-center gap-1.5 font-semibold text-[#4A148C]">
+              <img src={reechCurrency} alt="" className="w-[12px]" />
+              {PTS_TO_USD} = $1.00
             </p>
           </div>
 
@@ -116,11 +122,12 @@ const WithdrawCard = ({ onClose }: Props) => {
               <p className="text-sm font-montserrat font-bold text-[#0D0D0D]">
                 Total Points Deducted
               </p>
-              <p className="text-sm font-montserrat font-bold text-[#4A148C]">
+              <p className="text-sm font-montserrat font-bold text-[#4A148C] flex gap-1.5">
+                <img src={reechCurrency} alt="" className="w-[20px]" />
+
                 {totalPointsDeducted > 0
                   ? totalPointsDeducted.toLocaleString()
                   : "0"}
-                PTS
               </p>
             </div>
           </div>

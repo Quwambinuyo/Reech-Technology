@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import CountUp from "react-countup";
 import { TbSend } from "react-icons/tb";
-import { LuUpload } from "react-icons/lu";
+import { MdOutlineGeneratingTokens } from "react-icons/md";
 import { RiShieldKeyholeLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { HiArrowDownLeft, HiArrowUpRight } from "react-icons/hi2";
@@ -11,8 +11,8 @@ import TabSelector from "../../components/TabSelector";
 import { billLine, wallet, reechCurrency } from "../../assets";
 import { tabs } from "../../customer/partials";
 import PayBillCard from "../../customer/partials/PaybillCard";
-import SendPointFlow from "../../pages/payment/steps/SendpointFlow";
-import WithdrawCard from "../../customer/partials/WithdrawCard";
+import SendPointFlow from "./sendCreditSteps/SendpointFlow";
+import TokenGenerationFlow from "./tokenGenerationStep/TokenGenerationFlow";
 import CreatePinFlow from "../../pages/payment/createPinStep/CreatePinFlow";
 import Modal from "../../layout/Modal";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -24,14 +24,14 @@ import Spinner from "../../components/Spinner";
 import Empty from "../../components/Empty";
 import { timeRangeOptions, getDateRangeFromOption } from "../../utils";
 
+type ActiveModal = "send" | "bill" | "token" | "pin" | null;
+
 const MakePayment = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const [activeTab, setActiveTab] = useState("All");
-  const [activeModal, setActiveModal] = useState<
-    "send" | "bill" | "withdraw" | "pin" | null
-  >(null);
+  const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [pageNumber] = useState(1);
   const [pageSize] = useState(10);
   const [selectedRange] = useState(timeRangeOptions[0]);
@@ -121,7 +121,7 @@ const MakePayment = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-[62%] bg-[#FCFCFF] rounded-xl flex items-center gap-3 md:gap-4 px-4 py-6 text-[#4A148C]">
+        <div className="w-full md:w-[62%] bg-[#FCFCFF] rounded-xl grid grid-cols-2 sm:flex sm:items-center gap-3 md:gap-4 px-4 py-6 text-[#4A148C]">
           <button
             onClick={() => setActiveModal("send")}
             className="flex-1 flex flex-col items-center gap-2.5 py-4 lg:py-5 rounded-xl bg-white border border-[#F0F1FE] hover:bg-[#F5F3FF] hover:border-[#E8E3FF] active:scale-[0.97] transition-all duration-150"
@@ -129,7 +129,9 @@ const MakePayment = () => {
             <span className="flex-center h-11 w-11 rounded-full bg-[#F0F1FE]">
               <TbSend size={20} />
             </span>
-            <p className="text-[13px] lg:text-sm font-medium">Send Credit</p>
+            <p className="text-[13px] lg:text-[10px] font-medium">
+              Send Credit
+            </p>
           </button>
 
           <button
@@ -139,17 +141,19 @@ const MakePayment = () => {
             <span className="flex-center h-11 w-11 rounded-full bg-[#F0F1FE]">
               <img src={billLine} alt="bill" className="w-5 h-5" />
             </span>
-            <p className="text-[13px] lg:text-sm font-medium">Pay Bill</p>
+            <p className="text-[13px] lg:text-[10px] font-medium">Pay Bill</p>
           </button>
 
           <button
-            onClick={() => setActiveModal("withdraw")}
+            onClick={() => setActiveModal("token")}
             className="flex-1 flex flex-col items-center gap-2.5 py-4 lg:py-5 rounded-xl bg-white border border-[#F0F1FE] hover:bg-[#F5F3FF] hover:border-[#E8E3FF] active:scale-[0.97] transition-all duration-150"
           >
             <span className="flex-center h-11 w-11 rounded-full bg-[#F0F1FE]">
-              <LuUpload size={20} />
+              <MdOutlineGeneratingTokens size={20} />
             </span>
-            <p className="text-[13px] lg:text-sm font-medium">Withdraw</p>
+            <p className="text-[13px] lg:text-[10px] font-medium">
+              Token Generation
+            </p>
           </button>
 
           <button
@@ -159,7 +163,7 @@ const MakePayment = () => {
             <span className="flex-center h-11 w-11 rounded-full bg-[#F0F1FE]">
               <RiShieldKeyholeLine size={20} />
             </span>
-            <p className="text-[13px] lg:text-sm font-medium">Set PIN</p>
+            <p className="text-[13px] lg:text-[10px] font-medium">Set PIN</p>
           </button>
         </div>
       </section>
@@ -231,9 +235,9 @@ const MakePayment = () => {
         </Modal>
       )}
 
-      {activeModal === "withdraw" && (
-        <Modal modal={activeModal === "withdraw"} onClose={closeModal}>
-          <WithdrawCard onClose={closeModal} />
+      {activeModal === "token" && (
+        <Modal modal={activeModal === "token"} onClose={closeModal}>
+          <TokenGenerationFlow onClose={closeModal} />
         </Modal>
       )}
 

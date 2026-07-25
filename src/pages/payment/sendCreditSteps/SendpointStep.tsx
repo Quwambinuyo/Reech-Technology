@@ -7,7 +7,7 @@ import type { Recipient } from "./types";
 import { TRANSFER_FEE, CURRENT_BALANCE } from "./types";
 import { MdPersonSearch } from "react-icons/md";
 import { FaCoins } from "react-icons/fa6";
-import { formatInputNumber, formatNumber } from "../../../../src/utils";
+import { formatInputNumber, formatNumber } from "../../../utils";
 
 interface Props {
   onClose: () => void;
@@ -90,12 +90,6 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <div className="flex text-[16px] justify-between items-center">
-              <p className="text-[#4A454F]">Transfer Fee</p>
-              <p className="font-ibmplex font-semibold text-[#0D0D0D]">
-                -{formatNumber(TRANSFER_FEE)} Credits
-              </p>
-            </div>
             <div className="border-t border-gray-100 pt-3">
               <div className="flex justify-between items-start">
                 <p className="text-sm font-montserrat font-bold text-[#0D0D0D]">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PinFlowStep } from "../steps/types";
+import type { PinFlowStep } from "../sendCreditSteps/types";
 import PinIntroStep from "./PinIntroStep";
 import CreatePinStep from "./CreatePinStep";
 import ConfirmPinStep from "./ConfirmPinStep";

@@ -2,29 +2,21 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import Logo from "../../../assets/logo-s.png";
 import StepBar from "./StepBar";
-import type { Merchant, Step } from "./types";
-import { EXCHANGE_RATE } from "./types";
+import type { Step } from "../sendCreditSteps/types";
+import { EXCHANGE_RATE } from "../sendCreditSteps/types";
 
 interface Props {
   onClose: () => void;
-  merchant: Merchant;
   points: number;
   onBack: () => void;
   onConfirm: () => void;
 }
 
-const ReviewStep = ({
-  onClose,
-  merchant,
-  points,
-  onBack,
-  onConfirm,
-}: Props) => {
+const ReviewStep = ({ onClose, points, onBack, onConfirm }: Props) => {
   const equivalent = points * EXCHANGE_RATE;
 
   const rows = [
-    { label: "Merchant", value: merchant.name, isChip: true },
-    { label: "Points sending", value: `${points.toLocaleString()} credits` },
+    { label: "Points converting", value: `${points.toLocaleString()} credits` },
     {
       label: "Equivalent value",
       value: `₦${equivalent.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`,
@@ -43,10 +35,10 @@ const ReviewStep = ({
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-montserrat font-bold text-[#0D0D0D] text-lg">
-              Send Credits
+              Review Token
             </h3>
             <p className="text-gray-400 text-[12px] font-ibmplex mt-0.5">
-              Review the details before generating your OTP.
+              Review the details before generating your token.
             </p>
           </div>
           <button
@@ -57,7 +49,7 @@ const ReviewStep = ({
           </button>
         </div>
 
-        <StepBar current={3 as Step} />
+        <StepBar current={1 as Step} />
 
         <div className="flex flex-col divide-y divide-gray-100 border border-[#EFEFFF] rounded-xl overflow-hidden">
           {rows.map((r) => (
@@ -68,31 +60,17 @@ const ReviewStep = ({
               <p className="text-[13px] font-ibmplex text-[#6B6B8A]">
                 {r.label}
               </p>
-              {r.isChip ? (
-                <div className="flex items-center gap-1.5">
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0"
-                    style={{ background: merchant.color }}
-                  >
-                    {merchant.initials}
-                  </div>
-                  <p className="text-[13px] font-ibmplex font-semibold text-[#0D0D0D]">
-                    {r.value}
-                  </p>
-                </div>
-              ) : (
-                <p
-                  className={`text-[13px] font-ibmplex font-semibold ${
-                    r.red
-                      ? "text-[#C62828]"
-                      : r.purple
-                        ? "text-[#4A148C]"
-                        : "text-[#0D0D0D]"
-                  }`}
-                >
-                  {r.value}
-                </p>
-              )}
+              <p
+                className={`text-[13px] font-ibmplex font-semibold ${
+                  r.red
+                    ? "text-[#C62828]"
+                    : r.purple
+                      ? "text-[#4A148C]"
+                      : "text-[#0D0D0D]"
+                }`}
+              >
+                {r.value}
+              </p>
             </div>
           ))}
         </div>
@@ -103,10 +81,8 @@ const ReviewStep = ({
             className="text-[#4A148C] mt-0.5 shrink-0"
           />
           <p className="text-[12px] font-ibmplex text-[#3D3D6B] leading-relaxed">
-            An OTP will be generated upon confirmation. This code is unique to
-            this transaction and should be shared{" "}
-            <span className="font-bold">only with the merchant</span> to
-            complete the transfer.
+            A token will be generated upon confirmation. Keep it safe until you
+            redeem it.
           </p>
         </div>
 
@@ -121,7 +97,7 @@ const ReviewStep = ({
             onClick={onConfirm}
             className="flex-1 bg-[#4A148C] text-white font-montserrat font-semibold rounded-4xl py-3.5 text-[16px]"
           >
-            Review & Confirm
+            Confirm
           </button>
         </div>
       </div>
