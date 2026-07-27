@@ -2,8 +2,8 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import Logo from "../../../assets/logo-s.png";
 import StepBar from "./StepBar";
-import type { Step } from "../sendCreditSteps/types";
-import { EXCHANGE_RATE } from "../sendCreditSteps/types";
+import type { Step } from "../types";
+import { EXCHANGE_RATE } from "../types";
 
 interface Props {
   onClose: () => void;

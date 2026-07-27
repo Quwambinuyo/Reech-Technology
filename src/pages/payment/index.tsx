@@ -20,6 +20,7 @@ import {
   fetchCustomerDashboardOverview,
   fetchCustomerRecentTransactions,
 } from "../../redux/dashboard/action";
+import { fetchUserPinStatus } from "../../redux/auth/authActions";
 import Spinner from "../../components/Spinner";
 import Empty from "../../components/Empty";
 import { timeRangeOptions, getDateRangeFromOption } from "../../utils";
@@ -47,6 +48,10 @@ const MakePayment = () => {
   const { customerOverview, customerRecentTransactions, loading } =
     useAppSelector((state) => state.dashboard);
 
+  const { pinStatus } = useAppSelector((state) => state.auth);
+
+  const hasPin = pinStatus?.hasPin ?? false;
+
   useEffect(() => {
     dispatch(
       fetchCustomerDashboardOverview({
@@ -67,6 +72,10 @@ const MakePayment = () => {
       }),
     );
   }, [dispatch, pageNumber, pageSize, startDate, endDate]);
+
+  useEffect(() => {
+    dispatch(fetchUserPinStatus());
+  }, [dispatch]);
 
   const transactions = customerRecentTransactions?.result ?? [];
 
@@ -163,7 +172,9 @@ const MakePayment = () => {
             <span className="flex-center h-11 w-11 rounded-full bg-[#F0F1FE]">
               <RiShieldKeyholeLine size={20} />
             </span>
-            <p className="text-[13px] lg:text-[10px] font-medium">Set PIN</p>
+            <p className="text-[13px] lg:text-[10px] font-medium">
+              {hasPin ? "Update PIN" : "Set PIN"}
+            </p>
           </button>
         </div>
       </section>

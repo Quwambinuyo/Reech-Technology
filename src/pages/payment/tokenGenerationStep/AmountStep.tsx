@@ -4,8 +4,8 @@ import Logo from "../../../assets/logo-s.png";
 import { reechCurrency } from "../../../assets";
 import { formatNumber } from "../../../../src/utils";
 import StepBar from "./StepBar";
-import type { Step } from "../sendCreditSteps/types";
-import { CURRENT_BALANCE, EXCHANGE_RATE } from "../sendCreditSteps/types";
+import type { Step } from "../types";
+import { CURRENT_BALANCE, EXCHANGE_RATE } from "../types";
 
 interface Props {
   onClose: () => void;

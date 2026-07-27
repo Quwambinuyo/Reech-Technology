@@ -1,4 +1,4 @@
-import type { Step } from "../sendCreditSteps/types";
+import type { Step } from "../types";
 
 interface Props {
   current: Step;

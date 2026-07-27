@@ -8,11 +8,23 @@ interface Props {
   onClose: () => void;
   onBack: () => void;
   onNext: (pin: string) => void;
+  title?: string;
+  subtitle?: string;
+  noticeText?: string;
+  submitLabel?: string;
 }
 
 const PIN_LENGTH = 6;
 
-const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
+const CreatePinStep = ({
+  onClose,
+  onBack,
+  onNext,
+  title = "Create Transaction PIN",
+  subtitle = "Secure Your REECH Wallet",
+  noticeText = "Create a secure 6-digit PIN to protect your REECH Credits. This PIN will be required for every credit transfer and withdrawal.",
+  submitLabel = "Continue",
+}: Props) => {
   const [digitsArr, setDigitsArr] = useState<string[]>(
     Array(PIN_LENGTH).fill(""),
   );
@@ -52,10 +64,8 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
     <div className="bg-white rounded-2xl h-auto max-h-[80vh] md:h-[650px] md:max-h-[70vh] w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl border border-dashed border-[#D0D0F0] p-6 flex flex-col gap-5">
       <div className="flex items-start justify-between shrink-0">
         <div className="flex flex-col gap-1">
-          <h3 className="text-[#030649] text-lg font-semibold">
-            Create Transaction PIN
-          </h3>
-          <p className="text-[#797979] text-sm">Secure Your REECH Wallet</p>
+          <h3 className="text-[#030649] text-lg font-semibold">{title}</h3>
+          <p className="text-[#797979] text-sm">{subtitle}</p>
         </div>
 
         <button
@@ -88,8 +98,7 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
             className="text-[#C77B26] mt-0.5 shrink-0"
           />
           <p className="text-[#8A5A1E] text-[13px] leading-relaxed">
-            Create a secure 6-digit PIN to protect your REECH Credits. This PIN
-            will be required for every credit transfer and withdrawal.
+            {noticeText}
           </p>
         </div>
       </div>
@@ -106,7 +115,7 @@ const CreatePinStep = ({ onClose, onBack, onNext }: Props) => {
           onClick={handleContinue}
           className="flex-1 py-3 rounded-full w-full bg-[#4A148C] text-white font-medium hover:bg-[#3A1070] transition-colors"
         >
-          Continue
+          {submitLabel}
         </button>
       </div>
 

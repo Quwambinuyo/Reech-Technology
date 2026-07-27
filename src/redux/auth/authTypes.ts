@@ -5,6 +5,10 @@ export interface SignupDataType {
   url: string;
 }
 
+export interface PinStatusType {
+  hasPin: boolean;
+}
+
 export interface StateType {
   allCountries: CountryProps[];
   createAccountLoading: boolean;
@@ -21,6 +25,12 @@ export interface StateType {
   forgotPasswordLoading: boolean;
   forgotPasswordSuccess: any;
   forgotPasswordError: string;
+  updatePinLoading: boolean;
+  updatePinSuccess: unknown;
+  updatePinError: string;
+  pinStatusLoading: boolean;
+  pinStatus: PinStatusType | null;
+  pinStatusError: string;
 }
 
 export interface SigninDataType {

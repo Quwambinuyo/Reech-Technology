@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Recipient } from "./types";
+import type { Recipient } from "../types";
 import SendPointStep from "./SendpointStep";
 import ConfirmPinStep from "./ConfirmPinStep";
 

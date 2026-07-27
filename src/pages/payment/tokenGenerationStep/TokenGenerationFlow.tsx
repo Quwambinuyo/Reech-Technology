@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Step } from "../sendCreditSteps/types";
+import type { Step } from "../types";
 import AmountStep from "./AmountStep";
 import ReviewStep from "./ReviewStep";
 import PinStep from "../sendCreditSteps/ConfirmPinStep";

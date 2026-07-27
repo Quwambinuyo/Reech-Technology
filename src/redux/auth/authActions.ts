@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { baseURL } from "../../components/api";
+import { axiosInstance, baseURL } from "../../components/api";
 import { toast } from "react-toastify";
 import type { SigninDataType, SignupDataType } from "./authTypes";
 import { getOrCreateTabId, saveUserToStorage } from "../../utils";
@@ -135,6 +135,65 @@ export const userAccountForgotPassword = createAsyncThunk(
 
       toast.error(message);
       return rejectWithValue(message);
+    }
+  },
+);
+
+export const updateUserPin = createAsyncThunk(
+  "auth/updateUserPin",
+  async (
+    reqBody: { pin: string; currentPin?: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.put(`${baseURL}/users/pin`, reqBody);
+
+      if (response.data?.isSuccess) {
+        toast.success("Your PIN has been updated successfully.");
+        return response.data?.data;
+      } else {
+        throw new Error(response.data?.message || "Failed to update PIN");
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else if (
+        error?.response?.data?.message?.includes(
+          "Password is required and must contain",
+        )
+      ) {
+        toast.error("The provided current PIN is incorrect.");
+        return rejectWithValue("Invalid current PIN");
+      } else {
+        toast.error(error?.response?.data?.message || error?.message);
+        return rejectWithValue(error?.message || error?.response?.data?.error);
+      }
+    }
+  },
+);
+
+export const fetchUserPinStatus = createAsyncThunk(
+  "auth/fetchUserPinStatus",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`${baseURL}/users/pin`);
+
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      } else {
+        throw new Error(response.data?.message || "Failed to fetch PIN status");
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else {
+        toast.error(error?.response?.data?.message || error?.message);
+        return rejectWithValue(error?.message || error?.response?.data?.error);
+      }
     }
   },
 );
