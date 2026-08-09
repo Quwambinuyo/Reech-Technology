@@ -50,6 +50,30 @@ const CreatePinStep = ({
     }
   };
 
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key !== "Backspace") {
+      return;
+    }
+
+    if (digitsArr[index]) {
+      return;
+    }
+
+    if (index === 0) {
+      return;
+    }
+
+    e.preventDefault();
+
+    const next = digitsArr.slice();
+    next[index - 1] = "";
+    setDigitsArr(next);
+    inputRefs.current[index - 1]?.focus();
+  };
+
   const handleContinue = () => {
     const pin = digitsArr.join("");
     if (pin.length !== PIN_LENGTH) {
@@ -86,6 +110,7 @@ const CreatePinStep = ({
               hasError={!!error}
               inputRefs={inputRefs}
               onChange={handleChange}
+              onKeyDown={handleKeyDown}
             />
           ))}
         </div>

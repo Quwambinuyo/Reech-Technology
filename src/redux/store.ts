@@ -8,6 +8,7 @@ import { merchantReducer } from "./merchant/reducer";
 import { apiKeyReducer } from "./profile/reducer";
 import { dashboardReducer } from "./dashboard/reducer";
 import { currencyReducer } from "./currency/reducer";
+import { walletReducer } from "./wallet/reducer";
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     apiKey: apiKeyReducer,
     dashboard: dashboardReducer,
     currency: currencyReducer,
+    wallet: walletReducer,
   },
 });
 

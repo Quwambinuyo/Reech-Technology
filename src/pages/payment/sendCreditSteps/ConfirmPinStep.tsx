@@ -9,11 +9,12 @@ interface Props {
   onClose: () => void;
   onBack: () => void;
   onConfirm: (pin: string) => void;
+  loading?: boolean;
 }
 
 const PIN_LENGTH = 6;
 
-const ConfirmPinStep = ({ onClose, onBack, onConfirm }: Props) => {
+const ConfirmPinStep = ({ onClose, onBack, onConfirm, loading }: Props) => {
   const [digitsArr, setDigitsArr] = useState<string[]>(
     Array(PIN_LENGTH).fill(""),
   );
@@ -117,16 +118,18 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm }: Props) => {
       <div className="flex items-center gap-3 mt-1 flex-col md:flex-row shrink-0">
         <button
           onClick={onBack}
-          className="flex-1 py-3 rounded-full border border-[#4A148C] text-[#4A148C] font-medium hover:bg-[#F5F3FF] transition-colors w-full"
+          disabled={loading}
+          className="flex-1 py-3 rounded-full border border-[#4A148C] text-[#4A148C] font-medium hover:bg-[#F5F3FF] transition-colors w-full disabled:opacity-50"
         >
           Back
         </button>
 
         <button
           onClick={handleContinue}
-          className="flex-1 py-3 rounded-full w-full bg-[#4A148C] text-white font-medium hover:bg-[#3A1070] transition-colors"
+          disabled={loading}
+          className="flex-1 py-3 rounded-full w-full bg-[#4A148C] text-white font-medium hover:bg-[#3A1070] transition-colors disabled:opacity-50"
         >
-          Continue
+          {loading ? "Processing..." : "Continue"}
         </button>
       </div>
 

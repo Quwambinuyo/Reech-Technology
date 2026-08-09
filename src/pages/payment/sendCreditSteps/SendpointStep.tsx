@@ -4,7 +4,7 @@ import { TbSend } from "react-icons/tb";
 import Logo from "../../../assets/logo-s.png";
 import { CustomTextInput } from "../../../components/CustomInput";
 import type { Recipient } from "../types";
-import { TRANSFER_FEE, CURRENT_BALANCE } from "../types";
+import { TRANSFER_FEE } from "../types";
 import { MdPersonSearch } from "react-icons/md";
 import { FaCoins } from "react-icons/fa6";
 import { formatInputNumber, formatNumber } from "../../../utils";
@@ -12,20 +12,21 @@ import { formatInputNumber, formatNumber } from "../../../utils";
 interface Props {
   onClose: () => void;
   onNext: (recipient: Recipient, points: number, note: string) => void;
+  balance: number;
 }
 
-const SendPointStep = ({ onClose, onNext }: Props) => {
+const SendPointStep = ({ onClose, onNext, balance }: Props) => {
   const [recipientInput, setRecipientInput] = useState("");
   const [points, setPoints] = useState("");
   const [note, setNote] = useState("");
 
   const pointsNum = points ? parseFloat(points.replace(/,/g, "")) : 0;
   const totalDeduction = pointsNum > 0 ? pointsNum + TRANSFER_FEE : 0;
-  const remaining = CURRENT_BALANCE - totalDeduction;
+  const remaining = balance - totalDeduction;
   const isValid =
     recipientInput.trim() !== "" &&
     pointsNum > 0 &&
-    pointsNum + TRANSFER_FEE <= CURRENT_BALANCE;
+    pointsNum + TRANSFER_FEE <= balance;
 
   const handleNext = () => {
     if (!isValid) return;
@@ -121,7 +122,7 @@ const SendPointStep = ({ onClose, onNext }: Props) => {
             </p>
           )}
 
-          {totalDeduction > CURRENT_BALANCE && (
+          {totalDeduction > balance && (
             <p className="text-xs text-red-500 font-ibmplex">
               Insufficient balance.
             </p>

@@ -96,6 +96,7 @@ const CreatePinFlow = ({ onClose, onComplete }: Props) => {
           setPin(newPin);
           setStep(2);
         }}
+        title={hasPin ? "Create New Transaction PIN" : "Create Transaction PIN"}
       />
     );
   }
