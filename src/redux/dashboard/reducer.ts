@@ -5,6 +5,8 @@ import {
   fetchRecentTransactions,
   fetchCustomerDashboardOverview,
   fetchCustomerRecentTransactions,
+  fetchAdminDashboardOverview,
+  fetchAdminRewardPerformance,
 } from "./action";
 
 interface MetricStat {
@@ -30,6 +32,15 @@ interface CustomerDashboardOverview {
   totalPointsSpent: MetricStat;
   totalTransactions: MetricStat;
   redeemedPoints: MetricStat;
+}
+
+interface AdminDashboardOverview {
+  startDate: string;
+  endDate: string;
+  totalCustomers: MetricStat;
+  totalPoints: MetricStat;
+  totalMerchants: MetricStat;
+  totalSpent: MetricStat;
 }
 
 interface RewardPerformanceItem {
@@ -83,12 +94,16 @@ interface DashboardState {
   recentTransactions: RecentTransactionsData | null;
   customerOverview: CustomerDashboardOverview | null;
   customerRecentTransactions: CustomerRecentTransactionsData | null;
+  adminOverview: AdminDashboardOverview | null;
+  adminRewardPerformance: RewardPerformanceItem[];
   loading: {
     overview: boolean;
     rewardPerformance: boolean;
     recentTransactions: boolean;
     customerOverview: boolean;
     customerRecentTransactions: boolean;
+    adminOverview: boolean;
+    adminRewardPerformance: boolean;
   };
   error: {
     overview: string | null;
@@ -96,6 +111,8 @@ interface DashboardState {
     recentTransactions: string | null;
     customerOverview: string | null;
     customerRecentTransactions: string | null;
+    adminOverview: string | null;
+    adminRewardPerformance: string | null;
   };
 }
 
@@ -105,12 +122,16 @@ const initialState: DashboardState = {
   recentTransactions: null,
   customerOverview: null,
   customerRecentTransactions: null,
+  adminOverview: null,
+  adminRewardPerformance: [],
   loading: {
     overview: false,
     rewardPerformance: false,
     recentTransactions: false,
     customerOverview: false,
     customerRecentTransactions: false,
+    adminOverview: false,
+    adminRewardPerformance: false,
   },
   error: {
     overview: null,
@@ -118,6 +139,8 @@ const initialState: DashboardState = {
     recentTransactions: null,
     customerOverview: null,
     customerRecentTransactions: null,
+    adminOverview: null,
+    adminRewardPerformance: null,
   },
 };
 
@@ -193,6 +216,32 @@ const dashboardSlice = createSlice({
       .addCase(fetchCustomerRecentTransactions.rejected, (state, action) => {
         state.loading.customerRecentTransactions = false;
         state.error.customerRecentTransactions = action.payload as string;
+      })
+
+      .addCase(fetchAdminDashboardOverview.pending, (state) => {
+        state.loading.adminOverview = true;
+        state.error.adminOverview = null;
+      })
+      .addCase(fetchAdminDashboardOverview.fulfilled, (state, action) => {
+        state.loading.adminOverview = false;
+        state.adminOverview = action.payload;
+      })
+      .addCase(fetchAdminDashboardOverview.rejected, (state, action) => {
+        state.loading.adminOverview = false;
+        state.error.adminOverview = action.payload as string;
+      })
+
+      .addCase(fetchAdminRewardPerformance.pending, (state) => {
+        state.loading.adminRewardPerformance = true;
+        state.error.adminRewardPerformance = null;
+      })
+      .addCase(fetchAdminRewardPerformance.fulfilled, (state, action) => {
+        state.loading.adminRewardPerformance = false;
+        state.adminRewardPerformance = action.payload;
+      })
+      .addCase(fetchAdminRewardPerformance.rejected, (state, action) => {
+        state.loading.adminRewardPerformance = false;
+        state.error.adminRewardPerformance = action.payload as string;
       });
   },
 });

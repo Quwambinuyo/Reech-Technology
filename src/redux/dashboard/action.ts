@@ -208,3 +208,70 @@ export const fetchCustomerRecentTransactions = createAsyncThunk(
     }
   },
 );
+
+export const fetchAdminDashboardOverview = createAsyncThunk(
+  "dashboard/fetchAdminDashboardOverview",
+  async (
+    reqBody: { startDate: string | null; endDate: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.get(
+        `${baseURL}/admin/dashboard/overview`,
+        { params: reqBody },
+      );
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      } else {
+        throw new Error("Failed to fetch admin dashboard overview");
+      }
+    } catch (error: any) {
+      console.log(error, error?.response?.status);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again,");
+        clearUserSession(tabId);
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+      } else {
+        toast.error(error?.response?.data?.error || error?.message);
+        return rejectWithValue(error?.message || error?.response?.data?.error);
+      }
+    }
+  },
+);
+
+export const fetchAdminRewardPerformance = createAsyncThunk(
+  "dashboard/fetchAdminRewardPerformance",
+  async (grouping: 0 | 1, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `${baseURL}/admin/dashboard/reward-performance`,
+        { params: { Grouping: grouping } },
+      );
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      } else {
+        throw new Error("Failed to fetch admin reward performance");
+      }
+    } catch (error: any) {
+      console.log(error, error?.response?.status);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again,");
+        clearUserSession(tabId);
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+      } else {
+        toast.error(error?.response?.data?.error || error?.message);
+        return rejectWithValue(error?.message || error?.response?.data?.error);
+      }
+    }
+  },
+);

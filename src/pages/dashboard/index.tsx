@@ -30,7 +30,7 @@ const Dashboard = () => {
       </section>
 
       {currentUserRole === "SuperAdmin" ? (
-        <AdminDashboard />
+        <AdminDashboard startDate={startDate} endDate={endDate} />
       ) : currentUserRole === "BusinessAdmin" ? (
         <MerchantDashboard startDate={startDate} endDate={endDate} />
       ) : (
