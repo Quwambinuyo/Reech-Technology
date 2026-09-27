@@ -14,7 +14,7 @@ import {
   fetchCustomerDashboardOverview,
   fetchCustomerRecentTransactions,
 } from "../redux/dashboard/action";
-import Skeleton from "../merchant/skeleton/dashboardSkeleton/Skeleton";
+import Skeleton from "../merchant/skeleton/transactionSkeleton/Skeleton";
 
 type CustomerDashboardProps = {
   startDate: Date | null;

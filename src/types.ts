@@ -99,7 +99,6 @@ export interface AdminCategoryListProps {
   numOfMerchants?: number;
   description: string;
   id: string;
-  // status?: "enabled" | "disabled";
 }
 
 export interface ActivityPointProps {
@@ -129,3 +128,15 @@ export interface CustomerTransactionProps {
   status: string;
   time: string;
 }
+
+export type MerchantTransactionCardProps = {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  profilePicture: string;
+  amount: number;
+  points: number;
+  isDebit: boolean;
+  time: string;
+};

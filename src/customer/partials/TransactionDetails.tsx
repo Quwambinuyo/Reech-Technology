@@ -12,6 +12,9 @@ const TransactionDetails = () => {
 		(state) => state.transaction
 	);
 
+	const isMerchantTransaction =
+		!!toggleTransactionDetails && "productType" in toggleTransactionDetails;
+
 	return (
 		<div className="bg-white w-11/12 max-w-[550px] md:max-w-[600px] lg:max-w-[650px] py-4 sm:py-5 lg:py-6 xl:py-7 rounded-xl">
 			<section className="flex-between text-lg lg:text-xl px-4 sm:px-5 lg:px-6 xl:px-7 mb-6 lg:mb-7 xl:mb-8">
@@ -28,16 +31,30 @@ const TransactionDetails = () => {
 				<div className="font-semibold flex-between text-sm pb-3 md:pb-4 border-b-2 border-b-[#D7D7D7]">
 					<div className="flex items-center gap-2">
 						<img
-							src={toggleTransactionDetails?.company}
-							alt={toggleTransactionDetails?.productType}
+							src={
+								isMerchantTransaction
+									? toggleTransactionDetails.company
+									: toggleTransactionDetails?.businessLogo
+							}
+							alt={
+								isMerchantTransaction
+									? toggleTransactionDetails.productType
+									: undefined
+							}
 							className="`w-[29px] xl:w-[30px] h-auto"
 						/>
 						<p className="text-xs md:text-[13px]">
-							{toggleTransactionDetails?.productType}
+							{isMerchantTransaction
+								? toggleTransactionDetails.productType
+								: toggleTransactionDetails?.businessName}
 						</p>
 					</div>
 					<p>
-						{moment(toggleTransactionDetails?.date).format("DD/MM/YYYY h:mm A")}
+						{moment(
+							isMerchantTransaction
+								? toggleTransactionDetails.date
+								: toggleTransactionDetails?.time
+						).format("DD/MM/YYYY h:mm A")}
 					</p>
 				</div>
 
@@ -45,8 +62,17 @@ const TransactionDetails = () => {
 					<div className="flex-between">
 						<div className="flex flex-col gap-2">
 							<h3 className="text-neutral-900 text-2xl font-bold">
-								{toggleTransactionDetails?.type === "credit" ? "+" : "-"}{" "}
-								{toggleTransactionDetails?.pointsEarned} Points
+								{(
+									isMerchantTransaction
+										? toggleTransactionDetails.type === "credit"
+										: toggleTransactionDetails?.isDebit === false
+								)
+									? "+"
+									: "-"}{" "}
+								{isMerchantTransaction
+									? toggleTransactionDetails.pointsEarned
+									: toggleTransactionDetails?.points}{" "}
+								Points
 							</h3>
 							<p className="text-sm text-neutral-900">
 								For a {toggleTransactionDetails?.status} transaction{" "}

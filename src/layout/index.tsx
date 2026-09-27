@@ -7,15 +7,14 @@ import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
 import Navbar, { MobileNavbar } from "./Navbar";
 import Modal from "./Modal";
-// import MerchantTransactionDetails from "../merchant/partial/MerchantTransactionDetails";
+import MerchantTransactionDetails from "../merchant/partial/MerchantTransactionDetails";
 
 const LayoutWrapper = () => {
   const { pathname } = useLocation();
 
   const { toggleMobileSidebar } = useAppSelector((state) => state.auth);
-  const { toggleTransactionDetails } = useAppSelector(
-    (state) => state.transaction,
-  );
+  const { toggleTransactionDetails, toggleMerchantTransactionDetails } =
+    useAppSelector((state) => state.transaction);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -27,9 +26,9 @@ const LayoutWrapper = () => {
       <Modal modal={!!toggleTransactionDetails}>
         <TransactionDetails />
       </Modal>
-      {/* <Modal >
+      <Modal modal={!!toggleMerchantTransactionDetails}>
         <MerchantTransactionDetails />
-      </Modal> */}
+      </Modal>
 
       <div className="md:ml-[220px] lg:ml-[235px] xl:ml-[256px] px-5 sm:px-8 md:px-5 xl:px-6 pb-14 sm:pb-16 max-w-[1400px] mx-auto bg-[#F0F1FE]">
         <MobileNavbar />

@@ -2,6 +2,8 @@ import moment from "moment";
 import { customerImg } from "../../assets";
 import { StatusDisplay } from "../../components/small";
 import { CustomerInfo } from ".";
+import { useAppDispatch } from "../../redux/hooks";
+import { onToggleMerchantTransactionDetails } from "../../redux/transaction/reducer";
 
 type MerchantTransactionProps = {
   id: string;
@@ -20,6 +22,8 @@ const TransactionCard = ({
 }: {
   transaction: MerchantTransactionProps;
 }) => {
+  const dispatch = useAppDispatch();
+
   return (
     <div
       className="grid font-ibmplex font-semibold text-neutral-900 gap-4 text-sm xl:text-[14.5px] odd:bg-[#F5F6FF] p-4"
@@ -57,7 +61,10 @@ const TransactionCard = ({
       </div>
 
       <div className="col-span-2">
-        <button className="text-[#4A148C] border border-[#4A148C] rounded-lg py-2 text-sm font-inter font-normal w-full">
+        <button
+          className="text-[#4A148C] border border-[#4A148C] rounded-lg py-2 text-sm font-inter font-normal w-full"
+          onClick={() => dispatch(onToggleMerchantTransactionDetails(transaction))}
+        >
           Details
         </button>
       </div>

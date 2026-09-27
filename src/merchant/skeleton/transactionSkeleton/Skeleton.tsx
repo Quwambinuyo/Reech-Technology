@@ -1,6 +1,18 @@
 const Skeleton = () => {
   return (
-    <div className="mt-7 animate-pulse">
+    <div className="mt-7">
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -400px 0; }
+          100% { background-position: 400px 0; }
+        }
+        .shimmer {
+          background: linear-gradient(90deg, #f1f2f6 25%, #ffffff 50%, #f1f2f6 75%);
+          background-size: 800px 100%;
+          animation: shimmer 1.6s infinite linear;
+        }
+      `}</style>
+
       <section className="overflow-x-auto hide-scroll">
         <div className="grid grid-cols-4 gap-4 min-w-[1000px]">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -8,15 +20,15 @@ const Skeleton = () => {
               key={index}
               className="bg-white rounded-xl p-4 flex flex-col gap-3 min-w-[220px] xl:min-w-[230px]"
             >
-              <div className="w-10 h-10 rounded-lg bg-gray-200" />
-              <div className="w-28 h-4 rounded bg-gray-200" />
+              <div className="w-10 h-10 rounded-lg shimmer" />
+              <div className="w-28 h-4 rounded shimmer" />
               <div className="flex items-center gap-2">
-                <div className="w-24 h-8 rounded bg-gray-300" />
-                <div className="w-12 h-4 rounded bg-gray-200" />
+                <div className="w-24 h-8 rounded shimmer" />
+                <div className="w-12 h-4 rounded shimmer" />
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-gray-200" />
-                <div className="w-36 h-3 rounded bg-gray-200" />
+                <div className="w-4 h-4 rounded-full shimmer" />
+                <div className="w-36 h-3 rounded shimmer" />
               </div>
             </div>
           ))}
@@ -25,13 +37,13 @@ const Skeleton = () => {
 
       <section className="rounded-xl bg-white p-3 lg:p-4 mt-7 flex flex-col gap-4">
         <div className="flex justify-between items-center">
-          <div className="w-48 h-6 rounded bg-gray-300" />
-          <div className="w-20 h-9 rounded-lg bg-gray-200" />
+          <div className="w-48 h-6 rounded shimmer" />
+          <div className="w-20 h-9 rounded-lg shimmer" />
         </div>
 
         <div className="flex gap-3">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="w-24 h-10 rounded-full bg-gray-200" />
+            <div key={index} className="w-24 h-10 rounded-full shimmer" />
           ))}
         </div>
 
@@ -40,12 +52,12 @@ const Skeleton = () => {
             className="grid gap-3 px-2 min-w-[1000px]"
             style={{ gridTemplateColumns: "repeat(19, 1fr)" }}
           >
-            <div className="col-span-4 h-4 rounded bg-gray-300" />
-            <div className="col-span-3 h-4 rounded bg-gray-300" />
-            <div className="col-span-4 h-4 rounded bg-gray-300" />
-            <div className="col-span-3 h-4 rounded bg-gray-300" />
-            <div className="col-span-3 h-4 rounded bg-gray-300" />
-            <div className="col-span-2 h-4 rounded bg-gray-300" />
+            <div className="col-span-4 h-4 rounded shimmer" />
+            <div className="col-span-3 h-4 rounded shimmer" />
+            <div className="col-span-4 h-4 rounded shimmer" />
+            <div className="col-span-3 h-4 rounded shimmer" />
+            <div className="col-span-3 h-4 rounded shimmer" />
+            <div className="col-span-2 h-4 rounded shimmer" />
           </div>
 
           <div className="px-2 py-5 lg:px-3 min-w-[1000px]">
@@ -57,32 +69,32 @@ const Skeleton = () => {
                   style={{ gridTemplateColumns: "repeat(19, 1fr)" }}
                 >
                   <div className="col-span-4 flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gray-300" />
+                    <div className="w-12 h-12 rounded-full shimmer" />
                     <div className="flex flex-col gap-2">
-                      <div className="w-32 h-4 rounded bg-gray-300" />
-                      <div className="w-44 h-3 rounded bg-gray-200" />
+                      <div className="w-32 h-4 rounded shimmer" />
+                      <div className="w-44 h-3 rounded shimmer" />
                     </div>
                   </div>
 
                   <div className="col-span-3 flex items-center">
-                    <div className="w-24 h-4 rounded bg-gray-300" />
+                    <div className="w-24 h-4 rounded shimmer" />
                   </div>
 
                   <div className="col-span-4 flex justify-center items-center gap-2">
-                    <div className="w-20 h-4 rounded bg-gray-300" />
-                    <div className="w-16 h-4 rounded bg-gray-200" />
+                    <div className="w-20 h-4 rounded shimmer" />
+                    <div className="w-16 h-4 rounded shimmer" />
                   </div>
 
                   <div className="col-span-3 flex justify-center items-center">
-                    <div className="w-20 h-4 rounded bg-gray-300" />
+                    <div className="w-20 h-4 rounded shimmer" />
                   </div>
 
                   <div className="col-span-3 flex justify-center items-center">
-                    <div className="w-20 h-8 rounded-full bg-gray-200" />
+                    <div className="w-20 h-8 rounded-full shimmer" />
                   </div>
 
                   <div className="col-span-2 flex items-center">
-                    <div className="w-full h-9 rounded-lg bg-gray-200" />
+                    <div className="w-full h-9 rounded-lg shimmer" />
                   </div>
                 </div>
               ))}

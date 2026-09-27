@@ -1,13 +1,20 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { TransactionProps, CustomerTransactionProps } from "../../types";
+import type {
+  TransactionProps,
+  CustomerTransactionProps,
+  MerchantTransactionCardProps,
+} from "../../types";
 
 type AnyTransactionProps = TransactionProps | CustomerTransactionProps;
 
 interface TransactionReducerProps {
   toggleTransactionDetails: AnyTransactionProps | null;
+  toggleMerchantTransactionDetails: MerchantTransactionCardProps | null;
 }
+
 const initialState: TransactionReducerProps = {
   toggleTransactionDetails: null,
+  toggleMerchantTransactionDetails: null,
 };
 
 const transactionSlice = createSlice({
@@ -27,9 +34,25 @@ const transactionSlice = createSlice({
         return { payload: transactionInfo };
       },
     },
+    onToggleMerchantTransactionDetails: {
+      reducer: (
+        state,
+        action: PayloadAction<MerchantTransactionCardProps | null | undefined>,
+      ) => {
+        state.toggleMerchantTransactionDetails = action.payload ?? null;
+      },
+      prepare: (
+        transactionInfo?: MerchantTransactionCardProps | null,
+      ): { payload: MerchantTransactionCardProps | null | undefined } => {
+        return { payload: transactionInfo };
+      },
+    },
   },
 });
 
-export const { onToggleTransactionDetails } = transactionSlice.actions;
+export const {
+  onToggleTransactionDetails,
+  onToggleMerchantTransactionDetails,
+} = transactionSlice.actions;
 
 export const transactionReducer = transactionSlice.reducer;
