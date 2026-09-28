@@ -121,11 +121,12 @@ export interface CustomerTransactionProps {
   id: string;
   businessId: string;
   businessName: string;
-  businessLogo: string;
+  businessLogo: string | null;
   amount: number;
   points: number;
   isDebit: boolean;
   status: string;
+  reference: string;
   time: string;
 }
 
@@ -134,9 +135,12 @@ export type MerchantTransactionCardProps = {
   userId: string;
   name: string;
   email: string;
-  profilePicture: string;
+  profilePicture: string | null;
   amount: number;
   points: number;
   isDebit: boolean;
+  status: string;
+  type: string;
+  reference: string;
   time: string;
 };

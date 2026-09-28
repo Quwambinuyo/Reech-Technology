@@ -3,6 +3,7 @@ import type { CustomerTransactionProps } from "../../types";
 import { StatusDisplay } from "../../components/small";
 import { useAppDispatch } from "../../redux/hooks";
 import { onToggleTransactionDetails } from "../../redux/transaction/reducer";
+import { fetchCustomerTransactionDetails } from "../../redux/dashboard/action";
 
 const TransactionCard = ({
   transaction,
@@ -15,6 +16,7 @@ const TransactionCard = ({
 
   const onDetailsClick = () => {
     dispatch(onToggleTransactionDetails(transaction));
+    dispatch(fetchCustomerTransactionDetails(transaction.id));
   };
 
   return (

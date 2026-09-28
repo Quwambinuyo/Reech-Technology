@@ -1,73 +1,61 @@
 import moment from "moment";
-import { customerImg } from "../../assets";
+import type { MerchantTransactionCardProps } from "../../types";
 import { StatusDisplay } from "../../components/small";
-import { CustomerInfo } from ".";
 import { useAppDispatch } from "../../redux/hooks";
 import { onToggleMerchantTransactionDetails } from "../../redux/transaction/reducer";
-
-type MerchantTransactionProps = {
-  id: string;
-  userId: string;
-  name: string;
-  email: string;
-  profilePicture: string;
-  amount: number;
-  points: number;
-  isDebit: boolean;
-  time: string;
-};
+import { fetchMerchantTransactionDetails } from "../../redux/dashboard/action";
 
 const TransactionCard = ({
   transaction,
 }: {
-  transaction: MerchantTransactionProps;
+  transaction: MerchantTransactionCardProps;
 }) => {
   const dispatch = useAppDispatch();
 
+  const onDetailsClick = () => {
+    dispatch(onToggleMerchantTransactionDetails(transaction));
+    dispatch(fetchMerchantTransactionDetails(transaction.id));
+  };
+
   return (
     <div
-      className="grid font-ibmplex font-semibold text-neutral-900 gap-4 text-sm xl:text-[14.5px] odd:bg-[#F5F6FF] p-4"
+      className="grid font-ibmplex font-semibold text-neutral-900 gap-3 text-sm xl:text-[14.5px] items-center"
       style={{ gridTemplateColumns: "repeat(20, 1fr)" }}
     >
-      <div className="col-span-5">
-        <CustomerInfo
-          imgUrl={transaction.profilePicture || customerImg}
-          name={transaction.name}
-          email={transaction.email}
-        />
+      <div className="col-span-5 ml-5 flex items-center gap-3">
+        {transaction.profilePicture ? (
+          <img
+            src={transaction.profilePicture}
+            alt={transaction.name}
+            className="w-[29px] xl:w-[30px] aspect-square rounded-full object-cover shrink-0"
+          />
+        ) : (
+          <div className="w-[29px] xl:w-[30px] aspect-square rounded-full border border-[#4A148C] bg-[#4A148C] text-white flex items-center justify-center text-sm font-semibold uppercase shrink-0">
+            {transaction.name?.charAt(0)}
+          </div>
+        )}
+        <p className="truncate">{transaction.name}</p>
       </div>
-
       <p className="col-span-3 flex items-center">
-        ₦{(transaction.amount ?? 0).toLocaleString()}
+        ₦{transaction.amount.toLocaleString()}
       </p>
-
-      <p className="col-span-4 flex-center gap-2 text-sm">
-        <span>
-          {transaction.time
-            ? moment(transaction.time).format("DD/MM/YYYY")
-            : "--"}
-        </span>
-        <span>
-          {transaction.time ? moment(transaction.time).format("h:mm A") : "--"}
-        </span>
+      <p className="col-span-4 flex gap-2 items-center justify-center">
+        <span>{moment(transaction.time).format("DD/MM/YYYY")}</span>
+        <span>{moment(transaction.time).format("h:mm A")}</span>
       </p>
-
-      <p className="col-span-3 flex-center">
-        {(transaction.points ?? 0).toLocaleString()} points
+      <p className="col-span-3 flex items-center justify-center">
+        {transaction.isDebit ? "-" : "+"} {transaction.points.toLocaleString()}{" "}
+        Points
       </p>
-
-      <div className="col-span-3 text-center">
-        <StatusDisplay status={transaction.isDebit ? "Debit" : "Credit"} />
+      <div className="col-span-3 flex items-center">
+        <StatusDisplay status={transaction.status} />
       </div>
-
-      <div className="col-span-2">
-        <button
-          className="text-[#4A148C] border border-[#4A148C] rounded-lg py-2 text-sm font-inter font-normal w-full"
-          onClick={() => dispatch(onToggleMerchantTransactionDetails(transaction))}
-        >
-          Details
-        </button>
-      </div>
+      <button
+        className="text-[#4A148C] border border-[#4A148C] rounded-lg py-2 font-normal text-sm font-inter col-span-2"
+        onClick={onDetailsClick}
+      >
+        Details
+      </button>
     </div>
   );
 };

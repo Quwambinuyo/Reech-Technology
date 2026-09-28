@@ -17,6 +17,9 @@ const Transaction = () => {
     };
   }, [selectedRange]);
 
+
+  console.log(startDate, endDate);
+  
   return (
     <div>
       <section className="flex-between">

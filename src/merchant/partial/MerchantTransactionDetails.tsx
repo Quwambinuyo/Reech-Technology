@@ -1,79 +1,138 @@
-import moment from "moment";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import { StatusDisplay } from "../../components/small";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { onToggleMerchantTransactionDetails } from "../../redux/transaction/reducer";
-import { StatusDisplay } from "../../components/small";
-import { customerImg } from "../../assets";
+import { clearMerchantTransactionDetails } from "../../redux/dashboard/reducer";
+import { formatDateTime } from "../../utils";
+
+const DetailRow = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) => (
+  <div className="flex items-center justify-between gap-6 py-4 border-b border-neutral-300">
+    <p className="text-sm text-neutral-700 shrink-0">{label}</p>
+    <div className="text-sm sm:text-base font-semibold text-neutral-900 text-right break-all">
+      {value}
+    </div>
+  </div>
+);
+
+const DetailsSkeleton = () => (
+  <div className="animate-pulse flex flex-col gap-5">
+    <div className="flex items-center gap-3">
+      <div className="w-[42px] h-[42px] rounded-full bg-neutral-200" />
+      <div className="h-4 w-40 rounded bg-neutral-200" />
+    </div>
+    <div className="h-px bg-neutral-200" />
+    <div className="h-8 w-48 rounded bg-neutral-200" />
+    <div className="h-5 rounded bg-neutral-200" />
+    <div className="h-5 rounded bg-neutral-200" />
+    <div className="h-5 rounded bg-neutral-200" />
+  </div>
+);
 
 const MerchantTransactionDetails = () => {
   const dispatch = useAppDispatch();
 
-  const { toggleMerchantTransactionDetails } = useAppSelector(
-    (state) => state.transaction,
+  const { merchantTransactionDetails, loading, error } = useAppSelector(
+    (state) => state.dashboard,
   );
 
+  const onClose = () => {
+    dispatch(onToggleMerchantTransactionDetails(null));
+    dispatch(clearMerchantTransactionDetails());
+  };
+
+  const renderBody = () => {
+    if (error.merchantTransactionDetails) {
+      return (
+        <p className="text-sm text-red-600">
+          {error.merchantTransactionDetails}
+        </p>
+      );
+    }
+
+    if (loading.merchantTransactionDetails || !merchantTransactionDetails) {
+      return <DetailsSkeleton />;
+    }
+
+    const {
+      name,
+      email,
+      profilePicture,
+      points,
+      isDebit,
+      amount,
+      status,
+      reference,
+      time,
+    } = merchantTransactionDetails;
+
+    return (
+      <>
+        <div className="flex items-center gap-3 pb-5 border-b border-neutral-300">
+          {profilePicture ? (
+            <img
+              src={profilePicture}
+              alt={name}
+              className="w-[42px] h-[42px] rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div className="w-[42px] h-[42px] rounded-full bg-[#4A148C] text-white flex items-center justify-center text-base font-semibold uppercase shrink-0">
+              {name?.charAt(0)}
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="font-semibold text-neutral-900 truncate">{name}</p>
+            <p className="text-xs text-neutral-500 truncate">{email}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 py-5">
+          <p className="text-xl sm:text-2xl font-bold text-neutral-900">
+            {isDebit ? "-" : "+"} {points.toLocaleString()} Points
+          </p>
+          <span
+            className={`flex items-center gap-2 rounded-md px-6 sm:px-10 py-2.5 text-sm font-medium ${
+              isDebit
+                ? "bg-[#E3F2E1] text-[#43A047]"
+                : "bg-[#EDE7F6] text-[#4A148C]"
+            }`}
+          >
+            <span className="w-1 h-1 rounded-full bg-current" />
+            {isDebit ? "Debit" : "Credit"}
+          </span>
+        </div>
+
+        <div className="flex flex-col">
+          <DetailRow label="Amount" value={`₦${amount.toLocaleString()}`} />
+          <DetailRow label="Status" value={<StatusDisplay status={status} />} />
+          <DetailRow label="Reference" value={reference} />
+          <DetailRow label="Date/Time" value={formatDateTime(time)} />
+        </div>
+      </>
+    );
+  };
+
   return (
-    <div className="bg-white w-11/12 max-w-[550px] md:max-w-[600px] lg:max-w-[650px] py-4 sm:py-5 lg:py-6 xl:py-7 rounded-xl">
-      <section className="flex-between text-lg lg:text-xl px-4 sm:px-5 lg:px-6 xl:px-7 mb-6 lg:mb-7 xl:mb-8">
-        <h4 className="text-light-black font-medium">Transaction Details</h4>
+    <div className="bg-white rounded-2xl px-7 py-7 w-[92vw] max-w-[650px] font-ibmplex">
+      <div className="flex items-center justify-between mb-6">
+        <h5 className="text-xl sm:text-2xl font-semibold text-neutral-900">
+          Transaction Details
+        </h5>
         <button
-          className="text-2xl lg:text-3xl"
-          onClick={() => dispatch(onToggleMerchantTransactionDetails(null))}
+          onClick={onClose}
+          className="text-neutral-900 text-3xl"
+          aria-label="Close"
         >
           <IoCloseCircleOutline />
         </button>
-      </section>
+      </div>
 
-      <section className="text-ibmplex px-4 sm:px-5 lg:px-6 xl:px-7">
-        <div className="flex items-center gap-3 pb-4 border-b-2 border-b-[#D7D7D7]">
-          <img
-            src={toggleMerchantTransactionDetails?.profilePicture || customerImg}
-            alt={toggleMerchantTransactionDetails?.name}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <div>
-            <p className="font-semibold text-sm">
-              {toggleMerchantTransactionDetails?.name}
-            </p>
-            <p className="text-xs text-neutral-500">
-              {toggleMerchantTransactionDetails?.email}
-            </p>
-          </div>
-        </div>
-
-        <div className="py-4 flex flex-col gap-4">
-          <div className="flex-between">
-            <h3 className="text-neutral-900 text-2xl font-bold">
-              {toggleMerchantTransactionDetails?.isDebit ? "-" : "+"}{" "}
-              {(toggleMerchantTransactionDetails?.points ?? 0).toLocaleString()}{" "}
-              Points
-            </h3>
-            <StatusDisplay
-              status={
-                toggleMerchantTransactionDetails?.isDebit ? "Debit" : "Credit"
-              }
-            />
-          </div>
-
-          <div className="flex-between border-b border-b-[#D7D7D7] pb-3">
-            <p className="text-sm">Amount</p>
-            <h5 className="font-medium">
-              ₦{(toggleMerchantTransactionDetails?.amount ?? 0).toLocaleString()}
-            </h5>
-          </div>
-
-          <div className="flex-between border-b border-b-[#D7D7D7] pb-3">
-            <p className="text-sm">Date/Time</p>
-            <h5 className="font-medium">
-              {toggleMerchantTransactionDetails?.time
-                ? moment(toggleMerchantTransactionDetails.time).format(
-                    "DD/MM/YYYY h:mm A",
-                  )
-                : "--"}
-            </h5>
-          </div>
-        </div>
-      </section>
+      {renderBody()}
     </div>
   );
 };

@@ -43,6 +43,9 @@ const MerchantTransactions = ({
         endDate: endDate.toISOString(),
       }),
     );
+  }, [dispatch, startDate, endDate]);
+
+  useEffect(() => {
     dispatch(
       fetchRecentTransactions({
         pageNumber,
@@ -54,25 +57,15 @@ const MerchantTransactions = ({
     );
   }, [dispatch, pageNumber, pageSize, search, startDate, endDate]);
 
-  const selectedTransactions = () => {
-    if (!recentTransactions?.result) return [];
+  const transactions = recentTransactions?.result ?? [];
 
-    if (activeTab === "Points") {
-      return recentTransactions.result.filter(
-        (transaction) => !transaction.isDebit,
-      );
-    }
+  const selectedTransactions = transactions.filter((transaction) => {
+    if (activeTab === "Points") return !transaction.isDebit;
+    if (activeTab === "Rewards") return transaction.isDebit;
+    return true;
+  });
 
-    if (activeTab === "Rewards") {
-      return recentTransactions.result.filter(
-        (transaction) => transaction.isDebit,
-      );
-    }
-
-    return recentTransactions.result;
-  };
-
-  if (loading.overview || loading.recentTransactions) {
+  if (loading.overview) {
     return <Skeleton />;
   }
 
@@ -152,30 +145,28 @@ const MerchantTransactions = ({
             <p className="col-span-4 text-center">Date/Time</p>
             <p className="col-span-3 text-center">Point Earned</p>
             <p className="col-span-3">
-              {activeTab === "Points"
-                ? "Status"
-                : activeTab === "Rewards"
-                  ? "Redeemed"
-                  : "Status"}
+              {activeTab === "Rewards" ? "Redeemed" : "Status"}
             </p>
             <p className="col-span-2">Action</p>
           </div>
 
           <div className="px-2 py-4 lg:py-5 lg:px-3 min-h-[250px] min-w-[1000px]">
-            <div className="grid gap-2">
-              {selectedTransactions().length === 0 ? (
-                <div className="h-[300px] xl:h-[300px]">
-                  <Empty text="No Transaction has been made yet" />
-                </div>
-              ) : (
-                selectedTransactions().map((transaction) => (
+            {loading.recentTransactions ? (
+              <Skeleton />
+            ) : selectedTransactions.length === 0 ? (
+              <div className="h-[300px]">
+                <Empty text="No Transaction has been made yet" />
+              </div>
+            ) : (
+              <div className="grid gap-8">
+                {selectedTransactions.map((transaction) => (
                   <TransactionCard
                     key={transaction.id}
                     transaction={transaction}
                   />
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

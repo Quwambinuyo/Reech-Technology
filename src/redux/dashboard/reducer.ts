@@ -3,8 +3,10 @@ import {
   fetchDashboardOverview,
   fetchRewardPerformance,
   fetchRecentTransactions,
+  fetchMerchantTransactionDetails,
   fetchCustomerDashboardOverview,
   fetchCustomerRecentTransactions,
+  fetchCustomerTransactionDetails,
   fetchAdminDashboardOverview,
   fetchAdminRewardPerformance,
 } from "./action";
@@ -55,10 +57,13 @@ interface RecentTransaction {
   userId: string;
   name: string;
   email: string;
-  profilePicture: string;
+  profilePicture: string | null;
   amount: number;
   points: number;
   isDebit: boolean;
+  status: string;
+  type: string;
+  reference: string;
   time: string;
 }
 
@@ -73,11 +78,12 @@ interface CustomerRecentTransaction {
   id: string;
   businessId: string;
   businessName: string;
-  businessLogo: string;
+  businessLogo: string | null;
   amount: number;
   points: number;
   isDebit: boolean;
   status: string;
+  reference: string;
   time: string;
 }
 
@@ -92,16 +98,26 @@ interface DashboardState {
   overview: DashboardOverview | null;
   rewardPerformance: RewardPerformanceItem[];
   recentTransactions: RecentTransactionsData | null;
+  recentTransactionsId: string | null;
+  recentTransactionsRequestId: string | null;
+  merchantTransactionDetails: RecentTransaction | null;
+  merchantTransactionDetailsRequestId: string | null;
   customerOverview: CustomerDashboardOverview | null;
   customerRecentTransactions: CustomerRecentTransactionsData | null;
+  customerRecentTransactionsId: string | null;
+  customerRecentTransactionsRequestId: string | null;
+  customerTransactionDetails: CustomerRecentTransaction | null;
+  customerTransactionDetailsRequestId: string | null;
   adminOverview: AdminDashboardOverview | null;
   adminRewardPerformance: RewardPerformanceItem[];
   loading: {
     overview: boolean;
     rewardPerformance: boolean;
     recentTransactions: boolean;
+    merchantTransactionDetails: boolean;
     customerOverview: boolean;
     customerRecentTransactions: boolean;
+    customerTransactionDetails: boolean;
     adminOverview: boolean;
     adminRewardPerformance: boolean;
   };
@@ -109,8 +125,10 @@ interface DashboardState {
     overview: string | null;
     rewardPerformance: string | null;
     recentTransactions: string | null;
+    merchantTransactionDetails: string | null;
     customerOverview: string | null;
     customerRecentTransactions: string | null;
+    customerTransactionDetails: string | null;
     adminOverview: string | null;
     adminRewardPerformance: string | null;
   };
@@ -120,16 +138,26 @@ const initialState: DashboardState = {
   overview: null,
   rewardPerformance: [],
   recentTransactions: null,
+  recentTransactionsId: null,
+  recentTransactionsRequestId: null,
+  merchantTransactionDetails: null,
+  merchantTransactionDetailsRequestId: null,
   customerOverview: null,
   customerRecentTransactions: null,
+  customerRecentTransactionsId: null,
+  customerRecentTransactionsRequestId: null,
+  customerTransactionDetails: null,
+  customerTransactionDetailsRequestId: null,
   adminOverview: null,
   adminRewardPerformance: [],
   loading: {
     overview: false,
     rewardPerformance: false,
     recentTransactions: false,
+    merchantTransactionDetails: false,
     customerOverview: false,
     customerRecentTransactions: false,
+    customerTransactionDetails: false,
     adminOverview: false,
     adminRewardPerformance: false,
   },
@@ -137,8 +165,10 @@ const initialState: DashboardState = {
     overview: null,
     rewardPerformance: null,
     recentTransactions: null,
+    merchantTransactionDetails: null,
     customerOverview: null,
     customerRecentTransactions: null,
+    customerTransactionDetails: null,
     adminOverview: null,
     adminRewardPerformance: null,
   },
@@ -149,6 +179,18 @@ const dashboardSlice = createSlice({
   initialState,
   reducers: {
     resetDashboardState: () => initialState,
+    clearMerchantTransactionDetails: (state) => {
+      state.merchantTransactionDetails = null;
+      state.merchantTransactionDetailsRequestId = null;
+      state.loading.merchantTransactionDetails = false;
+      state.error.merchantTransactionDetails = null;
+    },
+    clearCustomerTransactionDetails: (state) => {
+      state.customerTransactionDetails = null;
+      state.customerTransactionDetailsRequestId = null;
+      state.loading.customerTransactionDetails = false;
+      state.error.customerTransactionDetails = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -179,17 +221,42 @@ const dashboardSlice = createSlice({
         state.error.rewardPerformance = action.payload as string;
       })
 
-      .addCase(fetchRecentTransactions.pending, (state) => {
+      .addCase(fetchRecentTransactions.pending, (state, action) => {
+        const requestedId = action.meta.arg.id ?? null;
+        if (state.recentTransactionsId !== requestedId) {
+          state.recentTransactions = null;
+        }
+        state.recentTransactionsId = requestedId;
+        state.recentTransactionsRequestId = action.meta.requestId;
         state.loading.recentTransactions = true;
         state.error.recentTransactions = null;
       })
       .addCase(fetchRecentTransactions.fulfilled, (state, action) => {
+        if (state.recentTransactionsRequestId !== action.meta.requestId) return;
         state.loading.recentTransactions = false;
-        state.recentTransactions = action.payload;
+        state.recentTransactions = action.payload ?? null;
       })
       .addCase(fetchRecentTransactions.rejected, (state, action) => {
+        if (state.recentTransactionsRequestId !== action.meta.requestId) return;
         state.loading.recentTransactions = false;
         state.error.recentTransactions = action.payload as string;
+      })
+
+      .addCase(fetchMerchantTransactionDetails.pending, (state, action) => {
+        state.merchantTransactionDetails = null;
+        state.merchantTransactionDetailsRequestId = action.meta.requestId;
+        state.loading.merchantTransactionDetails = true;
+        state.error.merchantTransactionDetails = null;
+      })
+      .addCase(fetchMerchantTransactionDetails.fulfilled, (state, action) => {
+        if (state.merchantTransactionDetailsRequestId !== action.meta.requestId) return;
+        state.loading.merchantTransactionDetails = false;
+        state.merchantTransactionDetails = action.payload ?? null;
+      })
+      .addCase(fetchMerchantTransactionDetails.rejected, (state, action) => {
+        if (state.merchantTransactionDetailsRequestId !== action.meta.requestId) return;
+        state.loading.merchantTransactionDetails = false;
+        state.error.merchantTransactionDetails = action.payload as string;
       })
 
       .addCase(fetchCustomerDashboardOverview.pending, (state) => {
@@ -205,17 +272,42 @@ const dashboardSlice = createSlice({
         state.error.customerOverview = action.payload as string;
       })
 
-      .addCase(fetchCustomerRecentTransactions.pending, (state) => {
+      .addCase(fetchCustomerRecentTransactions.pending, (state, action) => {
+        const requestedId = action.meta.arg.id ?? null;
+        if (state.customerRecentTransactionsId !== requestedId) {
+          state.customerRecentTransactions = null;
+        }
+        state.customerRecentTransactionsId = requestedId;
+        state.customerRecentTransactionsRequestId = action.meta.requestId;
         state.loading.customerRecentTransactions = true;
         state.error.customerRecentTransactions = null;
       })
       .addCase(fetchCustomerRecentTransactions.fulfilled, (state, action) => {
+        if (state.customerRecentTransactionsRequestId !== action.meta.requestId) return;
         state.loading.customerRecentTransactions = false;
-        state.customerRecentTransactions = action.payload;
+        state.customerRecentTransactions = action.payload ?? null;
       })
       .addCase(fetchCustomerRecentTransactions.rejected, (state, action) => {
+        if (state.customerRecentTransactionsRequestId !== action.meta.requestId) return;
         state.loading.customerRecentTransactions = false;
         state.error.customerRecentTransactions = action.payload as string;
+      })
+
+      .addCase(fetchCustomerTransactionDetails.pending, (state, action) => {
+        state.customerTransactionDetails = null;
+        state.customerTransactionDetailsRequestId = action.meta.requestId;
+        state.loading.customerTransactionDetails = true;
+        state.error.customerTransactionDetails = null;
+      })
+      .addCase(fetchCustomerTransactionDetails.fulfilled, (state, action) => {
+        if (state.customerTransactionDetailsRequestId !== action.meta.requestId) return;
+        state.loading.customerTransactionDetails = false;
+        state.customerTransactionDetails = action.payload ?? null;
+      })
+      .addCase(fetchCustomerTransactionDetails.rejected, (state, action) => {
+        if (state.customerTransactionDetailsRequestId !== action.meta.requestId) return;
+        state.loading.customerTransactionDetails = false;
+        state.error.customerTransactionDetails = action.payload as string;
       })
 
       .addCase(fetchAdminDashboardOverview.pending, (state) => {
@@ -246,5 +338,9 @@ const dashboardSlice = createSlice({
   },
 });
 
-export const { resetDashboardState } = dashboardSlice.actions;
+export const {
+  resetDashboardState,
+  clearMerchantTransactionDetails,
+  clearCustomerTransactionDetails,
+} = dashboardSlice.actions;
 export const dashboardReducer = dashboardSlice.reducer;

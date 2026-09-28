@@ -81,6 +81,7 @@ export const fetchRecentTransactions = createAsyncThunk(
       search?: string;
       startDate?: string | null;
       endDate?: string;
+      id?: string;
     },
     { rejectWithValue },
   ) => {
@@ -92,6 +93,7 @@ export const fetchRecentTransactions = createAsyncThunk(
             PageNumber: params.pageNumber ?? 1,
             PageSize: params.pageSize ?? 10,
             Search: params.search ?? "",
+            Id: params.id,
           },
         },
       );
@@ -101,6 +103,47 @@ export const fetchRecentTransactions = createAsyncThunk(
       }
 
       throw new Error("Failed to fetch recent transactions");
+    } catch (error: any) {
+      console.log(error, error?.response?.status);
+
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again.");
+        clearUserSession(tabId);
+
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+      } else {
+        toast.error(error?.response?.data?.error || error?.message);
+        return rejectWithValue(error?.message || error?.response?.data?.error);
+      }
+    }
+  },
+);
+
+export const fetchMerchantTransactionDetails = createAsyncThunk(
+  "dashboard/fetchMerchantTransactionDetails",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `${baseURL}/businesses/dashboard/recent-transactions`,
+        {
+          params: {
+            PageNumber: 1,
+            PageSize: 1,
+            Id: id,
+          },
+        },
+      );
+
+      if (response.data?.isSuccess) {
+        return response.data?.data?.result?.[0];
+      }
+
+      throw new Error("Failed to fetch transaction details");
     } catch (error: any) {
       console.log(error, error?.response?.status);
 
@@ -166,6 +209,7 @@ export const fetchCustomerRecentTransactions = createAsyncThunk(
       search?: string;
       startDate?: string | null;
       endDate?: string;
+      id?: string;
     },
     { rejectWithValue },
   ) => {
@@ -179,6 +223,7 @@ export const fetchCustomerRecentTransactions = createAsyncThunk(
             Search: params.search ?? "",
             StartDate: params.startDate ?? null,
             EndDate: params.endDate,
+            Id: params.id,
           },
         },
       );
@@ -188,6 +233,47 @@ export const fetchCustomerRecentTransactions = createAsyncThunk(
       }
 
       throw new Error("Failed to fetch customer recent transactions");
+    } catch (error: any) {
+      console.log(error, error?.response?.status);
+
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again.");
+        clearUserSession(tabId);
+
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+      } else {
+        toast.error(error?.response?.data?.error || error?.message);
+        return rejectWithValue(error?.message || error?.response?.data?.error);
+      }
+    }
+  },
+);
+
+export const fetchCustomerTransactionDetails = createAsyncThunk(
+  "dashboard/fetchCustomerTransactionDetails",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `${baseURL}/customers/dashboard/recent-transactions`,
+        {
+          params: {
+            PageNumber: 1,
+            PageSize: 1,
+            Id: id,
+          },
+        },
+      );
+
+      if (response.data?.isSuccess) {
+        return response.data?.data?.result?.[0];
+      }
+
+      throw new Error("Failed to fetch transaction details");
     } catch (error: any) {
       console.log(error, error?.response?.status);
 

@@ -1,125 +1,136 @@
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import moment from "moment";
-import { onToggleTransactionDetails } from "../../redux/transaction/reducer";
 import { StatusDisplay } from "../../components/small";
-import logo from "../../assets/reech-single.png";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { onToggleTransactionDetails } from "../../redux/transaction/reducer";
+import { clearCustomerTransactionDetails } from "../../redux/dashboard/reducer";
+import { formatDateTime } from "../../utils";
+
+const DetailRow = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) => (
+  <div className="flex items-center justify-between gap-6 py-4 border-b border-neutral-300">
+    <p className="text-sm text-neutral-700 shrink-0">{label}</p>
+    <div className="text-sm sm:text-base font-semibold text-neutral-900 text-right break-all">
+      {value}
+    </div>
+  </div>
+);
+
+const DetailsSkeleton = () => (
+  <div className="animate-pulse flex flex-col gap-5">
+    <div className="flex items-center gap-3">
+      <div className="w-[42px] h-[42px] rounded-full bg-neutral-200" />
+      <div className="h-4 w-40 rounded bg-neutral-200" />
+    </div>
+    <div className="h-px bg-neutral-200" />
+    <div className="h-8 w-48 rounded bg-neutral-200" />
+    <div className="h-5 rounded bg-neutral-200" />
+    <div className="h-5 rounded bg-neutral-200" />
+    <div className="h-5 rounded bg-neutral-200" />
+  </div>
+);
 
 const TransactionDetails = () => {
-	const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-	const { toggleTransactionDetails } = useAppSelector(
-		(state) => state.transaction
-	);
+  const { customerTransactionDetails, loading, error } = useAppSelector(
+    (state) => state.dashboard,
+  );
 
-	const isMerchantTransaction =
-		!!toggleTransactionDetails && "productType" in toggleTransactionDetails;
+  const onClose = () => {
+    dispatch(onToggleTransactionDetails(null));
+    dispatch(clearCustomerTransactionDetails());
+  };
 
-	return (
-		<div className="bg-white w-11/12 max-w-[550px] md:max-w-[600px] lg:max-w-[650px] py-4 sm:py-5 lg:py-6 xl:py-7 rounded-xl">
-			<section className="flex-between text-lg lg:text-xl px-4 sm:px-5 lg:px-6 xl:px-7 mb-6 lg:mb-7 xl:mb-8">
-				<h4 className="text-light-black font-medium">#12345678</h4>
-				<button
-					className="text-2xl lg:text-3xl"
-					onClick={() => dispatch(onToggleTransactionDetails(null))}
-				>
-					<IoCloseCircleOutline />
-				</button>
-			</section>
+  const renderBody = () => {
+    if (error.customerTransactionDetails) {
+      return (
+        <p className="text-sm text-red-600">{error.customerTransactionDetails}</p>
+      );
+    }
 
-			<section className="text-ibmplex h-[70vh] overflow-y-auto max-h-[450px] px-4 sm:px-5 lg:px-6 xl:px-7">
-				<div className="font-semibold flex-between text-sm pb-3 md:pb-4 border-b-2 border-b-[#D7D7D7]">
-					<div className="flex items-center gap-2">
-						<img
-							src={
-								isMerchantTransaction
-									? toggleTransactionDetails.company
-									: toggleTransactionDetails?.businessLogo
-							}
-							alt={
-								isMerchantTransaction
-									? toggleTransactionDetails.productType
-									: undefined
-							}
-							className="`w-[29px] xl:w-[30px] h-auto"
-						/>
-						<p className="text-xs md:text-[13px]">
-							{isMerchantTransaction
-								? toggleTransactionDetails.productType
-								: toggleTransactionDetails?.businessName}
-						</p>
-					</div>
-					<p>
-						{moment(
-							isMerchantTransaction
-								? toggleTransactionDetails.date
-								: toggleTransactionDetails?.time
-						).format("DD/MM/YYYY h:mm A")}
-					</p>
-				</div>
+    if (loading.customerTransactionDetails || !customerTransactionDetails) {
+      return <DetailsSkeleton />;
+    }
 
-				<div className="py-2 lg:py-3">
-					<div className="flex-between">
-						<div className="flex flex-col gap-2">
-							<h3 className="text-neutral-900 text-2xl font-bold">
-								{(
-									isMerchantTransaction
-										? toggleTransactionDetails.type === "credit"
-										: toggleTransactionDetails?.isDebit === false
-								)
-									? "+"
-									: "-"}{" "}
-								{isMerchantTransaction
-									? toggleTransactionDetails.pointsEarned
-									: toggleTransactionDetails?.points}{" "}
-								Points
-							</h3>
-							<p className="text-sm text-neutral-900">
-								For a {toggleTransactionDetails?.status} transaction{" "}
-							</p>
-						</div>
-						<StatusDisplay
-							status={toggleTransactionDetails?.status as string}
-						/>
-					</div>
+    const {
+      businessName,
+      businessLogo,
+      points,
+      isDebit,
+      amount,
+      status,
+      reference,
+      time,
+    } = customerTransactionDetails;
 
-					<div className="px-2 flex flex-col gap-4 lg:gap-5 mt-6">
-						<div className="flex-between border-b border-b-[#D7D7D7] pb-3 md:pb-4 lg:pb-5">
-							<p className="text-sm">Fee</p>
-							<h5 className="font-medium">-2 Points</h5>
-						</div>
+    return (
+      <>
+        <div className="flex items-center gap-3 pb-5 border-b border-neutral-300">
+          {businessLogo ? (
+            <img
+              src={businessLogo}
+              alt={businessName}
+              className="w-[42px] h-[42px] rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div className="w-[42px] h-[42px] rounded-full bg-[#4A148C] text-white flex items-center justify-center text-base font-semibold uppercase shrink-0">
+              {businessName.charAt(0)}
+            </div>
+          )}
+          <p className="font-semibold uppercase text-neutral-900 truncate">
+            {businessName}
+          </p>
+        </div>
 
-						<div className="flex-between border-b border-b-[#D7D7D7] pb-3 md:pb-4 lg:pb-5">
-							<p className="text-sm">Payment Type</p>
-							<h5 className="font-medium">Electronic Scan Transfer</h5>
-						</div>
+        <div className="flex items-center justify-between gap-4 py-5">
+          <p className="text-xl sm:text-2xl font-bold text-neutral-900">
+            {isDebit ? "-" : "+"} {points.toLocaleString()} Points
+          </p>
+          <span
+            className={`flex items-center gap-2 rounded-md px-6 sm:px-10 py-2.5 text-sm font-medium ${
+              isDebit
+                ? "bg-[#E3F2E1] text-[#43A047]"
+                : "bg-[#EDE7F6] text-[#4A148C]"
+            }`}
+          >
+            <span className="w-1 h-1 rounded-full bg-current" />
+            {isDebit ? "Debit" : "Credit"}
+          </span>
+        </div>
 
-						<div className="flex-between border-b border-b-[#D7D7D7] pb-3 md:pb-4 lg:pb-5">
-							<p className="text-sm">Debit From</p>
-							<h5 className="font-medium">Alex Meian</h5>
-						</div>
+        <div className="flex flex-col">
+          <DetailRow label="Amount" value={`₦${amount.toLocaleString()}`} />
+          <DetailRow label="Status" value={<StatusDisplay status={status} />} />
+          <DetailRow label="Reference" value={reference} />
+          <DetailRow label="Date/Time" value={formatDateTime(time)} />
+        </div>
+      </>
+    );
+  };
 
-						<div className="flex-between border-b border-b-[#D7D7D7] pb-3 md:pb-4 lg:pb-5">
-							<p className="text-sm">Fee</p>
-							<div className="flex flex-col items-end gap-1">
-								<h5 className="font-medium">Shoprite Allen Avenue</h5>
-								<p className="text-sm">019289378</p>
-							</div>
-						</div>
+  return (
+    <div className="bg-white rounded-2xl px-7 py-7 w-[92vw] max-w-[650px] font-ibmplex">
+      <div className="flex items-center justify-between mb-6">
+        <h5 className="text-xl sm:text-2xl font-semibold text-neutral-900">
+          Transaction Details
+        </h5>
+        <button
+          onClick={onClose}
+          className="text-neutral-900 text-3xl"
+          aria-label="Close"
+        >
+          <IoCloseCircleOutline />
+        </button>
+      </div>
 
-						<div className="flex-center">
-							<p className="flex items-center gap-0.5">
-								<img src={logo} alt="logo" className="w-[40px]" />
-								<span className="font-poppins font-medium text-[#000000]">
-									reech
-								</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</section>
-		</div>
-	);
+      {renderBody()}
+    </div>
+  );
 };
 
 export default TransactionDetails;
