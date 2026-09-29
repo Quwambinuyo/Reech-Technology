@@ -12,7 +12,7 @@ interface Props {
   loading?: boolean;
 }
 
-const PIN_LENGTH = 6;
+const PIN_LENGTH = 4;
 
 const ConfirmPinStep = ({ onClose, onBack, onConfirm, loading }: Props) => {
   const [digitsArr, setDigitsArr] = useState<string[]>(

@@ -14,7 +14,7 @@ interface Props {
   submitLabel?: string;
 }
 
-const PIN_LENGTH = 6;
+const PIN_LENGTH = 4;
 
 const CreatePinStep = ({
   onClose,
