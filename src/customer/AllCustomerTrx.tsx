@@ -35,21 +35,15 @@ const AllCustomerTrx = () => {
   }, [dispatch, pageNumber, pageSize, search]);
 
   const selectedTransactions = () => {
-    if (!customerRecentTransactions?.result) return [];
+    const transactions = customerRecentTransactions?.result ?? [];
 
-    if (activeTab === "Points") {
-      return customerRecentTransactions.result.filter(
-        (transaction) => !transaction.isDebit,
-      );
-    }
+    return transactions.filter((a) => {
+      if (activeTab === "All") {
+        return true;
+      }
 
-    if (activeTab === "Rewards") {
-      return customerRecentTransactions.result.filter(
-        (transaction) => transaction.isDebit,
-      );
-    }
-
-    return customerRecentTransactions.result;
+      return activeTab.toLowerCase().includes(a.isDebit ? "debit" : "credit");
+    });
   };
 
   if (loading.customerRecentTransactions) {

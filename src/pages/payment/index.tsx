@@ -67,11 +67,9 @@ const MakePayment = () => {
         pageNumber,
         pageSize,
         search: "",
-        startDate: startDate ? startDate.toISOString() : null,
-        endDate: endDate.toISOString(),
       }),
     );
-  }, [dispatch, pageNumber, pageSize, startDate, endDate]);
+  }, [dispatch, pageNumber, pageSize]);
 
   useEffect(() => {
     dispatch(fetchUserPinStatus());
@@ -83,10 +81,16 @@ const MakePayment = () => {
     if (activeTab === "All") {
       return true;
     }
+
     return activeTab.toLowerCase().includes(a.isDebit ? "debit" : "credit");
   });
 
   const closeModal = () => setActiveModal(null);
+
+  const handlePinComplete = () => {
+    dispatch(fetchUserPinStatus());
+    closeModal();
+  };
 
   const percentage = customerOverview?.pointBalance.percentageChange ?? 0;
 
@@ -254,12 +258,7 @@ const MakePayment = () => {
 
       {activeModal === "pin" && (
         <Modal modal={activeModal === "pin"} onClose={closeModal}>
-          <CreatePinFlow
-            onClose={closeModal}
-            onComplete={(pin) => {
-              console.log("PIN created:", pin);
-            }}
-          />
+          <CreatePinFlow onClose={closeModal} onComplete={handlePinComplete} />
         </Modal>
       )}
     </>

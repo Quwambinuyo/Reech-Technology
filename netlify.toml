@@ -1,0 +1,14 @@
+[build]
+  command = "yarn build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/api/v1/*"
+  to = "http://217.117.15.108:8090/api/v1/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
