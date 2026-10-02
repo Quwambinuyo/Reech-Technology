@@ -18,28 +18,28 @@ const ManageUsers = () => {
 					<DashboardCard
 						icon={pointBalance}
 						title="total customers"
-						value="2,300"
+						value={2300}
 						context="user"
 						info={{ percentage: 12 }}
 					/>
 					<DashboardCard
 						icon={redeemedPoint}
 						title="total transactions"
-						value="1,200"
+						value={1200}
 						context="user"
 						info={{ percentage: -10 }}
 					/>
 					<DashboardCard
 						icon={rank}
 						title="total spent rewards"
-						value="25"
+						value={25}
 						context="point"
 						info={{ percentage: 8 }}
 					/>
 					<DashboardCard
 						icon={pointSpent}
 						title="total points"
-						value="120,000"
+						value={120000}
 						context="point"
 						info={{ percentage: 2 }}
 					/>
