@@ -2,7 +2,15 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   submitMerchantVerification,
   fetchBusinesses,
+  fetchAdminMerchants,
+  fetchAdminMerchantDetail,
+  approveMerchant,
+  declineMerchant,
   type Business,
+  type AdminMerchant,
+  type MerchantDetail,
+  type MerchantStatus,
+  type AdminMerchantsQuery,
 } from "./action";
 
 type DirectorProps = {
@@ -11,6 +19,12 @@ type DirectorProps = {
   idCard: File | null;
   emailAddress: string;
   phoneNumber: string;
+};
+
+type MerchantListFilters = {
+  statusLabel: string;
+  search: string;
+  page: number;
 };
 
 type MerchantVerificationState = {
@@ -32,6 +46,21 @@ type MerchantVerificationState = {
   businessesTotalCount: number;
   isFetchingBusinesses: boolean;
   fetchBusinessesError: string;
+  adminMerchants: AdminMerchant[];
+  adminMerchantsPageNumber: number;
+  adminMerchantsTotalPages: number;
+  adminMerchantsTotalCount: number;
+  isFetchingAdminMerchants: boolean;
+  fetchAdminMerchantsError: string;
+  adminMerchantsQuery: AdminMerchantsQuery | null;
+  adminMerchantsFetchedAt: number | null;
+  merchantListFilters: MerchantListFilters;
+  merchantDetail: MerchantDetail | null;
+  isFetchingMerchantDetail: boolean;
+  fetchMerchantDetailError: string;
+  isApproving: boolean;
+  isDeclining: boolean;
+  reviewError: string;
 };
 
 const createEmptyDirector = (): DirectorProps => ({
@@ -61,6 +90,31 @@ const initialState: MerchantVerificationState = {
   businessesTotalCount: 0,
   isFetchingBusinesses: false,
   fetchBusinessesError: "",
+  adminMerchants: [],
+  adminMerchantsPageNumber: 0,
+  adminMerchantsTotalPages: 0,
+  adminMerchantsTotalCount: 0,
+  isFetchingAdminMerchants: false,
+  fetchAdminMerchantsError: "",
+  adminMerchantsQuery: null,
+  adminMerchantsFetchedAt: null,
+  merchantListFilters: { statusLabel: "All", search: "", page: 1 },
+  merchantDetail: null,
+  isFetchingMerchantDetail: false,
+  fetchMerchantDetailError: "",
+  isApproving: false,
+  isDeclining: false,
+  reviewError: "",
+};
+
+const syncMerchantStatus = (
+  state: MerchantVerificationState,
+  id: string,
+  status: MerchantStatus,
+) => {
+  const row = state.adminMerchants.find((merchant) => merchant.id === id);
+  if (row) row.status = status;
+  if (state.merchantDetail?.id === id) state.merchantDetail.status = status;
 };
 
 const merchantSlice = createSlice({
@@ -131,6 +185,20 @@ const merchantSlice = createSlice({
         payload: { index, file },
       }),
     },
+    setMerchantListFilters: (
+      state,
+      action: PayloadAction<Partial<MerchantListFilters>>,
+    ) => {
+      state.merchantListFilters = {
+        ...state.merchantListFilters,
+        ...action.payload,
+      };
+    },
+    clearMerchantDetail: (state) => {
+      state.merchantDetail = null;
+      state.fetchMerchantDetailError = "";
+      state.reviewError = "";
+    },
     resetMerchantVerification: () => initialState,
   },
   extraReducers: (builder) => {
@@ -166,6 +234,60 @@ const merchantSlice = createSlice({
       .addCase(fetchBusinesses.rejected, (state, action) => {
         state.isFetchingBusinesses = false;
         state.fetchBusinessesError = action.payload as string;
+      })
+      .addCase(fetchAdminMerchants.pending, (state) => {
+        state.isFetchingAdminMerchants = true;
+        state.fetchAdminMerchantsError = "";
+      })
+      .addCase(fetchAdminMerchants.fulfilled, (state, action) => {
+        state.isFetchingAdminMerchants = false;
+        state.adminMerchants = action.payload.result;
+        state.adminMerchantsPageNumber = action.payload.pageNumber;
+        state.adminMerchantsTotalPages = action.payload.totalPages;
+        state.adminMerchantsTotalCount = action.payload.totalCount;
+        state.adminMerchantsQuery = action.payload.query;
+        state.adminMerchantsFetchedAt = action.payload.fetchedAt;
+      })
+      .addCase(fetchAdminMerchants.rejected, (state, action) => {
+        state.isFetchingAdminMerchants = false;
+        state.fetchAdminMerchantsError = action.payload as string;
+      })
+      .addCase(fetchAdminMerchantDetail.pending, (state) => {
+        state.isFetchingMerchantDetail = true;
+        state.fetchMerchantDetailError = "";
+      })
+      .addCase(fetchAdminMerchantDetail.fulfilled, (state, action) => {
+        state.isFetchingMerchantDetail = false;
+        state.merchantDetail = action.payload;
+        syncMerchantStatus(state, action.payload.id, action.payload.status);
+      })
+      .addCase(fetchAdminMerchantDetail.rejected, (state, action) => {
+        state.isFetchingMerchantDetail = false;
+        state.fetchMerchantDetailError = action.payload as string;
+      })
+      .addCase(approveMerchant.pending, (state) => {
+        state.isApproving = true;
+        state.reviewError = "";
+      })
+      .addCase(approveMerchant.fulfilled, (state, action) => {
+        state.isApproving = false;
+        syncMerchantStatus(state, action.payload.id, action.payload.status);
+      })
+      .addCase(approveMerchant.rejected, (state, action) => {
+        state.isApproving = false;
+        state.reviewError = action.payload as string;
+      })
+      .addCase(declineMerchant.pending, (state) => {
+        state.isDeclining = true;
+        state.reviewError = "";
+      })
+      .addCase(declineMerchant.fulfilled, (state, action) => {
+        state.isDeclining = false;
+        syncMerchantStatus(state, action.payload.id, action.payload.status);
+      })
+      .addCase(declineMerchant.rejected, (state, action) => {
+        state.isDeclining = false;
+        state.reviewError = action.payload as string;
       });
   },
 });
@@ -182,6 +304,8 @@ export const {
   removeDirector,
   updateDirectorField,
   setDirectorIdCard,
+  setMerchantListFilters,
+  clearMerchantDetail,
   resetMerchantVerification,
 } = merchantSlice.actions;
 
