@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { onToggleTransactionDetails } from "../../redux/transaction/reducer";
 import { clearCustomerTransactionDetails } from "../../redux/dashboard/reducer";
 import { formatDateTime } from "../../utils";
+import Logo from "../../assets/logo-s.png";
 
 const DetailRow = ({
   label,
@@ -129,6 +130,15 @@ const TransactionDetails = () => {
       </div>
 
       {renderBody()}
+
+      <div className="flex justify-center items-center pt-6">
+        <div className="flex items-center">
+          <img src={Logo} alt="logo" className="w-[40px]" />
+          <span className="font-poppins font-medium text-[#000000] -ml-1">
+            reech
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

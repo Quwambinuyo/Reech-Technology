@@ -9,6 +9,7 @@ import { apiKeyReducer } from "./profile/reducer";
 import { dashboardReducer } from "./dashboard/reducer";
 import { currencyReducer } from "./currency/reducer";
 import { walletReducer } from "./wallet/reducer";
+import { userReducer } from "./users/reducer";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     currency: currencyReducer,
     wallet: walletReducer,
+    user: userReducer,
   },
 });
 
