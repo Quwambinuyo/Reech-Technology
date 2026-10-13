@@ -104,6 +104,7 @@ type ReviewResult = {
 };
 
 const DECLINE_REASON_MAX_LENGTH = 2000;
+const OTHER_ID_TYPE = "Other";
 
 const handleThunkError = (
   error: any,
@@ -279,6 +280,14 @@ export const submitMerchantVerification = createAsyncThunk(
       formData.append("Landmark", info.landmark);
       formData.append("CompanyName", info.companyName);
       formData.append("CompanyCategory", info.companyCategory);
+      formData.append("UtilityBillType", info.utilityBillType);
+
+      if (info.utilityBillType === "Other") {
+        formData.append(
+          "OtherUtilityBillType",
+          info.otherUtilityBillType.trim(),
+        );
+      }
 
       if (info.cacDocuments) {
         formData.append(
@@ -295,6 +304,14 @@ export const submitMerchantVerification = createAsyncThunk(
       info.directors.forEach((director: any, index: number) => {
         formData.append(`Directors[${index}].FullName`, director.fullName);
         formData.append(`Directors[${index}].IdType`, director.idType);
+
+        if (director.idType === OTHER_ID_TYPE) {
+          formData.append(
+            `Directors[${index}].OtherIdType`,
+            director.otherIdType.trim(),
+          );
+        }
+
         formData.append(
           `Directors[${index}].EmailAddress`,
           director.emailAddress,

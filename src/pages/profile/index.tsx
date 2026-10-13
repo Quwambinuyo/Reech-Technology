@@ -50,6 +50,9 @@ const Profile = () => {
   const [selectedKey, setSelectedKey] = useState<ApiKeyProps | null>(null);
 
   const { currentUser } = useAppSelector((state) => state.auth);
+
+  console.log(currentUser);
+  
   const {
     allApiKeys,
     fetchApiKeysLoading,

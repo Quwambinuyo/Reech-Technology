@@ -16,6 +16,7 @@ import {
 type DirectorProps = {
   fullName: string;
   idType: string;
+  otherIdType: string;
   idCard: File | null;
   emailAddress: string;
   phoneNumber: string;
@@ -35,6 +36,8 @@ type MerchantVerificationState = {
   companyCategory: string;
   cacDocuments: File | null;
   utilityBill: File | null;
+  utilityBillType: string;
+  otherUtilityBillType: string;
   directors: DirectorProps[];
   isSubmitting: boolean;
   submitError: string;
@@ -66,6 +69,7 @@ type MerchantVerificationState = {
 const createEmptyDirector = (): DirectorProps => ({
   fullName: "",
   idType: "",
+  otherIdType: "",
   idCard: null,
   emailAddress: "",
   phoneNumber: "",
@@ -79,6 +83,8 @@ const initialState: MerchantVerificationState = {
   companyCategory: "",
   cacDocuments: null,
   utilityBill: null,
+  utilityBillType: "",
+  otherUtilityBillType: "",
   directors: [createEmptyDirector()],
   isSubmitting: false,
   submitError: "",
@@ -142,6 +148,13 @@ const merchantSlice = createSlice({
     setUtilityBill: (state, action: PayloadAction<File | null>) => {
       state.utilityBill = action.payload;
     },
+    setUtilityBillType: (state, action: PayloadAction<string>) => {
+      state.utilityBillType = action.payload;
+      state.otherUtilityBillType = "";
+    },
+    setOtherUtilityBillType: (state, action: PayloadAction<string>) => {
+      state.otherUtilityBillType = action.payload;
+    },
     addDirector: (state) => {
       state.directors.push(createEmptyDirector());
     },
@@ -162,6 +175,7 @@ const merchantSlice = createSlice({
         const director = state.directors[index];
         if (!director) return;
         director[field] = value;
+        if (field === "idType") director.otherIdType = "";
       },
       prepare: (
         index: number,
@@ -300,6 +314,8 @@ export const {
   setCompanyCategory,
   setCacDocuments,
   setUtilityBill,
+  setUtilityBillType,
+  setOtherUtilityBillType,
   addDirector,
   removeDirector,
   updateDirectorField,

@@ -1,20 +1,24 @@
-// DirectorForm.tsx
 import { useRef, useState } from "react";
 import { useAppDispatch } from "../../redux/hooks";
 import { updateDirectorField } from "../../redux/merchant/reducer";
 import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
 import { validateFile, FILE_ACCEPT_ATTR } from "../../filevalidation";
+import { validateEmail } from "../../utils";
 
 type IdTypeOption = {
   value: string;
   label: string;
 };
 
+const OTHER_ID_TYPE = "Other";
+const PHONE_LENGTH = 11;
+
 const ID_TYPES: IdTypeOption[] = [
   { value: "NationalId", label: "National ID" },
   { value: "InternationalPassport", label: "International Passport" },
   { value: "DriverLicense", label: "Driver's License" },
+  { value: OTHER_ID_TYPE, label: "Other" },
 ];
 
 interface DirectorFormProps {
@@ -22,6 +26,7 @@ interface DirectorFormProps {
   director: {
     fullName: string;
     idType: string;
+    otherIdType: string;
     emailAddress: string;
     phoneNumber: string;
   };
@@ -42,9 +47,26 @@ const DirectorForm = ({
   const dispatch = useAppDispatch();
   const [idTypeOpen, setIdTypeOpen] = useState(false);
   const [idCardError, setIdCardError] = useState<string | null>(null);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const idCardRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIdType = ID_TYPES.find((t) => t.value === director.idType);
+  const isOtherSelected = director.idType === OTHER_ID_TYPE;
+
+  const emailError =
+    emailTouched &&
+    director.emailAddress.trim() !== "" &&
+    !validateEmail(director.emailAddress.trim())
+      ? "Please enter a valid email address"
+      : null;
+
+  const phoneError =
+    phoneTouched &&
+    director.phoneNumber !== "" &&
+    director.phoneNumber.length !== PHONE_LENGTH
+      ? `Phone number must be ${PHONE_LENGTH} digits`
+      : null;
 
   const handleIdCardFile = (file: File | null) => {
     const validationError = validateFile(file);
@@ -106,6 +128,18 @@ const DirectorForm = ({
         )}
       </div>
 
+      {isOtherSelected && (
+        <CustomTextInput
+          id={`director-other-id-type-${index}`}
+          label="Specify ID Type"
+          placeholder="Enter the type of ID"
+          value={director.otherIdType}
+          handleChange={(e) =>
+            dispatch(updateDirectorField(index, "otherIdType", e.target.value))
+          }
+        />
+      )}
+
       <div className="flex flex-col gap-1">
         <p className="text-sm md:text-[14.5px]">Upload ID Card</p>
         <div
@@ -135,26 +169,39 @@ const DirectorForm = ({
         )}
       </div>
 
-      <CustomTextInput
-        id={`director-email-${index}`}
-        label="Email address"
-        type="email"
-        placeholder="Enter your Director's email address"
-        value={director.emailAddress}
-        handleChange={(e) =>
-          dispatch(updateDirectorField(index, "emailAddress", e.target.value))
-        }
-      />
+      <div className="flex flex-col gap-1">
+        <CustomTextInput
+          id={`director-email-${index}`}
+          label="Email address"
+          type="email"
+          placeholder="Enter your Director's email address"
+          value={director.emailAddress}
+          handleChange={(e) =>
+            dispatch(updateDirectorField(index, "emailAddress", e.target.value))
+          }
+          onBlur={() => setEmailTouched(true)}
+        />
+        {emailError && <p className="text-red-500 text-[12px]">{emailError}</p>}
+      </div>
 
-      <CustomTextInput
-        id={`director-phone-${index}`}
-        label="Phone Number"
-        placeholder="Enter your Director's Phone number"
-        value={director.phoneNumber}
-        handleChange={(e) =>
-          dispatch(updateDirectorField(index, "phoneNumber", e.target.value))
-        }
-      />
+      <div className="flex flex-col gap-1">
+        <CustomTextInput
+          id={`director-phone-${index}`}
+          label="Phone Number"
+          type="tel"
+          placeholder="Enter your Director's Phone number"
+          value={director.phoneNumber}
+          handleChange={(e) => {
+            const digits = e.target.value
+              .replace(/\D/g, "")
+              .slice(0, PHONE_LENGTH);
+            dispatch(updateDirectorField(index, "phoneNumber", digits));
+          }}
+          onBlur={() => setPhoneTouched(true)}
+          otherInputProps={{ maxLength: PHONE_LENGTH, inputMode: "numeric" }}
+        />
+        {phoneError && <p className="text-red-500 text-[12px]">{phoneError}</p>}
+      </div>
     </div>
   );
 };

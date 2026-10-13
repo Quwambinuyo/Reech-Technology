@@ -17,6 +17,8 @@ import PasswordCriteria from "./partial/PasswordCriteria";
 import CountryDropdown from "../../components/CountryDropdown";
 import { onClearAccountCreationSuccess } from "../../redux/auth/authReducer";
 
+const PHONE_LENGTH = 11;
+
 const SignUp = () => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
@@ -54,6 +56,11 @@ const SignUp = () => {
 
 	const handleChange = (e: InputEvent) => {
 		setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+	};
+
+	const handlePhoneChange = (e: InputEvent) => {
+		const digits = e.target.value.replace(/\D/g, "").slice(0, PHONE_LENGTH);
+		setForm((prev) => ({ ...prev, phone: digits }));
 	};
 
 	const isEmailValid = validateEmail(email);
@@ -98,8 +105,8 @@ const SignUp = () => {
 				?.scrollIntoView({ behavior: "smooth" });
 		} else if (!isEmailValid) {
 			toast.error("Please enter a valid email");
-		} else if (isNaN(Number(phone))) {
-			toast.error("Phone number is invalid");
+		} else if (phone && phone.length !== PHONE_LENGTH) {
+			toast.error(`Phone number must be ${PHONE_LENGTH} digits`);
 		} else if (Object.values(isPasswordValid).includes(false)) {
 			toast.error("Password does not match the criteria provided.");
 		} else if (password !== confirmPassword) {
@@ -235,8 +242,9 @@ const SignUp = () => {
 							id="phone"
 							type="tel"
 							value={phone}
-							handleChange={handleChange}
+							handleChange={handlePhoneChange}
 							placeholder="Enter your phone number"
+							otherInputProps={{ maxLength: PHONE_LENGTH, inputMode: "numeric" }}
 						/>
 						<div className="relative">
 							{togglePasswordHint && (

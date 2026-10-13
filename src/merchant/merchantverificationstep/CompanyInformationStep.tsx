@@ -6,6 +6,8 @@ import {
   setAddress,
   setLandmark,
   setCompanyCategory,
+  setUtilityBillType,
+  setOtherUtilityBillType,
 } from "../../redux/merchant/reducer";
 import { CustomTextInput } from "../../components/CustomInput";
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
@@ -22,13 +24,30 @@ type CategoryOption = {
   label: string;
 };
 
+const OTHER_UTILITY_BILL_TYPE = "Other";
+
+const UTILITY_BILL_TYPES = [
+  "Electricity",
+  "Water",
+  "Waste Management",
+  "Gas",
+  "Internet",
+  OTHER_UTILITY_BILL_TYPE,
+];
+
 const CompanyInformationStep = ({ onNext }: Props) => {
   const dispatch = useAppDispatch();
-  const { categoryId, companyName, address, landmark } = useAppSelector(
-    (state) => state.merchant,
-  );
+  const {
+    categoryId,
+    companyName,
+    address,
+    landmark,
+    utilityBillType,
+    otherUtilityBillType,
+  } = useAppSelector((state) => state.merchant);
 
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [utilityTypeOpen, setUtilityTypeOpen] = useState(false);
   const cacRef = useRef<HTMLInputElement | null>(null);
   const utilityRef = useRef<HTMLInputElement | null>(null);
   const cacFile = useRef<File | null>(null);
@@ -51,11 +70,23 @@ const CompanyInformationStep = ({ onNext }: Props) => {
 
   const selectedCategory = categoryOptions.find((c) => c.id === categoryId);
 
+  const isOtherSelected = utilityBillType === OTHER_UTILITY_BILL_TYPE;
+
   useEffect(() => {
     dispatch(fetchAdminCategories());
   }, []);
 
-  const canSubmit = !cacError && !utilityError;
+  const canSubmit =
+    !!categoryId &&
+    companyName.trim() !== "" &&
+    address.trim() !== "" &&
+    landmark.trim() !== "" &&
+    !!utilityBillType &&
+    (!isOtherSelected || otherUtilityBillType.trim() !== "") &&
+    !!cacFileName &&
+    !!utilityFileName &&
+    !cacError &&
+    !utilityError;
 
   return (
     <div className="px-6 pb-6 flex flex-col gap-4">
@@ -132,6 +163,43 @@ const CompanyInformationStep = ({ onNext }: Props) => {
         value={landmark}
         handleChange={(e) => dispatch(setLandmark(e.target.value))}
       />
+
+      <div className="flex flex-col gap-1">
+        <CustomSelectNoDropDown
+          context="Utility Bill Type"
+          value={utilityBillType}
+          placeholder="Select utility bill type"
+          handleToggle={() => setUtilityTypeOpen((prev) => !prev)}
+        />
+        {utilityTypeOpen && (
+          <div className="border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm">
+            {UTILITY_BILL_TYPES.map((type) => (
+              <button
+                key={type}
+                onClick={() => {
+                  dispatch(setUtilityBillType(type));
+                  setUtilityTypeOpen(false);
+                }}
+                className="w-full text-left px-4 py-2.5 text-[13px] text-[#060606] hover:bg-[#f5f3ff] transition-colors"
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {isOtherSelected && (
+        <CustomTextInput
+          id="other-utility-bill-type"
+          label="Specify Utility Bill Type"
+          placeholder="Enter the type of utility bill"
+          value={otherUtilityBillType}
+          handleChange={(e) =>
+            dispatch(setOtherUtilityBillType(e.target.value))
+          }
+        />
+      )}
 
       <div className="flex flex-col gap-1">
         <p className="text-sm md:text-[14.5px]">Upload Utility Bill</p>

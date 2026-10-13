@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { addDirector, removeDirector } from "../../redux/merchant/reducer";
 import { submitMerchantVerification } from "../../redux/merchant/action";
 import Button from "../../components/Button";
+import { validateEmail } from "../../utils";
 import DirectorForm from "./DirectorForm";
 
 interface Props {
@@ -11,6 +12,9 @@ interface Props {
   cacFile: File | null;
   utilityFile: File | null;
 }
+
+const OTHER_ID_TYPE = "Other";
+const PHONE_LENGTH = 11;
 
 const DirectorInformationStep = ({
   onBack,
@@ -36,8 +40,10 @@ const DirectorInformationStep = ({
     (director, index) =>
       director.fullName.trim() !== "" &&
       director.idType.trim() !== "" &&
-      director.emailAddress.trim() !== "" &&
-      director.phoneNumber.trim() !== "" &&
+      (director.idType !== OTHER_ID_TYPE ||
+        director.otherIdType.trim() !== "") &&
+      validateEmail(director.emailAddress.trim()) &&
+      new RegExp(`^\\d{${PHONE_LENGTH}}$`).test(director.phoneNumber) &&
       idCardFiles.current[index] != null,
   );
 
