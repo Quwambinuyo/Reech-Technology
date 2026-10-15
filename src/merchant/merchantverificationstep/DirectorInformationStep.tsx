@@ -88,6 +88,8 @@ const DirectorInformationStep = ({
     }
   };
 
+
+  
   return (
     <div className="px-6 pb-6 flex flex-col gap-6">
       <h3 className="text-[15px] font-semibold text-[#060606] text-center">

@@ -50,7 +50,7 @@ const CountryDropdown = ({
 	);
 
 	return (
-		<div className="bg-white shadow-lg rounded-xl border border-[#CBD5E1]/30 py-2 w-full w-full">
+		<div className="bg-white shadow-lg rounded-xl border border-[#CBD5E1]/30 py-2 w-full ">
 			<div className="px-4">
 				<input
 					type="text"

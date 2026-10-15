@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { MiniCreateButton } from "../../components/small";
 import { MerchantStatusSelect } from "../../admin/partial";
-import { mockMerchantLists } from "../../mock";
-import MerchantList from "./MerchantList";
+// import { useNavigate } from "react-router-dom";
+// import { MiniCreateButton } from "../../components/small";
+// import { mockMerchantLists } from "../../mock";
+// import { FaQuestion } from "react-icons/fa6";
+// import MerchantList from "./MerchantList";
 import MerchantRow from "./MerchantRow";
 import { Pagination } from "../../components/Pagination";
-import { FaQuestion } from "react-icons/fa6";
 import {
 	fetchAdminMerchants,
 	type AdminMerchantsQuery,
@@ -57,7 +57,7 @@ const MerchantRowSkeleton = () => (
 );
 
 const ManageMerchants = () => {
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
 
 	const {
@@ -202,7 +202,7 @@ const ManageMerchants = () => {
 				)}
 			</section>
 
-			<section className="rounded-xl bg-white p-4 lg:p-5 mt-6 flex flex-col gap-4">
+			{/* <section className="rounded-xl bg-white p-4 lg:p-5 mt-6 flex flex-col gap-4">
 				<div className="flex-between">
 					<h4 className="text-light-black sm:text-lg flex items-center gap-1">
 						Redemption Merchants <FaQuestion color="#4A148C" size={15} />
@@ -236,7 +236,7 @@ const ManageMerchants = () => {
 						))}
 					</div>
 				</div>
-			</section>
+			</section> */}
 		</>
 	);
 };

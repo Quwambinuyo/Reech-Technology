@@ -81,6 +81,8 @@ const DirectorForm = ({
     onIdCardChange(file, null);
   };
 
+
+
   return (
     <div className="flex flex-col gap-4">
       {showRemove && (
