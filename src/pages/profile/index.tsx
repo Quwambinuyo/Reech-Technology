@@ -1,6 +1,6 @@
 import { useRole } from "../../hooks/useRole";
 import { useState, useEffect } from "react";
-import type { CountryProps, ApiKeyProps } from "../../types";
+import type { ApiKeyProps } from "../../types";
 import ImageCard from "../profile/partial/ImageCard";
 import { MiniInfoCard } from "../profile/partial";
 import ProfileInput, {
@@ -14,6 +14,7 @@ import CreateApiKeyModal from "./partial/CreateApiKeyModal";
 import RevokeApiKeyModal from "./partial/RevokeApiKeyModal";
 import KeyDetailsModal from "./partial/KeyDetailsModal";
 import ApiKeysTable from "./partial/ApiKeyTable";
+import PhoneChangeModal, { toE164 } from "./partial/PhoneChangeModal";
 import Button from "../../components/Button";
 import RotateKeyModal from "./partial/RotateKeyModal";
 import Spinner from "../../components/Spinner";
@@ -24,6 +25,7 @@ import {
   rotateApiKeys,
   revokeApiKeys,
 } from "../../redux/profile/action";
+import { onClearPhoneChange } from "../../redux/auth/authReducer";
 
 type ActiveModal = "create" | "revoke" | "details" | "rotate" | null;
 
@@ -44,15 +46,12 @@ const getApiKeysArray = (allApiKeys: unknown): ApiKeyProps[] => {
 const Profile = () => {
   const role = useRole();
   const dispatch = useAppDispatch();
-  const [togglePhone, setTogglePhone] = useState(false);
-  const [country, setCountry] = useState<CountryProps | null>(null);
+  const [phoneModal, setPhoneModal] = useState(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [selectedKey, setSelectedKey] = useState<ApiKeyProps | null>(null);
 
   const { currentUser } = useAppSelector((state) => state.auth);
 
-  console.log(currentUser);
-  
   const {
     allApiKeys,
     fetchApiKeysLoading,
@@ -67,6 +66,7 @@ const Profile = () => {
   });
 
   const { fullName, email } = form;
+  const displayPhone = toE164(currentUser?.phoneNumber);
 
   useEffect(() => {
     if (role === "BusinessAdmin") {
@@ -74,14 +74,14 @@ const Profile = () => {
     }
   }, [dispatch, role]);
 
-  const onCountrySelect = (opt: any) => {
-    setCountry(opt);
-    setTogglePhone(false);
-  };
-
   const closeModal = () => {
     setActiveModal(null);
     setSelectedKey(null);
+  };
+
+  const closePhoneModal = () => {
+    dispatch(onClearPhoneChange());
+    setPhoneModal(false);
   };
 
   const handleCreateApiKey = async (name: string) => {
@@ -138,18 +138,20 @@ const Profile = () => {
               value={email}
               onChange={() => {}}
             />
-            <ProfileInput
-              type="tel"
-              placeholder="Enter phone number"
-              label="phone number"
-              id="phoneNumber"
-              togglePhoneInput={togglePhone}
-              onTogglePhone={() => setTogglePhone(!togglePhone)}
-              onCountrySelect={onCountrySelect}
-              selectedCountry={country}
-              value="09067793929"
-              onChange={() => {}}
-            />
+            <div className="flex flex-col gap-2">
+              <PlainInput
+                label="phone number"
+                id="phoneNumber"
+                value={displayPhone || "Not added"}
+              />
+              <button
+                type="button"
+                onClick={() => setPhoneModal(true)}
+                className="self-start text-sm font-medium text-[#4A148C]"
+              >
+                {displayPhone ? "Change phone number" : "Add phone number"}
+              </button>
+            </div>
             <PlainInput
               label="account type"
               id="accountType"
@@ -223,6 +225,10 @@ const Profile = () => {
           </div>
         </div>
       )}
+
+      <Modal modal={phoneModal} onClose={closePhoneModal}>
+        <>{phoneModal && <PhoneChangeModal onClose={closePhoneModal} />}</>
+      </Modal>
 
       <Modal modal={activeModal === "create"} onClose={closeModal}>
         <CreateApiKeyModal

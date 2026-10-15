@@ -55,6 +55,7 @@ export interface StakeholderProps {
   firstName: string;
   lastName: string;
   emailConfirmed: boolean;
+  phoneNumber?: string | null;
   roles: string[];
   avatar?: string;
   business?: {
@@ -63,7 +64,6 @@ export interface StakeholderProps {
     status: string | null;
   };
 }
-
 export interface SelectProps {
   selectedText: string;
   isOpen: boolean;

@@ -11,13 +11,14 @@ type IdTypeOption = {
   label: string;
 };
 
-const OTHER_ID_TYPE = "Other";
+const OTHER_ID_TYPE = "99";
+const OTHER_TYPE_MAX_LENGTH = 100;
 const PHONE_LENGTH = 11;
 
 const ID_TYPES: IdTypeOption[] = [
-  { value: "NationalId", label: "National ID" },
-  { value: "InternationalPassport", label: "International Passport" },
-  { value: "DriverLicense", label: "Driver's License" },
+  { value: "0", label: "National ID" },
+  { value: "1", label: "International Passport" },
+  { value: "2", label: "Driver's License" },
   { value: OTHER_ID_TYPE, label: "Other" },
 ];
 
@@ -137,6 +138,7 @@ const DirectorForm = ({
           handleChange={(e) =>
             dispatch(updateDirectorField(index, "otherIdType", e.target.value))
           }
+          otherInputProps={{ maxLength: OTHER_TYPE_MAX_LENGTH }}
         />
       )}
 

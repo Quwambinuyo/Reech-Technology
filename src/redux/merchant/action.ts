@@ -34,9 +34,17 @@ export type MerchantDirector = {
   id: string;
   fullName: string;
   idType: number;
+  otherIdType: string | null;
   idCardUrl: string | null;
   emailAddress: string;
   phoneNumber: string;
+};
+
+export type MerchantUtilityBill = {
+  type: number;
+  otherType: string | null;
+  url: string | null;
+  fileName: string | null;
 };
 
 export type VerificationHistoryItem = {
@@ -60,6 +68,7 @@ export type MerchantDetail = {
   createdAt: string | null;
   submittedAt: string | null;
   cacDocumentUrls: string[];
+  utilityBill: MerchantUtilityBill | null;
   directors: MerchantDirector[];
   verificationHistory: VerificationHistoryItem[];
 };
@@ -104,7 +113,44 @@ type ReviewResult = {
 };
 
 const DECLINE_REASON_MAX_LENGTH = 2000;
-const OTHER_ID_TYPE = "Other";
+const OTHER_TYPE_CODE = 99;
+const OTHER_TYPE_MAX_LENGTH = 100;
+const UTILITY_BILL_MAX_BYTES = 10 * 1024 * 1024;
+const UTILITY_BILL_MIME_TYPES = ["application/pdf", "image/png", "image/jpeg"];
+
+const UTILITY_BILL_TYPE_CODES: Record<string, number> = {
+  electricity: 0,
+  water: 1,
+  gas: 2,
+  internet: 3,
+  other: OTHER_TYPE_CODE,
+};
+
+const ID_TYPE_CODES: Record<string, number> = {
+  nationalid: 0,
+  passport: 1,
+  driverslicence: 2,
+  driverslicense: 2,
+  driverlicence: 2,
+  driverlicense: 2,
+  other: OTHER_TYPE_CODE,
+};
+
+const normalizeLabel = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const resolveTypeCode = (
+  value: unknown,
+  codes: Record<string, number>,
+): number | null => {
+  const raw = String(value ?? "").trim();
+  if (raw === "") return null;
+  if (/^\d+$/.test(raw)) return Number(raw);
+  const code = codes[normalizeLabel(raw)];
+  return code === undefined ? null : code;
+};
+
+const isBlank = (value: unknown) => String(value ?? "").trim() === "";
 
 const handleThunkError = (
   error: any,
@@ -124,7 +170,12 @@ const handleThunkError = (
     return rejectWithValue("Unauthorized");
   }
 
-  const message = error?.response?.data?.error || error?.message;
+  const data = error?.response?.data;
+  const validation =
+    data?.errors && typeof data.errors === "object"
+      ? Object.values(data.errors).flat().join(" ")
+      : "";
+  const message = data?.error || data?.message || validation || error?.message;
   toast.error(message);
   return rejectWithValue(message);
 };
@@ -272,7 +323,81 @@ export const declineMerchant = createAsyncThunk(
 export const submitMerchantVerification = createAsyncThunk(
   "verify/businesses/info",
   async (info: any, { dispatch, getState, rejectWithValue }) => {
+    const fail = (message: string) => {
+      toast.error(message);
+      return rejectWithValue(message);
+    };
+
     try {
+      const hasUtilityType = !isBlank(info.utilityBillType);
+      const hasUtilityFile = !!info.utilityBill;
+      let utilityCode: number | null = null;
+
+      if (hasUtilityType !== hasUtilityFile) {
+        return fail("Select a utility bill type and upload the file together.");
+      }
+
+      if (hasUtilityType && hasUtilityFile) {
+        utilityCode = resolveTypeCode(
+          info.utilityBillType,
+          UTILITY_BILL_TYPE_CODES,
+        );
+
+        if (utilityCode === null) {
+          return fail("Select a valid utility bill type.");
+        }
+
+        if (!UTILITY_BILL_MIME_TYPES.includes(info.utilityBill.type)) {
+          return fail("Utility bill must be a PDF, PNG or JPEG file.");
+        }
+
+        if (info.utilityBill.size > UTILITY_BILL_MAX_BYTES) {
+          return fail("Utility bill must not exceed 10 MB.");
+        }
+
+        if (utilityCode === OTHER_TYPE_CODE) {
+          const otherText = String(info.otherUtilityBillType ?? "").trim();
+
+          if (!otherText) {
+            return fail("Please specify the utility bill type.");
+          }
+
+          if (otherText.length > OTHER_TYPE_MAX_LENGTH) {
+            return fail(
+              `Utility bill type must not exceed ${OTHER_TYPE_MAX_LENGTH} characters.`,
+            );
+          }
+        }
+      }
+
+      const directors: any[] = info.directors ?? [];
+      const directorIdCodes: (number | null)[] = [];
+
+      for (let index = 0; index < directors.length; index += 1) {
+        const director = directors[index];
+        const code = resolveTypeCode(director.idType, ID_TYPE_CODES);
+
+        if (!isBlank(director.idType) && code === null) {
+          return fail(`Select a valid ID type for director ${index + 1}.`);
+        }
+
+        if (code === OTHER_TYPE_CODE) {
+          const otherText = String(director.otherIdType ?? "").trim();
+
+          if (!otherText) {
+            return fail(`Please specify the ID type for director ${index + 1}.`);
+          }
+
+          if (otherText.length > OTHER_TYPE_MAX_LENGTH) {
+            return fail(
+              `ID type for director ${index + 1} must not exceed ${OTHER_TYPE_MAX_LENGTH} characters.`,
+            );
+          }
+        }
+
+        directorIdCodes.push(code);
+      }
+
       const formData = new FormData();
 
       formData.append("CategoryId", info.categoryId);
@@ -280,13 +405,18 @@ export const submitMerchantVerification = createAsyncThunk(
       formData.append("Landmark", info.landmark);
       formData.append("CompanyName", info.companyName);
       formData.append("CompanyCategory", info.companyCategory);
-      formData.append("UtilityBillType", info.utilityBillType);
 
-      if (info.utilityBillType === "Other") {
-        formData.append(
-          "OtherUtilityBillType",
-          info.otherUtilityBillType.trim(),
-        );
+      if (utilityCode !== null && info.utilityBill) {
+        formData.append("UtilityBillType", String(utilityCode));
+
+        if (utilityCode === OTHER_TYPE_CODE) {
+          formData.append(
+            "OtherUtilityBillType",
+            String(info.otherUtilityBillType).trim(),
+          );
+        }
+
+        formData.append("UtilityBill", info.utilityBill, info.utilityBill.name);
       }
 
       if (info.cacDocuments) {
@@ -297,18 +427,19 @@ export const submitMerchantVerification = createAsyncThunk(
         );
       }
 
-      if (info.utilityBill) {
-        formData.append("UtilityBill", info.utilityBill, info.utilityBill.name);
-      }
+      directors.forEach((director: any, index: number) => {
+        const idCode = directorIdCodes[index];
 
-      info.directors.forEach((director: any, index: number) => {
         formData.append(`Directors[${index}].FullName`, director.fullName);
-        formData.append(`Directors[${index}].IdType`, director.idType);
 
-        if (director.idType === OTHER_ID_TYPE) {
+        if (idCode !== null) {
+          formData.append(`Directors[${index}].IdType`, String(idCode));
+        }
+
+        if (idCode === OTHER_TYPE_CODE) {
           formData.append(
             `Directors[${index}].OtherIdType`,
-            director.otherIdType.trim(),
+            String(director.otherIdType).trim(),
           );
         }
 

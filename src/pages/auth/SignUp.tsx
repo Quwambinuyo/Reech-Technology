@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
 
 import { CustomSelectNoDropDown } from "../../components/CustomSelect";
@@ -10,21 +9,46 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { CustomTextInput } from "../../components/CustomInput";
 import type { CountryProps, FormEvent, InputEvent } from "../../types";
 import Button from "../../components/Button";
+import GoogleAuthButton from "./partial/GoogleAuthButton";
 import { validateEmail } from "../../utils";
 import logo from "../../assets/reech.png";
 import { createHolderAccount } from "../../redux/auth/authActions";
 import PasswordCriteria from "./partial/PasswordCriteria";
+import SignupOtp from "./partial/SignupOtp";
 import CountryDropdown from "../../components/CountryDropdown";
-import { onClearAccountCreationSuccess } from "../../redux/auth/authReducer";
+import {
+	onClearAccountCreationSuccess,
+	onClearSignupChallenge,
+} from "../../redux/auth/authReducer";
 
-const PHONE_LENGTH = 11;
+const COUNTRY_PREFIX = "+234";
+const LOCAL_DIGITS = 10;
+
+const parseLocalDigits = (raw: string) => {
+	if (raw.startsWith("+") && !raw.startsWith(COUNTRY_PREFIX)) return "";
+
+	const startedWithPrefix = raw.startsWith(COUNTRY_PREFIX);
+	let digits = startedWithPrefix ? raw.slice(COUNTRY_PREFIX.length) : raw;
+	digits = digits.replace(/\D/g, "");
+
+	if (!startedWithPrefix && digits.startsWith("234")) {
+		digits = digits.slice(3);
+	}
+
+	return digits.replace(/^0+/, "").slice(0, LOCAL_DIGITS);
+};
 
 const SignUp = () => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
-	const { allCountries, createAccountLoading, createAccountSuccess } =
-		useAppSelector((state) => state.auth);
+	const {
+		allCountries,
+		createAccountLoading,
+		createAccountSuccess,
+		signupChallenge,
+		currentUser,
+	} = useAppSelector((state) => state.auth);
 
 	const [togglePasswordHint, setTogglePasswordHint] = useState(false);
 	const [toggleCountry, setToggleCountry] = useState(false);
@@ -59,8 +83,7 @@ const SignUp = () => {
 	};
 
 	const handlePhoneChange = (e: InputEvent) => {
-		const digits = e.target.value.replace(/\D/g, "").slice(0, PHONE_LENGTH);
-		setForm((prev) => ({ ...prev, phone: digits }));
+		setForm((prev) => ({ ...prev, phone: parseLocalDigits(e.target.value) }));
 	};
 
 	const isEmailValid = validateEmail(email);
@@ -105,17 +128,21 @@ const SignUp = () => {
 				?.scrollIntoView({ behavior: "smooth" });
 		} else if (!isEmailValid) {
 			toast.error("Please enter a valid email");
-		} else if (phone && phone.length !== PHONE_LENGTH) {
-			toast.error(`Phone number must be ${PHONE_LENGTH} digits`);
+		} else if (activeTab === "merchant" && !phone) {
+			toast.error("Please provide your phone number.");
+		} else if (phone && phone.length !== LOCAL_DIGITS) {
+			toast.error(`Enter the ${LOCAL_DIGITS} digits after ${COUNTRY_PREFIX}.`);
 		} else if (Object.values(isPasswordValid).includes(false)) {
 			toast.error("Password does not match the criteria provided.");
 		} else if (password !== confirmPassword) {
 			toast.error("Passwords does not match. Please check!");
 		} else {
+			const phoneNumber = phone ? `${COUNTRY_PREFIX}${phone}` : undefined;
+
 			const userData = {
 				firstName,
 				lastName,
-				phoneNumber: phone,
+				phoneNumber,
 				email,
 				password,
 			};
@@ -124,7 +151,7 @@ const SignUp = () => {
 				firstName,
 				lastName,
 				email,
-				phoneNumber: phone,
+				phoneNumber,
 				password,
 				businessName,
 				countryId: country?.id,
@@ -140,11 +167,27 @@ const SignUp = () => {
 
 	useEffect(() => {
 		if (createAccountSuccess) {
+			const needsVerification = createAccountSuccess?.signupVerificationRequired;
+
 			dispatch(onClearAccountCreationSuccess());
 
-			navigate("/sign-in");
+			if (!needsVerification) {
+				navigate("/sign-in");
+			}
 		}
 	}, [createAccountSuccess]);
+
+	useEffect(() => {
+		if (currentUser) {
+			navigate("/dashboard");
+		}
+	}, [currentUser]);
+
+	useEffect(() => {
+		return () => {
+			dispatch(onClearSignupChallenge());
+		};
+	}, []);
 
 	return (
 		<main className="md:flex h-screen mt-[60px] sm:mt-[63px] md:mt-0">
@@ -161,163 +204,170 @@ const SignUp = () => {
 			</section>
 			<section className="max-w-[500px] mx-auto md:max-w-none md:w-1/2 lg:w-[48%] overflow-y-auto">
 				<div className="px-5 sm:px-8 md:px-10 lg:px-12 xl:px-24 mt-8 sm:mt-10 mb-16 md:my-14 lg:my-16 xl:my-24">
-					<div className="border-b border-[#D7D7D7] inline-flex gap-5 sm:gap-6 xl:gap-8 text-[19px] sm:text-[24px] md:text-[20px] lg:text-[22px] xl:text-[25px] ">
-						<button
-							className={`transition-all pb-0.5 font-semibold capitalize ${
-								activeTab === "user"
-									? "text-black border-b-2 border-[#777DF9]"
-									: "text-[#D7D7D7]"
-							}`}
-							onClick={() => setActiveTab("user")}
-						>
-							user sign up
-						</button>
-						<button
-							className={`transition-all pb-0.5 font-semibold capitalize ${
-								activeTab === "merchant"
-									? "text-black border-b-2 border-[#777DF9]"
-									: "text-[#D7D7D7]"
-							}`}
-							onClick={() => setActiveTab("merchant")}
-						>
-							merchant sign up
-						</button>
-					</div>
-					<p className="mt-3 text-[15px] md:text-base xl:text-[17px] font-light">
-						Enter your Credentials to get started
-					</p>
+					{signupChallenge ? (
+						<SignupOtp email={email} />
+					) : (
+						<>
+							<div className="border-b border-[#D7D7D7] inline-flex gap-5 sm:gap-6 xl:gap-8 text-[19px] sm:text-[24px] md:text-[20px] lg:text-[22px] xl:text-[25px] ">
+								<button
+									className={`transition-all pb-0.5 font-semibold capitalize ${
+										activeTab === "user"
+											? "text-black border-b-2 border-[#777DF9]"
+											: "text-[#D7D7D7]"
+									}`}
+									onClick={() => setActiveTab("user")}
+								>
+									user sign up
+								</button>
+								<button
+									className={`transition-all pb-0.5 font-semibold capitalize ${
+										activeTab === "merchant"
+											? "text-black border-b-2 border-[#777DF9]"
+											: "text-[#D7D7D7]"
+									}`}
+									onClick={() => setActiveTab("merchant")}
+								>
+									merchant sign up
+								</button>
+							</div>
+							<p className="mt-3 text-[15px] md:text-base xl:text-[17px] font-light">
+								Enter your Credentials to get started
+							</p>
 
-					<form
-						className="mt-8 md:mt-10 grid gap-4 sm:gap-5 md:gap-6 xl:gap-7"
-						onSubmit={handleAccountCreation}
-						id="sign-up"
-					>
-						{activeTab === "merchant" && (
-							<>
-								<div className="relative">
-									<CustomSelectNoDropDown
-										context="Country"
-										value={country?.name as never as string}
-										placeholder="Select your country"
-										handleToggle={() => setToggleCountry(!toggleCountry)}
-									/>
-									{toggleCountry && (
-										<div className="absolute z-5 top-[75px] w-full">
-											<CountryDropdown onSelect={onCountrySelect} />
+							<form
+								className="mt-8 md:mt-10 grid gap-4 sm:gap-5 md:gap-6 xl:gap-7"
+								onSubmit={handleAccountCreation}
+								id="sign-up"
+							>
+								{activeTab === "merchant" && (
+									<>
+										<div className="relative">
+											<CustomSelectNoDropDown
+												context="Country"
+												value={country?.name as never as string}
+												placeholder="Select your country"
+												handleToggle={() => setToggleCountry(!toggleCountry)}
+											/>
+											{toggleCountry && (
+												<div className="absolute z-5 top-[75px] w-full">
+													<CountryDropdown onSelect={onCountrySelect} />
+												</div>
+											)}
 										</div>
-									)}
-								</div>
+										<CustomTextInput
+											label="Business Name"
+											id="businessName"
+											placeholder="Enter your business name"
+											value={businessName}
+											handleChange={handleChange}
+										/>
+									</>
+								)}
 								<CustomTextInput
-									label="Business Name"
-									id="businessName"
-									placeholder="Enter your business name"
-									value={businessName}
+									label="First Name"
+									id="firstName"
+									placeholder="Enter your first name"
+									value={firstName}
 									handleChange={handleChange}
 								/>
-							</>
-						)}
-						<CustomTextInput
-							label="First Name"
-							id="firstName"
-							placeholder="Enter your first name"
-							value={firstName}
-							handleChange={handleChange}
-						/>
-						<CustomTextInput
-							label="Last Name"
-							id="lastName"
-							placeholder="Enter your last name"
-							value={lastName}
-							handleChange={handleChange}
-						/>
-						<CustomTextInput
-							label="Email Address"
-							id="email"
-							placeholder="Enter your email"
-							value={email}
-							handleChange={handleChange}
-						/>
-						<CustomTextInput
-							label="Phone Number"
-							id="phone"
-							type="tel"
-							value={phone}
-							handleChange={handlePhoneChange}
-							placeholder="Enter your phone number"
-							otherInputProps={{ maxLength: PHONE_LENGTH, inputMode: "numeric" }}
-						/>
-						<div className="relative">
-							{togglePasswordHint && (
-								<PasswordCriteria isPasswordValid={isPasswordValid} />
-							)}
-							<CustomTextInput
-								label="Password"
-								id="password"
-								placeholder="Enter your password"
-								type="password"
-								value={password}
-								handleChange={handleChange}
-								togglePassword={togglePassword.normal}
-								handleTogglePassword={() =>
-									setTogglePassword((prev) => ({
-										...prev,
-										normal: !togglePassword.normal,
-									}))
-								}
-								onBlur={() => setTogglePasswordHint(false)}
-								onFocus={() => setTogglePasswordHint(true)}
-							/>
-						</div>
-						<CustomTextInput
-							label="Confirm Password"
-							id="confirmPassword"
-							placeholder="Re-enter your password"
-							type="password"
-							value={confirmPassword}
-							handleChange={handleChange}
-							togglePassword={togglePassword.confirm}
-							handleTogglePassword={() =>
-								setTogglePassword((prev) => ({
-									...prev,
-									confirm: !togglePassword.confirm,
-								}))
-							}
-						/>
-						<div className="mt-6">
-							<Button
-								text={createAccountLoading ? "Registering..." : "Register"}
-								type="submit"
-								isDisabled={createAccountLoading}
-								isLoading={createAccountLoading}
-							/>
-						</div>
-					</form>
+								<CustomTextInput
+									label="Last Name"
+									id="lastName"
+									placeholder="Enter your last name"
+									value={lastName}
+									handleChange={handleChange}
+								/>
+								<CustomTextInput
+									label="Email Address"
+									id="email"
+									placeholder="Enter your email"
+									value={email}
+									handleChange={handleChange}
+								/>
+								<CustomTextInput
+									label="Phone Number"
+									id="phone"
+									type="tel"
+									value={`${COUNTRY_PREFIX}${phone}`}
+									handleChange={handlePhoneChange}
+									placeholder="+2348012345678"
+									otherInputProps={{
+										maxLength: COUNTRY_PREFIX.length + LOCAL_DIGITS,
+										inputMode: "tel",
+									}}
+								/>
+								<div className="relative">
+									{togglePasswordHint && (
+										<PasswordCriteria isPasswordValid={isPasswordValid} />
+									)}
+									<CustomTextInput
+										label="Password"
+										id="password"
+										placeholder="Enter your password"
+										type="password"
+										value={password}
+										handleChange={handleChange}
+										togglePassword={togglePassword.normal}
+										handleTogglePassword={() =>
+											setTogglePassword((prev) => ({
+												...prev,
+												normal: !togglePassword.normal,
+											}))
+										}
+										onBlur={() => setTogglePasswordHint(false)}
+										onFocus={() => setTogglePasswordHint(true)}
+									/>
+								</div>
+								<CustomTextInput
+									label="Confirm Password"
+									id="confirmPassword"
+									placeholder="Re-enter your password"
+									type="password"
+									value={confirmPassword}
+									handleChange={handleChange}
+									togglePassword={togglePassword.confirm}
+									handleTogglePassword={() =>
+										setTogglePassword((prev) => ({
+											...prev,
+											confirm: !togglePassword.confirm,
+										}))
+									}
+								/>
+								<div className="mt-6">
+									<Button
+										text={createAccountLoading ? "Sending code..." : "Next"}
+										type="submit"
+										isDisabled={createAccountLoading}
+										isLoading={createAccountLoading}
+									/>
+								</div>
+							</form>
 
-					<div className="flex flex-col gap-5 xl:gap-6 mt-8 xl:mt-10">
-						<div className="grid sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-5 md:gap-4 xl:gap-6 font-poppins font-medium text-[15px]">
-							<button className="border border-[#D9D9D9] rounded-xl py-2.5 flex-center gap-2">
-								<span className="text-[24px] xl:text-[26px]">
-									<FcGoogle />
-								</span>
-								<span>Sign up with Google</span>
-							</button>
-							<button className="border border-[#D9D9D9] rounded-xl py-2.5 flex-center gap-2">
-								<span className="text-[24px] xl:text-[26px]">
-									<FaApple />
-								</span>
-								<span>Sign up with Apple</span>
-							</button>
-						</div>
-						<p className="self-center">
-							Already a user?{" "}
-							<Link
-								to="/sign-in"
-								className="text-[#4A148C] text-[17px] sm:text-lg"
-							>
-								Sign In
-							</Link>
-						</p>
-					</div>
+							<div className="flex flex-col gap-5 xl:gap-6 mt-8 xl:mt-10">
+								<div className="grid sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-5 md:gap-4 xl:gap-6 font-poppins font-medium text-[15px]">
+									<GoogleAuthButton
+										label="Sign up with Google"
+										text="signup_with"
+									/>
+									<button className="border border-[#D9D9D9] rounded-xl py-2.5 flex-center gap-2">
+										<span className="text-[24px] xl:text-[26px]">
+											<FaApple />
+										</span>
+										<span>Sign up with Apple</span>
+									</button>
+								</div>
+								<p className="self-center">
+									Already a user?{" "}
+									<Link
+										to="/sign-in"
+										className="text-[#4A148C] text-[17px] sm:text-lg"
+									>
+										Sign In
+									</Link>
+								</p>
+							</div>
+						</>
+					)}
 				</div>
 			</section>
 		</main>

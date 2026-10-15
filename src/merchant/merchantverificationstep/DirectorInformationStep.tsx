@@ -13,8 +13,11 @@ interface Props {
   utilityFile: File | null;
 }
 
-const OTHER_ID_TYPE = "Other";
+const OTHER_ID_TYPE = "99";
 const PHONE_LENGTH = 11;
+
+const toInternationalPhone = (value: string) =>
+  value.startsWith("0") ? `+234${value.slice(1)}` : `+${value}`;
 
 const DirectorInformationStep = ({
   onBack,
@@ -75,6 +78,7 @@ const DirectorInformationStep = ({
       utilityBill: utilityFile,
       directors: fullState.directors.map((d, i) => ({
         ...d,
+        phoneNumber: toInternationalPhone(d.phoneNumber),
         idCard: idCardFiles.current[i] ?? null,
       })),
     };

@@ -1,9 +1,14 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   createHolderAccount,
+  verifySignupOtp,
+  resendSignupOtp,
   fetchCountries,
   userAccountLogin,
+  googleLogin,
   userAccountForgotPassword,
+  requestPhoneChangeCode,
+  verifyPhoneChange,
   updateUserPin,
   fetchUserPinStatus,
 } from "./authActions";
@@ -14,6 +19,12 @@ const initialState: StateType = {
   createAccountLoading: false,
   createAccountSuccess: null,
   createAccountError: "",
+  signupChallenge: null,
+  verifySignupLoading: false,
+  verifySignupSuccess: false,
+  verifySignupError: "",
+  resendSignupLoading: false,
+  resendSignupError: "",
   countriesLoading: false,
   allCountries: [],
   countriesError: "",
@@ -21,11 +32,19 @@ const initialState: StateType = {
   currentUser: getUserFromStorage(),
   loginLoading: false,
   loginError: "",
+  googleLoginLoading: false,
+  googleLoginError: "",
   landingPageHamburgerToggle: false,
   toggleMobileSidebar: false,
   forgotPasswordLoading: false,
   forgotPasswordSuccess: null,
   forgotPasswordError: "",
+  phoneChange: null,
+  phoneCodeLoading: false,
+  phoneCodeError: "",
+  verifyPhoneLoading: false,
+  verifyPhoneSuccess: false,
+  verifyPhoneError: "",
   updatePinLoading: false,
   updatePinSuccess: null,
   updatePinError: "",
@@ -41,6 +60,23 @@ const authSlice = createSlice({
     onClearAccountCreationSuccess: (state) => {
       state.createAccountSuccess = null;
     },
+    onClearSignupChallenge: (state) => {
+      state.signupChallenge = null;
+      state.verifySignupLoading = false;
+      state.verifySignupSuccess = false;
+      state.verifySignupError = "";
+      state.resendSignupLoading = false;
+      state.resendSignupError = "";
+    },
+    onClearVerifySignupSuccess: (state) => {
+      state.verifySignupSuccess = false;
+    },
+    onClearPhoneChange: (state) => {
+      state.phoneChange = null;
+      state.phoneCodeError = "";
+      state.verifyPhoneError = "";
+      state.verifyPhoneSuccess = false;
+    },
     onToggleLandingHamburger: (state) => {
       state.landingPageHamburgerToggle = !state.landingPageHamburgerToggle;
     },
@@ -53,10 +89,26 @@ const authSlice = createSlice({
       state.createAccountError = "";
       state.authNetworkError = "";
       state.loginLoading = false;
+      state.googleLoginLoading = false;
+      state.googleLoginError = "";
+
+      state.signupChallenge = null;
+      state.verifySignupLoading = false;
+      state.verifySignupSuccess = false;
+      state.verifySignupError = "";
+      state.resendSignupLoading = false;
+      state.resendSignupError = "";
 
       state.forgotPasswordLoading = false;
       state.forgotPasswordError = "";
       state.forgotPasswordSuccess = null;
+
+      state.phoneChange = null;
+      state.phoneCodeLoading = false;
+      state.phoneCodeError = "";
+      state.verifyPhoneLoading = false;
+      state.verifyPhoneSuccess = false;
+      state.verifyPhoneError = "";
 
       state.updatePinLoading = false;
       state.updatePinSuccess = null;
@@ -79,14 +131,58 @@ const authSlice = createSlice({
       .addCase(createHolderAccount.pending, (state) => {
         state.createAccountLoading = true;
         state.createAccountError = "";
+        state.signupChallenge = null;
+        state.verifySignupSuccess = false;
+        state.verifySignupError = "";
       })
       .addCase(createHolderAccount.fulfilled, (state, action) => {
         state.createAccountLoading = false;
         state.createAccountSuccess = action.payload;
+
+        if (action.payload?.signupVerificationRequired) {
+          state.signupChallenge = {
+            id: action.payload?.id ?? null,
+            phoneNumber: action.payload?.phoneNumber ?? null,
+            challengeId: action.payload?.challengeId,
+            expiresAt: action.payload?.otpExpiresAt ?? null,
+          };
+        }
       })
       .addCase(createHolderAccount.rejected, (state, action) => {
         state.createAccountLoading = false;
         state.createAccountError = (action.payload as string) || "Error";
+      })
+
+      .addCase(verifySignupOtp.pending, (state) => {
+        state.verifySignupLoading = true;
+        state.verifySignupError = "";
+        state.verifySignupSuccess = false;
+      })
+      .addCase(verifySignupOtp.fulfilled, (state) => {
+        state.verifySignupLoading = false;
+        state.verifySignupSuccess = true;
+        state.signupChallenge = null;
+      })
+      .addCase(verifySignupOtp.rejected, (state, action) => {
+        state.verifySignupLoading = false;
+        state.verifySignupError =
+          (action.payload as string) || "Verification failed";
+      })
+
+      .addCase(resendSignupOtp.pending, (state) => {
+        state.resendSignupLoading = true;
+        state.resendSignupError = "";
+      })
+      .addCase(resendSignupOtp.fulfilled, (state, action) => {
+        state.resendSignupLoading = false;
+        if (state.signupChallenge) {
+          state.signupChallenge.expiresAt = action.payload?.expiresAt ?? null;
+        }
+      })
+      .addCase(resendSignupOtp.rejected, (state, action) => {
+        state.resendSignupLoading = false;
+        state.resendSignupError =
+          (action.payload as string) || "Failed to resend code";
       })
 
       .addCase(userAccountLogin.pending, (state) => {
@@ -99,7 +195,38 @@ const authSlice = createSlice({
       })
       .addCase(userAccountLogin.rejected, (state, action) => {
         state.loginLoading = false;
-        state.loginError = (action.payload as string) || "Login failed";
+        const payload = action.payload as any;
+
+        if (payload && typeof payload === "object") {
+          if (payload.signupVerificationRequired && payload.challengeId) {
+            state.signupChallenge = {
+              id: payload.id ?? null,
+              phoneNumber: payload.phoneNumber ?? null,
+              challengeId: payload.challengeId,
+              expiresAt: payload.expiresAt ?? null,
+            };
+            state.loginError = "Email verification required";
+            return;
+          }
+          state.loginError = "Login failed";
+          return;
+        }
+
+        state.loginError = (payload as string) || "Login failed";
+      })
+
+      .addCase(googleLogin.pending, (state) => {
+        state.googleLoginLoading = true;
+        state.googleLoginError = "";
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.googleLoginLoading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.googleLoginLoading = false;
+        state.googleLoginError =
+          (action.payload as string) || "Google login failed";
       })
 
       .addCase(userAccountForgotPassword.pending, (state) => {
@@ -115,6 +242,39 @@ const authSlice = createSlice({
         state.forgotPasswordLoading = false;
         state.forgotPasswordError =
           (action.payload as string) || "Failed to send reset email";
+      })
+
+      .addCase(requestPhoneChangeCode.pending, (state) => {
+        state.phoneCodeLoading = true;
+        state.phoneCodeError = "";
+      })
+      .addCase(requestPhoneChangeCode.fulfilled, (state, action) => {
+        state.phoneCodeLoading = false;
+        state.phoneChange = action.payload;
+      })
+      .addCase(requestPhoneChangeCode.rejected, (state, action) => {
+        state.phoneCodeLoading = false;
+        state.phoneCodeError =
+          (action.payload as string) || "Failed to send code";
+      })
+
+      .addCase(verifyPhoneChange.pending, (state) => {
+        state.verifyPhoneLoading = true;
+        state.verifyPhoneError = "";
+        state.verifyPhoneSuccess = false;
+      })
+      .addCase(verifyPhoneChange.fulfilled, (state, action) => {
+        state.verifyPhoneLoading = false;
+        state.verifyPhoneSuccess = true;
+        state.phoneChange = null;
+        if (state.currentUser) {
+          state.currentUser.phoneNumber = action.payload.phoneNumber;
+        }
+      })
+      .addCase(verifyPhoneChange.rejected, (state, action) => {
+        state.verifyPhoneLoading = false;
+        state.verifyPhoneError =
+          (action.payload as string) || "Failed to update phone";
       })
 
       .addCase(fetchCountries.pending, (state) => {
@@ -169,6 +329,9 @@ const authSlice = createSlice({
 
 export const {
   onClearAccountCreationSuccess,
+  onClearSignupChallenge,
+  onClearVerifySignupSuccess,
+  onClearPhoneChange,
   onToggleLandingHamburger,
   onToggleMobileSidebar,
   onLogout,

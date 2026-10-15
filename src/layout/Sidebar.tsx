@@ -8,8 +8,8 @@ import ac_transaction from "../assets/ac-transaction.png";
 import in_transaction from "../assets/in-transaction.png";
 import ac_profile from "../assets/ac-profile.png";
 import in_profile from "../assets/in-profile.png";
-import ac_task from "../assets/ac-task.png";
-import in_task from "../assets/in-task.png";
+// import ac_task from "../assets/ac-task.png";
+// import in_task from "../assets/in-task.png";
 import ac_user from "../assets/ac-user.png";
 import ac_merchant from "../assets/ac-merchant.png";
 import in_merchant from "../assets/inac-merchant.png";
@@ -97,10 +97,10 @@ export const customerLinks = [
 export const merchantLinks = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   { text: "upload points", icon: { active: ac_payment, inactive: in_payment } },
-  {
-    text: "rewards settings",
-    icon: { active: ac_task, inactive: in_task },
-  },
+  // {
+  //   text: "rewards settings",
+  //   icon: { active: ac_task, inactive: in_task },
+  // },
   {
     text: "transactions",
     icon: { active: ac_transaction, inactive: in_transaction },

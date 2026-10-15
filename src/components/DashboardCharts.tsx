@@ -1,6 +1,8 @@
 import type { ChartOptions } from "chart.js";
-import { ChartLabel, DoughnutChartLabel, RadialSeparators } from "./small";
-import { Doughnut, Line } from "react-chartjs-2";
+// import { ChartLabel, DoughnutChartLabel, RadialSeparators } from "./small";
+// import { Doughnut, Line } from "react-chartjs-2";
+import { ChartLabel } from "./small";
+import {  Line } from "react-chartjs-2";
 
 interface RewardPerformanceItem {
   periodStart: string;
@@ -19,7 +21,7 @@ interface DashboardChartsProps {
 }
 
 const DashboardCharts = ({
-  doughnutValues,
+  // doughnutValues,
   rewardPerformance,
 }: DashboardChartsProps) => {
   const labels = rewardPerformance?.map((item) => item.label);
@@ -92,46 +94,46 @@ const DashboardCharts = ({
     },
   };
 
-  const remaining =
-    100 -
-    (doughnutValues.completed +
-      doughnutValues.delayed +
-      doughnutValues.ongoing);
+  // const remaining =
+  //   100 -
+  //   (doughnutValues.completed +
+  //     doughnutValues.delayed +
+  //     doughnutValues.ongoing);
 
-  const dataTwo = {
-    labels: ["Completed", "Delayed", "Ongoing"],
-    datasets: [
-      {
-        data: [
-          doughnutValues.completed,
-          doughnutValues.delayed,
-          doughnutValues.ongoing,
-          remaining,
-        ],
-        backgroundColor: ["#1A932E", "#E5AE21", "#E65F2B", "#00000014"],
-        borderWidth: 0,
-        cutout: "92%",
-      },
-    ],
-  };
+  // const dataTwo = {
+  //   labels: ["Completed", "Delayed", "Ongoing"],
+  //   datasets: [
+  //     {
+  //       data: [
+  //         doughnutValues.completed,
+  //         doughnutValues.delayed,
+  //         doughnutValues.ongoing,
+  //         remaining,
+  //       ],
+  //       backgroundColor: ["#1A932E", "#E5AE21", "#E65F2B", "#00000014"],
+  //       borderWidth: 0,
+  //       cutout: "92%",
+  //     },
+  //   ],
+  // };
 
-  const optionsTwo: ChartOptions<"doughnut"> = {
-    responsive: true,
-    rotation: -90,
-    circumference: 180,
-    plugins: {
-      legend: { display: false },
-      tooltip: { enabled: false },
-    },
-    elements: {
-      line: {
-        borderJoinStyle: "round",
-      },
-    },
-  };
+  // const optionsTwo: ChartOptions<"doughnut"> = {
+  //   responsive: true,
+  //   rotation: -90,
+  //   circumference: 180,
+  //   plugins: {
+  //     legend: { display: false },
+  //     tooltip: { enabled: false },
+  //   },
+  //   elements: {
+  //     line: {
+  //       borderJoinStyle: "round",
+  //     },
+  //   },
+  // };
 
   return (
-    <section className="my-7 grid xl:grid-cols-5 gap-6">
+    <section className="my-7  gap-6">
       <div className="xl:col-span-3 bg-[#FFFFFFCC] border border-[#F0F1FE] rounded-xl p-3 sm:p-4 overflow-x-auto">
         <h4>Reward Performance</h4>
 
@@ -148,7 +150,7 @@ const DashboardCharts = ({
         </div>
       </div>
 
-      <div className="xl:col-span-2 bg-white p-3 sm:p-4 rounded-xl">
+      {/* <div className="xl:col-span-2 bg-white p-3 sm:p-4 rounded-xl">
         <div className="flex-between">
           <h4 className="text-[#060606]">Overall Point Progress</h4>
           <button>All</button>
@@ -199,7 +201,7 @@ const DashboardCharts = ({
             color="#E65F2B"
           />
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };
