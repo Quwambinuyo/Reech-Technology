@@ -3,7 +3,6 @@ import { HiOutlineInformationCircle } from "react-icons/hi2";
 import Logo from "../../../assets/logo-s.png";
 import StepBar from "./StepBar";
 import type { Step } from "../types";
-import { EXCHANGE_RATE } from "../types";
 
 interface Props {
   onClose: () => void;
@@ -13,15 +12,8 @@ interface Props {
 }
 
 const ReviewStep = ({ onClose, points, onBack, onConfirm }: Props) => {
-  const equivalent = points * EXCHANGE_RATE;
-
   const rows = [
     { label: "Points converting", value: `${points.toLocaleString()} credits` },
-    {
-      label: "Equivalent value",
-      value: `₦${equivalent.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`,
-      purple: true,
-    },
     {
       label: "Deduction from balance",
       value: `-${points.toLocaleString()} credits`,
@@ -62,11 +54,7 @@ const ReviewStep = ({ onClose, points, onBack, onConfirm }: Props) => {
               </p>
               <p
                 className={`text-[13px] font-ibmplex font-semibold ${
-                  r.red
-                    ? "text-[#C62828]"
-                    : r.purple
-                      ? "text-[#4A148C]"
-                      : "text-[#0D0D0D]"
+                  r.red ? "text-[#C62828]" : "text-[#0D0D0D]"
                 }`}
               >
                 {r.value}
@@ -81,8 +69,8 @@ const ReviewStep = ({ onClose, points, onBack, onConfirm }: Props) => {
             className="text-[#4A148C] mt-0.5 shrink-0"
           />
           <p className="text-[12px] font-ibmplex text-[#3D3D6B] leading-relaxed">
-            A token will be generated upon confirmation. Keep it safe until you
-            redeem it.
+            A token will be generated upon confirmation. Deducted when the
+            merchant confirms.
           </p>
         </div>
 

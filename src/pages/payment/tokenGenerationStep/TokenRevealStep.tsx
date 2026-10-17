@@ -1,19 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoClose, IoCopyOutline, IoCheckmark } from "react-icons/io5";
 import Logo from "../../../assets/logo-s.png";
 
 interface Props {
   onClose: () => void;
   token: string;
+  expiresAt: string;
 }
 
-const TokenRevealStep = ({ onClose, token }: Props) => {
+const getRemainingSeconds = (expiresAt: string) =>
+  Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
+
+const formatRemaining = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const rest = String(seconds % 60).padStart(2, "0");
+  return `${minutes}:${rest}`;
+};
+
+const TokenRevealStep = ({ onClose, token, expiresAt }: Props) => {
   const [copied, setCopied] = useState(false);
+  const [remaining, setRemaining] = useState(() =>
+    getRemainingSeconds(expiresAt),
+  );
+
+  useEffect(() => {
+    setRemaining(getRemainingSeconds(expiresAt));
+
+    const id = setInterval(() => {
+      const next = getRemainingSeconds(expiresAt);
+      setRemaining(next);
+
+      if (next === 0) clearInterval(id);
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [expiresAt]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(token);
     setCopied(true);
   };
+
+  const expired = remaining === 0;
 
   return (
     <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
@@ -37,16 +65,31 @@ const TokenRevealStep = ({ onClose, token }: Props) => {
 
         <div className="flex flex-col items-center gap-4 py-6">
           <div className="flex items-center gap-3">
-            <p className="text-[#030649] text-3xl font-montserrat font-bold tracking-[0.3em]">
+            <p
+              className={`text-3xl font-montserrat font-bold tracking-[0.3em] ${
+                expired ? "text-gray-400 line-through" : "text-[#030649]"
+              }`}
+            >
               {token}
             </p>
             <button
               onClick={handleCopy}
-              className="flex-center h-9 w-9 rounded-full border border-[#E5E6F5] text-[#4A148C] hover:bg-[#F5F3FF]"
+              disabled={expired}
+              className="flex-center h-9 w-9 rounded-full border border-[#E5E6F5] text-[#4A148C] hover:bg-[#F5F3FF] disabled:opacity-40"
             >
               {copied ? <IoCheckmark size={16} /> : <IoCopyOutline size={16} />}
             </button>
           </div>
+
+          <p
+            className={`text-[13px] font-ibmplex ${
+              expired ? "text-red-500" : "text-[#6B6B8A]"
+            }`}
+          >
+            {expired
+              ? "Token expired. Generate a new one."
+              : `Expires in ${formatRemaining(remaining)}`}
+          </p>
         </div>
 
         <button

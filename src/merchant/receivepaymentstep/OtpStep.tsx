@@ -6,6 +6,7 @@ import { MdOutline123 } from "react-icons/md";
 export type OtpStepProps = {
   otp: string[];
   otpError: boolean;
+  loading: boolean;
   inputRefs: MutableRefObject<(HTMLInputElement | null)[]>;
   onChange: (index: number, value: string) => void;
   onKeyDown: (index: number, e: KeyboardEvent<HTMLInputElement>) => void;
@@ -16,6 +17,7 @@ export type OtpStepProps = {
 const OtpStep = ({
   otp,
   otpError,
+  loading,
   inputRefs,
   onChange,
   onKeyDown,
@@ -63,10 +65,11 @@ const OtpStep = ({
 
     <button
       onClick={onValidate}
-      className="w-full flex items-center justify-center gap-2 bg-primary-purple text-white py-3.5 rounded-full text-[14px] font-medium hover:opacity-90 transition-opacity mt-2"
+      disabled={loading}
+      className="w-full flex items-center justify-center gap-2 bg-primary-purple text-white py-3.5 rounded-full text-[14px] font-medium hover:opacity-90 transition-opacity mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
     >
       <FiShield size={16} />
-      Validate Code
+      {loading ? "Validating..." : "Validate Code"}
     </button>
   </div>
 );

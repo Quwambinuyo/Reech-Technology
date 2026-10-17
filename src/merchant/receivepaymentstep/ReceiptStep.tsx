@@ -1,10 +1,24 @@
 import { FiCheckCircle, FiPlus, FiPrinter } from "react-icons/fi";
 
+export type RedeemedPayment = {
+  transactionId: string;
+  reference: string;
+  customerName: string;
+  points: number;
+  amount: number;
+  currencySymbol: string;
+  time: string;
+};
+
 type ReceiptStepProps = {
+  data: RedeemedPayment;
   onNewTransaction: () => void;
 };
 
-const ReceiptStep = ({ onNewTransaction }: ReceiptStepProps) => (
+const formatAmount = (symbol: string, amount: number) =>
+  `${symbol}${amount.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
+
+const ReceiptStep = ({ data, onNewTransaction }: ReceiptStepProps) => (
   <div>
     <div className="flex items-center justify-center mb-5">
       <div className="w-[64px] h-[64px] rounded-full bg-green-100 border-4 border-green-200 flex items-center justify-center">
@@ -23,22 +37,22 @@ const ReceiptStep = ({ onNewTransaction }: ReceiptStepProps) => (
       {[
         {
           label: "Customer",
-          value: "Alex Olutunde",
+          value: data.customerName,
           className: "font-semibold text-gray-900",
         },
         {
           label: "Points received",
-          value: "500 pts",
+          value: `${data.points.toLocaleString()} pts`,
           className: "font-semibold text-violet-600",
         },
         {
           label: "Value",
-          value: "₦500.00",
+          value: formatAmount(data.currencySymbol, data.amount),
           className: "font-semibold text-gray-900",
         },
         {
           label: "Reference",
-          value: "RCH-2025-0047821",
+          value: data.reference,
           className: "text-gray-700 text-[12.5px]",
         },
       ].map(({ label, value, className }) => (

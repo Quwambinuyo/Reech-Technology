@@ -5,18 +5,17 @@ import { reechCurrency } from "../../../assets";
 import { formatNumber } from "../../../../src/utils";
 import StepBar from "./StepBar";
 import type { Step } from "../types";
-import { CURRENT_BALANCE, EXCHANGE_RATE } from "../types";
 
 interface Props {
   onClose: () => void;
   points: number;
+  balance: number;
   onChange: (points: number) => void;
   onNext: () => void;
 }
 
-const AmountStep = ({ onClose, points, onChange, onNext }: Props) => {
-  const equivalent = points * EXCHANGE_RATE;
-  const isValid = points > 0 && points <= CURRENT_BALANCE;
+const AmountStep = ({ onClose, points, balance, onChange, onNext }: Props) => {
+  const isValid = Number.isInteger(points) && points > 0 && points <= balance;
 
   return (
     <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
@@ -44,6 +43,8 @@ const AmountStep = ({ onClose, points, onChange, onNext }: Props) => {
           <img src={reechCurrency} alt="currency" />
           <input
             type="number"
+            min={1}
+            step={1}
             value={points || ""}
             onChange={(e) => onChange(Number(e.target.value))}
             placeholder="0"
@@ -51,32 +52,26 @@ const AmountStep = ({ onClose, points, onChange, onNext }: Props) => {
           />
         </div>
 
-        <div className="mt-4 bg-[#F7F6FF] border border-[#E8E0FF] rounded-xl px-4 py-3.5">
-          <p className="text-[10px] font-ibmplex text-[#4A454F] font-semibold uppercase tracking-wider mb-1">
-            Equivalent Value
-          </p>
-          <p className="text-[22px] font-montserrat font-bold text-[#7542BB]">
-            ₦{formatNumber(equivalent)}
-          </p>
-        </div>
-
-        <div className="mt-3 flex items-start gap-2.5 bg-[#EEF0FF] rounded-xl px-4 py-3.5">
+        <div className="mt-4 flex items-start gap-2.5 bg-[#EEF0FF] rounded-xl px-4 py-3.5">
           <RiErrorWarningFill
             size={20}
             className="text-[#7f669d] mt-0.5 shrink-0"
           />
           <p className="text-[12px] font-ibmplex text-[#3D3D6B] leading-relaxed">
             Your current balance is{" "}
-            <span className="font-bold">
-              {formatNumber(CURRENT_BALANCE)} credits
-            </span>
-            .
+            <span className="font-bold">{formatNumber(balance)} credits</span>.
           </p>
         </div>
 
-        {points > CURRENT_BALANCE && (
+        {points > balance && (
           <p className="mt-2 text-xs text-red-500 font-ibmplex">
             Insufficient balance.
+          </p>
+        )}
+
+        {points > 0 && !Number.isInteger(points) && (
+          <p className="mt-2 text-xs text-red-500 font-ibmplex">
+            Enter a whole number of points.
           </p>
         )}
 

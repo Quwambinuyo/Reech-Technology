@@ -2,14 +2,24 @@ import { useState, useRef } from "react";
 import type { KeyboardEvent, ClipboardEvent } from "react";
 import OtpStep from "./receivepaymentstep/OtpStep";
 import ValidateStep from "./receivepaymentstep/ValidateStep";
+import type { ValidatedPayment } from "./receivepaymentstep/ValidateStep";
 import ReceiptStep from "./receivepaymentstep/ReceiptStep";
+import type { RedeemedPayment } from "./receivepaymentstep/ReceiptStep";
+import { useAppDispatch } from "../redux/hooks";
+import { redeemToken, validateToken } from "../redux/wallet/action";
 
 type Step = "otp" | "validate" | "receipt";
 
 const ReceivePayments = () => {
+  const dispatch = useAppDispatch();
+
   const [step, setStep] = useState<Step>("otp");
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [otpError, setOtpError] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [redeeming, setRedeeming] = useState(false);
+  const [validated, setValidated] = useState<ValidatedPayment | null>(null);
+  const [receipt, setReceipt] = useState<RedeemedPayment | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const otpValue = otp.join("");
@@ -47,17 +57,53 @@ const ReceivePayments = () => {
     inputRefs.current[Math.min(pasted.length, 5)]?.focus();
   };
 
-  const handleValidate = () => {
+  const handleValidate = async () => {
+    if (validating) return;
+
     if (otpValue.length < 6) {
       setOtpError(true);
       return;
     }
-    setStep("validate");
+
+    setValidating(true);
+
+    try {
+      const result = await dispatch(validateToken({ code: otpValue })).unwrap();
+      setValidated(result);
+      setStep("validate");
+    } catch {
+      setOtpError(true);
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  const handleRedeem = async () => {
+    if (redeeming) return;
+
+    setRedeeming(true);
+
+    try {
+      const result = await dispatch(redeemToken({ code: otpValue })).unwrap();
+      setReceipt(result);
+      setStep("receipt");
+    } catch {
+      return;
+    } finally {
+      setRedeeming(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setValidated(null);
+    setStep("otp");
   };
 
   const handleNewTransaction = () => {
     setOtp(Array(6).fill(""));
     setOtpError(false);
+    setValidated(null);
+    setReceipt(null);
     setStep("otp");
     setTimeout(() => inputRefs.current[0]?.focus(), 50);
   };
@@ -71,6 +117,7 @@ const ReceivePayments = () => {
           <OtpStep
             otp={otp}
             otpError={otpError}
+            loading={validating}
             inputRefs={inputRefs}
             onChange={handleOtpChange}
             onKeyDown={handleKeyDown}
@@ -78,15 +125,20 @@ const ReceivePayments = () => {
             onValidate={handleValidate}
           />
         )}
-        {step === "validate" && (
+        {step === "validate" && validated && (
           <ValidateStep
             formattedCode={formattedCode}
-            onCancel={() => setStep("otp")}
-            onConfirm={() => setStep("receipt")}
+            data={validated}
+            loading={redeeming}
+            onCancel={handleCancel}
+            onConfirm={handleRedeem}
           />
         )}
-        {step === "receipt" && (
-          <ReceiptStep onNewTransaction={handleNewTransaction} />
+        {step === "receipt" && receipt && (
+          <ReceiptStep
+            data={receipt}
+            onNewTransaction={handleNewTransaction}
+          />
         )}
       </div>
     </div>

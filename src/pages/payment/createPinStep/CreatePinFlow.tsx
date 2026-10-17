@@ -80,7 +80,7 @@ const CreatePinFlow = ({ onClose, onComplete }: Props) => {
           setStep(1);
         }}
         title="Confirm Current PIN"
-        noticeText="Enter your existing 6-digit transaction PIN to continue. You'll set your new PIN next."
+        noticeText="Enter your existing 4-digit transaction PIN to continue. You'll set your new PIN next."
         submitLabel="Continue"
       />
     );

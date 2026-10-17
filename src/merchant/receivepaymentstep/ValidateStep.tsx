@@ -1,13 +1,46 @@
 import { FiCheckCircle, FiInfo } from "react-icons/fi";
 
+export type ValidatedPayment = {
+  customerName: string;
+  phoneNumber: string;
+  points: number;
+  amount: number;
+  currencySymbol: string;
+  expiresAt: string;
+};
+
 type ValidateStepProps = {
   formattedCode: string;
+  data: ValidatedPayment;
+  loading: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+
+const formatAmount = (symbol: string, amount: number) =>
+  `${symbol}${amount.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
+
+const formatExpiry = (iso: string) =>
+  new Date(iso).toLocaleString("en-NG", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
 const ValidateStep = ({
   formattedCode,
+  data,
+  loading,
   onCancel,
   onConfirm,
 }: ValidateStepProps) => (
@@ -26,11 +59,13 @@ const ValidateStep = ({
 
     <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3 mb-5">
       <div className="w-[44px] h-[44px] rounded-full bg-emerald-100 flex items-center justify-center text-[13px] font-semibold text-emerald-700 flex-shrink-0">
-        AO
+        {getInitials(data.customerName)}
       </div>
       <div>
-        <p className="text-[14px] font-semibold text-gray-900">Alex Olutunde</p>
-        <p className="text-[12px] text-gray-500 mt-0.5">+234 812 456 7890</p>
+        <p className="text-[14px] font-semibold text-gray-900">
+          {data.customerName}
+        </p>
+        <p className="text-[12px] text-gray-500 mt-0.5">{data.phoneNumber}</p>
       </div>
     </div>
 
@@ -43,17 +78,17 @@ const ValidateStep = ({
         },
         {
           label: "Points",
-          value: "500 pts",
+          value: `${data.points.toLocaleString()} pts`,
           className: "font-semibold text-violet-600",
         },
         {
           label: "Equivalent value",
-          value: "₦500.00",
+          value: formatAmount(data.currencySymbol, data.amount),
           className: "font-semibold text-gray-900",
         },
         {
-          label: "Transaction time",
-          value: "26/05/2025 · 7:25 PM",
+          label: "Code expires",
+          value: formatExpiry(data.expiresAt),
           className: "text-gray-700",
         },
       ].map(({ label, value, className }) => (
@@ -75,16 +110,18 @@ const ValidateStep = ({
     <div className="flex gap-3">
       <button
         onClick={onCancel}
-        className="flex-1 py-3 rounded-full border border-gray-200 text-[13.5px] font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        disabled={loading}
+        className="flex-1 py-3 rounded-full border border-gray-200 text-[13.5px] font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
         Cancel
       </button>
       <button
         onClick={onConfirm}
-        className="flex-[2] py-3 rounded-full bg-green-800 text-white text-[13.5px] font-medium flex items-center justify-center gap-2 hover:bg-green-900 transition-colors"
+        disabled={loading}
+        className="flex-[2] py-3 rounded-full bg-green-800 text-white text-[13.5px] font-medium flex items-center justify-center gap-2 hover:bg-green-900 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <FiCheckCircle size={15} />
-        Confirm & Submit
+        {loading ? "Submitting..." : "Confirm & Submit"}
       </button>
     </div>
   </div>
