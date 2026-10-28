@@ -29,6 +29,7 @@ import AllCategories from "../pages/categories/AllCategories";
 import SingleMerchant from "../pages/manage-merchant/SingleMerchant";
 import ReceivePayments from "../merchant/ReceivePayments";
 import AuthVerify from "../pages/auth/AuthVerify";
+import GoogleCallback from "../pages/auth/GoogleCallback";
 
 export default function BaseRoutes() {
   const dispatch = useAppDispatch();
@@ -63,6 +64,7 @@ export default function BaseRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/auth/verify" element={<AuthVerify />} />
+        <Route path="/auth/google/callback" element={<GoogleCallback />} />
 
         <Route element={<PrivateRoute />}>
           <Route element={<LayoutWrapper />}>

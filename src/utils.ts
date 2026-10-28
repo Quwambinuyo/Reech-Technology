@@ -1,4 +1,4 @@
-import type { StakeholderProps } from "./types";
+import type { ApiKeyProps, StakeholderProps } from "./types";
 
 export const userRole = "merchant"; // Change to 'customer' or 'merchant' to test different roles
 
@@ -220,3 +220,37 @@ export const formatDateTime = (date: string | Date) => {
 };
 
 export const sanitizeDigits = (value: string) => value.replace(/\D/g, "");
+
+export const formatAmount = (symbol: string, amount: number) =>
+  `${symbol}${amount.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
+
+export const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+
+export const formatExpiry = (iso: string) =>
+  new Date(iso).toLocaleString("en-NG", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+export const getApiKeysArray = (allApiKeys: unknown): ApiKeyProps[] => {
+  if (!allApiKeys || typeof allApiKeys !== "object") return [];
+
+  const maybeResult = (allApiKeys as { result?: unknown }).result;
+  if (Array.isArray(maybeResult)) return maybeResult as ApiKeyProps[];
+
+  const maybeSingleKey = allApiKeys as Partial<ApiKeyProps>;
+  if (maybeSingleKey.id && maybeSingleKey.maskedKey) {
+    return [maybeSingleKey as ApiKeyProps];
+  }
+
+  return [];
+};

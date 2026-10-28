@@ -1,27 +1,21 @@
-import type { KeyboardEvent, ClipboardEvent, MutableRefObject } from "react";
 import { FiShield, FiInfo } from "react-icons/fi";
-import { OtpInput } from "../../components/CustomInput";
+import { CustomTextInput } from "../../components/CustomInput";
 import { MdOutline123 } from "react-icons/md";
+import type { InputEvent } from "../../types";
 
 export type OtpStepProps = {
-  otp: string[];
+  code: string;
   otpError: boolean;
   loading: boolean;
-  inputRefs: MutableRefObject<(HTMLInputElement | null)[]>;
-  onChange: (index: number, value: string) => void;
-  onKeyDown: (index: number, e: KeyboardEvent<HTMLInputElement>) => void;
-  onPaste: (e: ClipboardEvent<HTMLInputElement>) => void;
+  onChange: (e: InputEvent) => void;
   onValidate: () => void;
 };
 
 const OtpStep = ({
-  otp,
+  code,
   otpError,
   loading,
-  inputRefs,
   onChange,
-  onKeyDown,
-  onPaste,
   onValidate,
 }: OtpStepProps) => (
   <div>
@@ -39,19 +33,23 @@ const OtpStep = ({
       to validate the transaction.
     </p>
 
-    <div className="flex gap-2.5 justify-center mb-4">
-      {otp.map((digit, i) => (
-        <OtpInput
-          key={i}
-          index={i}
-          digit={digit}
-          hasError={otpError}
-          inputRefs={inputRefs}
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-          onPaste={onPaste}
-        />
-      ))}
+    <div className="mb-4">
+      <CustomTextInput
+        label="Customer code"
+        id="code"
+        type="text"
+        placeholder="Enter 6-digit code"
+        value={code}
+        handleChange={onChange}
+        borderColor={otpError ? "#F87171" : undefined}
+        otherInputProps={{
+          inputMode: "numeric",
+          maxLength: 6,
+          autoComplete: "off",
+          autoFocus: true,
+          disabled: loading,
+        }}
+      />
     </div>
 
     <div

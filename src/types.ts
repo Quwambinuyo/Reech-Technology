@@ -52,6 +52,7 @@ export interface StakeholderProps {
   id: string;
   token: string;
   email: string;
+  userName?: string | null;
   firstName: string;
   lastName: string;
   emailConfirmed: boolean;

@@ -15,6 +15,7 @@ import RevokeApiKeyModal from "./partial/RevokeApiKeyModal";
 import KeyDetailsModal from "./partial/KeyDetailsModal";
 import ApiKeysTable from "./partial/ApiKeyTable";
 import PhoneChangeModal, { toE164 } from "./partial/PhoneChangeModal";
+import UsernameModal from "./partial/UsernameModal";
 import Button from "../../components/Button";
 import RotateKeyModal from "./partial/RotateKeyModal";
 import Spinner from "../../components/Spinner";
@@ -26,27 +27,16 @@ import {
   revokeApiKeys,
 } from "../../redux/profile/action";
 import { onClearPhoneChange } from "../../redux/auth/authReducer";
+import { getApiKeysArray } from "../../utils";
 
 type ActiveModal = "create" | "revoke" | "details" | "rotate" | null;
 
-const getApiKeysArray = (allApiKeys: unknown): ApiKeyProps[] => {
-  if (!allApiKeys || typeof allApiKeys !== "object") return [];
-
-  const maybeResult = (allApiKeys as { result?: unknown }).result;
-  if (Array.isArray(maybeResult)) return maybeResult as ApiKeyProps[];
-
-  const maybeSingleKey = allApiKeys as Partial<ApiKeyProps>;
-  if (maybeSingleKey.id && maybeSingleKey.maskedKey) {
-    return [maybeSingleKey as ApiKeyProps];
-  }
-
-  return [];
-};
 
 const Profile = () => {
   const role = useRole();
   const dispatch = useAppDispatch();
   const [phoneModal, setPhoneModal] = useState(false);
+  const [usernameModal, setUsernameModal] = useState(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [selectedKey, setSelectedKey] = useState<ApiKeyProps | null>(null);
 
@@ -66,6 +56,7 @@ const Profile = () => {
   });
 
   const { fullName, email } = form;
+  const username = currentUser?.userName || "";
   const displayPhone = toE164(currentUser?.phoneNumber);
 
   useEffect(() => {
@@ -82,6 +73,10 @@ const Profile = () => {
   const closePhoneModal = () => {
     dispatch(onClearPhoneChange());
     setPhoneModal(false);
+  };
+
+  const closeUsernameModal = () => {
+    setUsernameModal(false);
   };
 
   const handleCreateApiKey = async (name: string) => {
@@ -138,6 +133,20 @@ const Profile = () => {
               value={email}
               onChange={() => {}}
             />
+            <div className="flex flex-col gap-2">
+              <PlainInput
+                label="username"
+                id="username"
+                value={username || "Not added"}
+              />
+              <button
+                type="button"
+                onClick={() => setUsernameModal(true)}
+                className="self-start text-sm font-medium text-[#4A148C]"
+              >
+                {username ? "Change username" : "Add username"}
+              </button>
+            </div>
             <div className="flex flex-col gap-2">
               <PlainInput
                 label="phone number"
@@ -228,6 +237,10 @@ const Profile = () => {
 
       <Modal modal={phoneModal} onClose={closePhoneModal}>
         <>{phoneModal && <PhoneChangeModal onClose={closePhoneModal} />}</>
+      </Modal>
+
+      <Modal modal={usernameModal} onClose={closeUsernameModal}>
+        <>{usernameModal && <UsernameModal onClose={closeUsernameModal} />}</>
       </Modal>
 
       <Modal modal={activeModal === "create"} onClose={closeModal}>

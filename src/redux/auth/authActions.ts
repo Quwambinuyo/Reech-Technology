@@ -198,12 +198,13 @@ export const userAccountLogin = createAsyncThunk(
 export const googleLogin = createAsyncThunk(
   "auth/googleLogin",
   async (
-    reqBody: { token: string; rememberMe?: boolean },
+    reqBody: { code: string; codeVerifier: string; rememberMe?: boolean },
     { rejectWithValue },
   ) => {
     try {
-      const response = await axios.post(`${baseURL}/auth/google-login`, {
-        token: reqBody.token,
+      const response = await axios.post(`${baseURL}/auth/google/exchange`, {
+        code: reqBody.code,
+        codeVerifier: reqBody.codeVerifier,
       });
 
       if (response.data?.isSuccess) {
@@ -326,6 +327,34 @@ export const verifyPhoneChange = createAsyncThunk(
         return rejectWithValue("Network error");
       }
       const message = extractErrorMessage(error, "Failed to update phone");
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const updateUsername = createAsyncThunk(
+  "auth/updateUsername",
+  async (userName: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(
+        `${baseURL}/users/me/username`,
+        { userName },
+      );
+
+      if (response.data?.isSuccess || response.data?.statusCode === 200) {
+        toast.success("Your username has been updated.");
+        return response.data?.data?.userName ?? userName;
+      } else {
+        throw new Error(response.data?.message || "Failed to update username");
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      }
+      const message = extractErrorMessage(error, "Failed to update username");
       toast.error(message);
       return rejectWithValue(message);
     }

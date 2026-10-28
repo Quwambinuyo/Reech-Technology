@@ -1,4 +1,5 @@
 import { FiCheckCircle, FiInfo } from "react-icons/fi";
+import { formatAmount, formatExpiry, getInitials } from "../../utils";
 
 export type ValidatedPayment = {
   customerName: string;
@@ -16,26 +17,6 @@ type ValidateStepProps = {
   onCancel: () => void;
   onConfirm: () => void;
 };
-
-const getInitials = (name: string) =>
-  name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join("");
-
-const formatAmount = (symbol: string, amount: number) =>
-  `${symbol}${amount.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
-
-const formatExpiry = (iso: string) =>
-  new Date(iso).toLocaleString("en-NG", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
 
 const ValidateStep = ({
   formattedCode,

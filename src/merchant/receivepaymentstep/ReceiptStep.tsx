@@ -1,4 +1,5 @@
 import { FiCheckCircle, FiPlus, FiPrinter } from "react-icons/fi";
+import { formatAmount } from "../../utils";
 
 export type RedeemedPayment = {
   transactionId: string;
@@ -14,9 +15,6 @@ type ReceiptStepProps = {
   data: RedeemedPayment;
   onNewTransaction: () => void;
 };
-
-const formatAmount = (symbol: string, amount: number) =>
-  `${symbol}${amount.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
 
 const ReceiptStep = ({ data, onNewTransaction }: ReceiptStepProps) => (
   <div>

@@ -9,6 +9,7 @@ import {
   userAccountForgotPassword,
   requestPhoneChangeCode,
   verifyPhoneChange,
+  updateUsername,
   updateUserPin,
   fetchUserPinStatus,
 } from "./authActions";
@@ -275,6 +276,12 @@ const authSlice = createSlice({
         state.verifyPhoneLoading = false;
         state.verifyPhoneError =
           (action.payload as string) || "Failed to update phone";
+      })
+
+      .addCase(updateUsername.fulfilled, (state, action) => {
+        if (state.currentUser) {
+          state.currentUser.userName = action.payload;
+        }
       })
 
       .addCase(fetchCountries.pending, (state) => {
