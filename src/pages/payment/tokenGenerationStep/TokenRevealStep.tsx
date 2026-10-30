@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { IoClose, IoCopyOutline, IoCheckmark } from "react-icons/io5";
+import {
+  IoCloseCircleOutline,
+  IoCopyOutline,
+  IoCheckmark,
+} from "react-icons/io5";
 import Logo from "../../../assets/logo-s.png";
+import Button from "../../../components/Button";
+import {
+  formatCode,
+  formatRemaining,
+  getRemainingSeconds,
+} from "../../../utils";
 
 interface Props {
   onClose: () => void;
   token: string;
   expiresAt: string;
 }
-
-const getRemainingSeconds = (expiresAt: string) =>
-  Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
-
-const formatRemaining = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const rest = String(seconds % 60).padStart(2, "0");
-  return `${minutes}:${rest}`;
-};
 
 const TokenRevealStep = ({ onClose, token, expiresAt }: Props) => {
   const [copied, setCopied] = useState(false);
@@ -44,66 +45,65 @@ const TokenRevealStep = ({ onClose, token, expiresAt }: Props) => {
   const expired = remaining === 0;
 
   return (
-    <div className="bg-white rounded-2xl w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto shadow-xl overflow-hidden border border-dashed border-[#D0D0F0]">
-      <div className="px-5 pt-5 pb-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-montserrat font-bold text-[#0D0D0D] text-lg">
-              Token Generated
-            </h3>
-            <p className="text-gray-400 text-[12px] font-ibmplex mt-0.5">
-              Share this token with the merchant to complete the transaction.
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-2xl text-black hover:text-gray-600 transition-colors"
-          >
-            <IoClose />
-          </button>
+    <div className="bg-white rounded-2xl w-11/12 max-w-[500px] md:max-w-[560px] mx-auto shadow-xl overflow-hidden relative">
+      <div className="px-5 lg:px-6 pt-5 lg:pt-6 pb-5">
+        <div className="pr-8">
+          <h3 className="font-montserrat font-bold text-light-black text-lg">
+            Token Generated
+          </h3>
+          <p className="text-gray-500 text-[13px] font-ibmplex mt-0.5">
+            Share this token with the merchant to complete the transaction.
+            Valid for 1 hour.
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute text-2xl lg:text-3xl top-4 lg:top-5 right-5 text-black hover:opacity-70 transition-opacity"
+        >
+          <IoCloseCircleOutline />
+        </button>
 
-        <div className="flex flex-col items-center gap-4 py-6">
+        <div className="mt-6 mb-6 flex flex-col items-center gap-4 rounded-xl bg-primary-purple/5 border border-primary-purple/15 px-4 py-7">
           <div className="flex items-center gap-3">
             <p
-              className={`text-3xl font-montserrat font-bold tracking-[0.3em] ${
-                expired ? "text-gray-400 line-through" : "text-[#030649]"
+              className={`text-2xl sm:text-3xl font-montserrat font-bold tracking-[0.12em] ${
+                expired ? "text-gray-400 line-through" : "text-primary-purple"
               }`}
             >
-              {token}
+              {formatCode(token)}
             </p>
             <button
+              type="button"
               onClick={handleCopy}
               disabled={expired}
-              className="flex-center h-9 w-9 rounded-full border border-[#E5E6F5] text-[#4A148C] hover:bg-[#F5F3FF] disabled:opacity-40"
+              title="Copy code"
+              className="flex-center h-9 w-9 shrink-0 rounded-full border border-primary-purple/20 bg-white text-primary-purple hover:bg-primary-purple/10 transition-colors disabled:opacity-40"
             >
               {copied ? <IoCheckmark size={16} /> : <IoCopyOutline size={16} />}
             </button>
           </div>
 
-          <p
-            className={`text-[13px] font-ibmplex ${
-              expired ? "text-red-500" : "text-[#6B6B8A]"
+          <span
+            className={`rounded-full px-3 py-1 text-[12px] font-ibmplex font-semibold ${
+              expired
+                ? "bg-default-red/10 text-default-red"
+                : "bg-white text-gray-600 border border-primary-purple/15"
             }`}
           >
             {expired
               ? "Token expired. Generate a new one."
               : `Expires in ${formatRemaining(remaining)}`}
-          </p>
+          </span>
         </div>
 
-        <button
-          onClick={onClose}
-          className="w-full bg-[#4A148C] text-white font-montserrat font-semibold rounded-4xl py-3.5 text-[16px]"
-        >
-          Done
-        </button>
+        <Button text="Done" onClick={onClose} />
       </div>
 
       <div className="flex justify-center items-center py-3 border-t border-gray-100">
         <div className="flex items-center">
           <img src={Logo} alt="logo" className="w-[40px]" />
-          <span className="font-poppins font-medium text-[#000000] -ml-1 text-sm">
+          <span className="font-poppins font-medium text-light-black -ml-1 text-sm">
             reech
           </span>
         </div>

@@ -28,3 +28,5 @@ const PointEquivalentCard = ({
 };
 
 export default PointEquivalentCard;
+
+

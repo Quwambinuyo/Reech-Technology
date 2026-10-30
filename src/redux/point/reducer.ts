@@ -3,6 +3,7 @@ import {
   createActivityPoints,
   deleteActivityPoints,
   editActivityPoints,
+  awardActivityPoints,
   fetchActivityPoints,
   fetchPointConversions,
   createPointConversions,
@@ -41,6 +42,8 @@ interface PointReducerProps {
   editActivityPointLoading: boolean;
   editActivityPointSuccess: any;
   editActivityPointError: string;
+  toggleAwardActivityPoint: ActivityPointProps | null;
+  awardActivityPointLoading: boolean;
   toggleDeleteActivityPoint: string;
   deleteActivityPointLoading: boolean;
   deleteActivityPointSuccess: any;
@@ -84,6 +87,8 @@ const initialState: PointReducerProps = {
   editActivityPointLoading: false,
   editActivityPointSuccess: null,
   editActivityPointError: "",
+  toggleAwardActivityPoint: null,
+  awardActivityPointLoading: false,
   toggleDeleteActivityPoint: "",
   deleteActivityPointLoading: false,
   deleteActivityPointSuccess: null,
@@ -123,6 +128,12 @@ const pointSlice = createSlice({
       ): { payload: ActivityPointProps | null | undefined } => {
         return { payload: categoryInfo };
       },
+    },
+    onToggleAwardActivityPoint: (
+      state,
+      action: PayloadAction<ActivityPointProps | null>,
+    ) => {
+      state.toggleAwardActivityPoint = action.payload ?? null;
     },
     onToggleDeleteActivityPoint: (state, action) => {
       state.toggleDeleteActivityPoint = action.payload || "";
@@ -194,6 +205,15 @@ const pointSlice = createSlice({
         state.editActivityPointLoading = false;
         const error = action.payload as string;
         state.editActivityPointError = error;
+      })
+      .addCase(awardActivityPoints.pending, (state) => {
+        state.awardActivityPointLoading = true;
+      })
+      .addCase(awardActivityPoints.fulfilled, (state) => {
+        state.awardActivityPointLoading = false;
+      })
+      .addCase(awardActivityPoints.rejected, (state) => {
+        state.awardActivityPointLoading = false;
       })
       .addCase(deleteActivityPoints.pending, (state) => {
         state.deleteActivityPointLoading = true;
@@ -276,6 +296,7 @@ export const {
   onToggleCreateActivityPoint,
   onToggleCreatePointConversion,
   onToggleEditActivityPoint,
+  onToggleAwardActivityPoint,
   onToggleDeleteActivityPoint,
   onToggleEditPointConversion,
   onToggleDeletePointConversion,

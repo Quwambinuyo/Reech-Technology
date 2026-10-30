@@ -106,7 +106,7 @@ const ConfirmPinStep = ({
             className="text-[#C77B26] mt-0.5 shrink-0"
           />
           <p className="text-[#8A5A1E] text-[13px] leading-relaxed">
-            Re-enter your 6-digit PIN to confirm it and complete the setup.
+            Re-enter your 4-digit PIN to confirm it and complete the setup.
           </p>
         </div>
       </div>

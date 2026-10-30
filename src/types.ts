@@ -52,6 +52,7 @@ export interface StakeholderProps {
   id: string;
   token: string;
   email: string;
+  username?: string | null;
   userName?: string | null;
   firstName: string;
   lastName: string;
@@ -104,7 +105,10 @@ export interface AdminCategoryListProps {
 
 export interface ActivityPointProps {
   name: string;
+  rewardType: number;
   points: number;
+  percentage: number | null;
+  maxPoints: number | null;
   description: string;
   id: string;
 }
@@ -129,6 +133,7 @@ export interface CustomerTransactionProps {
   status: string;
   reference: string;
   time: string;
+  description?: string;
 }
 
 export type MerchantTransactionCardProps = {
@@ -144,4 +149,5 @@ export type MerchantTransactionCardProps = {
   type: string;
   reference: string;
   time: string;
+  description?: string;
 };

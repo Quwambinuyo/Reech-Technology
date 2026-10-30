@@ -6,6 +6,7 @@ import NewPointConversionForm from "./modal/NewPointConversionForm";
 import { MiniCreateButton, SeeAllBtn } from "../components/small";
 import PointEquivalentCard from "./partial/PointEquivalentCard";
 import NewActivityPointForm from "./modal/NewActivityPointForm";
+import AwardActivityPointForm from "./modal/AwardActivityPointForm";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import ActivityPointCard from "./partial/ActivityPointCard";
 import ConfirmAction from "../components/ConfirmAction";
@@ -13,6 +14,7 @@ import { FetchActivityPointLoading } from "./partial";
 import Empty from "../components/Empty";
 import Modal from "../layout/Modal";
 import { Pagination } from "../components/Pagination";
+import type { ActivityPointProps, PointEquivalentProp } from "../types";
 import {
   deleteActivityPoints,
   fetchActivityPoints,
@@ -36,6 +38,8 @@ const PointUpload = () => {
   const [activityPageSize] = useState(6);
   const [conversionPageNumber, setConversionPageNumber] = useState(1);
   const [conversionPageSize] = useState(6);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const {
     toggleCreateActivityPoint,
@@ -44,6 +48,7 @@ const PointUpload = () => {
     allActivityPoints,
     createActivityPointSuccesss,
     toggleEditActivityPoint,
+    toggleAwardActivityPoint,
     editActivityPointSuccess,
     deleteActivityPointLoading,
     deleteActivityPointSuccess,
@@ -90,16 +95,32 @@ const PointUpload = () => {
   };
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      const trimmed = searchTerm.trim();
+      setDebouncedSearch((prev) => {
+        if (prev !== trimmed) {
+          setActivityPageNumber(1);
+        }
+        return trimmed;
+      });
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
     dispatch(
       fetchActivityPoints({
         pageNumber: activityPageNumber,
         pageSize: activityPageSize,
+        search: debouncedSearch || undefined,
       }),
     );
   }, [
     dispatch,
     activityPageNumber,
     activityPageSize,
+    debouncedSearch,
     createActivityPointSuccesss,
     editActivityPointSuccess,
     deleteActivityPointSuccess,
@@ -134,6 +155,10 @@ const PointUpload = () => {
 
       <Modal modal={!!toggleEditActivityPoint}>
         <NewActivityPointForm onClose={onCloseEditActivity} context="edit" />
+      </Modal>
+
+      <Modal modal={!!toggleAwardActivityPoint}>
+        <>{toggleAwardActivityPoint && <AwardActivityPointForm />}</>
       </Modal>
 
       <Modal modal={toggleCreateActivityPoint}>
@@ -178,26 +203,43 @@ const PointUpload = () => {
           </div>
         </div>
 
+        <div className="mt-4">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search activities"
+            className="w-full sm:max-w-[320px] border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary-purple bg-white"
+          />
+        </div>
+
         <div className="mt-5 lg:mt-6 overflow-x-auto min-h-[350px]">
           {fetchActivityPointsLoading ? (
             <FetchActivityPointLoading />
           ) : allActivityPoints?.result?.length > 0 ? (
             <>
-              <div className="grid grid-cols-10 gap-5 font-montserrat font-semibold text-sm min-w-[800px]">
-                <p className="col-span-3">Activity Name</p>
-                <p className="col-span-2">Points</p>
+              <div className="grid grid-cols-12 gap-5 items-center font-montserrat font-semibold text-sm min-w-[1000px] px-5 md:px-6 xl:px-8">
+                <p className="col-span-2">Activity Name</p>
+                <p className="col-span-2">Reward</p>
                 <p className="col-span-3">Description</p>
-                <p className="col-span-2">Action</p>
+                <p className="col-span-2 whitespace-nowrap">Activity ID</p>
+                <p className="col-span-3">Action</p>
               </div>
               <div className="mt-4">
-                {allActivityPoints?.result?.map((act) => (
+                {allActivityPoints?.result?.map((act: ActivityPointProps) => (
                   <ActivityPointCard act={act} key={act.id} />
                 ))}
               </div>
             </>
           ) : (
             <div className="h-[300px] xl:h-[300px]">
-              <Empty text="No Activity point has been created yet" />
+              <Empty
+                text={
+                  debouncedSearch
+                    ? "No activity matches your search"
+                    : "No Activity point has been created yet"
+                }
+              />
             </div>
           )}
         </div>
@@ -242,7 +284,7 @@ const PointUpload = () => {
                 <p className="col-span-3 text-center">Action</p>
               </div>
               <div className="mt-4">
-                {allPointConversions?.result.map((act) => (
+                {allPointConversions?.result.map((act: PointEquivalentProp) => (
                   <PointEquivalentCard pointEqui={act} key={act.id} />
                 ))}
               </div>

@@ -40,7 +40,17 @@ const TransactionCard = ({
             {transaction.businessName?.charAt(0)}
           </div>
         )}
-        <p className="truncate">{transaction.businessName}</p>
+        <div className="min-w-0">
+          <p className="truncate">{transaction.businessName}</p>
+          {transaction?.description && (
+            <p
+              className="truncate text-[12px] font-normal text-gray-500"
+              title={transaction?.description}
+            >
+              {transaction?.description}
+            </p>
+          )}
+        </div>
       </div>
       <p className="col-span-3 flex items-center">
         {transaction.isDebit ? "-" : "+"} {transaction.points.toLocaleString()}{" "}

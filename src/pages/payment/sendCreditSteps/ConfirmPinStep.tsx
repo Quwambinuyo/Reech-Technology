@@ -109,7 +109,7 @@ const ConfirmPinStep = ({ onClose, onBack, onConfirm, loading }: Props) => {
             className="text-[#C77B26] mt-0.5 shrink-0"
           />
           <p className="text-[#8A5A1E] text-[13px] leading-relaxed">
-            Enter your 6-digit PIN to authorize this transfer of REECH Credits.
+            Enter your 4-digit PIN to authorize this transfer of REECH Credits.
             This confirms the transaction and cannot be undone.
           </p>
         </div>

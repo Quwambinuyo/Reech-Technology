@@ -241,6 +241,38 @@ export const formatExpiry = (iso: string) =>
     minute: "2-digit",
   });
 
+export const getRemainingSeconds = (expiresAt: string) =>
+  Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
+
+export const formatRemaining = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+  const rest = String(seconds % 60).padStart(2, "0");
+
+  return hours > 0 ? `${hours}:${minutes}:${rest}` : `${Number(minutes)}:${rest}`;
+};
+
+export const formatCode = (code: string) =>
+  code.length === 10
+    ? `${code.slice(0, 3)} ${code.slice(3, 6)} ${code.slice(6)}`
+    : code;
+
+export const formatReward = (activity: {
+  rewardType: number;
+  points: number;
+  percentage: number;
+  maxPoints?: number | null;
+}) => {
+  if (activity.rewardType === 1) {
+    const base = `${Number(activity.percentage)}% back`;
+    return activity.maxPoints
+      ? `${base} · up to ${activity.maxPoints.toLocaleString()}`
+      : base;
+  }
+
+  return `${activity.points.toLocaleString()} points`;
+};
+
 export const getApiKeysArray = (allApiKeys: unknown): ApiKeyProps[] => {
   if (!allApiKeys || typeof allApiKeys !== "object") return [];
 

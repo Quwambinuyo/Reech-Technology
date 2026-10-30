@@ -280,7 +280,7 @@ const authSlice = createSlice({
 
       .addCase(updateUsername.fulfilled, (state, action) => {
         if (state.currentUser) {
-          state.currentUser.userName = action.payload;
+          state.currentUser.username = action.payload;
         }
       })
 

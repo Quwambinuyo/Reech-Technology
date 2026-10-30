@@ -42,7 +42,14 @@ export const fetchActivityPoints = createAsyncThunk(
 export const createActivityPoints = createAsyncThunk(
   "point/createActivityPoints",
   async (
-    reqBody: { name: string; description: string; points: number },
+    reqBody: {
+      name: string;
+      description: string;
+      rewardType?: number;
+      points?: number;
+      percentage?: number;
+      maxPoints?: number;
+    },
     { rejectWithValue },
   ) => {
     try {
@@ -68,8 +75,12 @@ export const createActivityPoints = createAsyncThunk(
           window.location.href = "/login";
         }, 1000);
       } else {
-        toast.error(error?.response?.data?.error || error?.message);
-        return rejectWithValue(error?.message || error?.response?.data?.error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message;
+        toast.error(errorMessage);
+        return rejectWithValue(errorMessage);
       }
     }
   },
@@ -101,8 +112,55 @@ export const editActivityPoints = createAsyncThunk(
           window.location.href = "/sign-in";
         }, 1000);
       } else {
-        toast.error(error?.response?.data?.error || error?.message);
-        return rejectWithValue(error?.message || error?.response?.data?.error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message;
+        toast.error(errorMessage);
+        return rejectWithValue(errorMessage);
+      }
+    }
+  },
+);
+
+export const awardActivityPoints = createAsyncThunk(
+  "point/awardActivityPoints",
+  async (
+    reqBody: {
+      id: string;
+      info: { email: string; amount?: number; reference: string };
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.post(
+        `${baseURL}/activity-points/${reqBody.id}/award`,
+        reqBody.info,
+      );
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      } else {
+        throw new Error(response.data?.message || "Failed to award points");
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again,");
+        clearUserSession(tabId);
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+        return rejectWithValue("Unauthorized");
+      } else {
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message;
+        toast.error(errorMessage);
+        return rejectWithValue(errorMessage);
       }
     }
   },

@@ -3,7 +3,13 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance, baseURL } from "../../components/api";
 import { toast } from "react-toastify";
 import type { SigninDataType, SignupDataType } from "./authTypes";
-import { getOrCreateTabId, saveUserToStorage } from "../../utils";
+import {
+  clearUserSession,
+  getActiveRole,
+  getOrCreateTabId,
+  getUserFromStorage,
+  saveUserToStorage,
+} from "../../utils";
 
 const tabId = getOrCreateTabId();
 
@@ -12,6 +18,9 @@ const extractErrorMessage = (error: any, fallback: string) =>
   error?.response?.data?.error ||
   error?.message ||
   fallback;
+
+const normalizeUsername = (value: string) =>
+  value.trim().replace(/^@/, "").toLowerCase();
 
 export const createHolderAccount = createAsyncThunk(
   "auth/createAccount",
@@ -333,18 +342,59 @@ export const verifyPhoneChange = createAsyncThunk(
   },
 );
 
+export const checkUsernameAvailable = createAsyncThunk(
+  "auth/checkUsernameAvailable",
+  async (username: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `${baseURL}/users/username-available`,
+        { params: { username: normalizeUsername(username) } },
+      );
+
+      if (response.data?.isSuccess || response.data?.statusCode === 200) {
+        return response.data?.data as { username: string; available: boolean };
+      } else {
+        throw new Error(response.data?.message || "Failed to check username");
+      }
+    } catch (error: any) {
+      if (error?.message === "Network Error") {
+        return rejectWithValue("You are not connected to the internet.");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again,");
+        clearUserSession(tabId);
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+        return rejectWithValue("Unauthorized");
+      }
+      return rejectWithValue(extractErrorMessage(error, "Failed to check username"));
+    }
+  },
+);
+
 export const updateUsername = createAsyncThunk(
   "auth/updateUsername",
-  async (userName: string, { rejectWithValue }) => {
+  async (username: string, { rejectWithValue }) => {
     try {
+      const normalized = normalizeUsername(username);
       const response = await axiosInstance.put(
         `${baseURL}/users/me/username`,
-        { userName },
+        { username: normalized },
       );
 
       if (response.data?.isSuccess || response.data?.statusCode === 200) {
         toast.success("Your username has been updated.");
-        return response.data?.data?.userName ?? userName;
+        const saved: string = response.data?.data?.username ?? normalized;
+
+        const stored = getUserFromStorage();
+        if (stored) {
+          const role = getActiveRole();
+          const remember =
+            localStorage.getItem(`${role}_remember_${tabId}`) === "true";
+          saveUserToStorage({ ...stored, username: saved }, tabId, remember);
+        }
+
+        return saved;
       } else {
         throw new Error(response.data?.message || "Failed to update username");
       }

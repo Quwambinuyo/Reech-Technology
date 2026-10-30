@@ -34,10 +34,20 @@ const TransactionCard = ({
             {transaction.name?.charAt(0)}
           </div>
         )}
-        <p className="truncate">{transaction.name}</p>
+        <div className="min-w-0">
+          <p className="truncate">{transaction.name}</p>
+          {transaction?.description && (
+            <p
+              className="truncate text-[12px] font-normal text-gray-500"
+              title={transaction?.description}
+            >
+              {transaction?.description}
+            </p>
+          )}
+        </div>
       </div>
       <p className="col-span-3 flex items-center">
-        ₦{transaction.amount.toLocaleString()}
+        ₦{transaction?.amount.toLocaleString()}
       </p>
       <p className="col-span-4 flex gap-2 items-center justify-center">
         <span>{moment(transaction.time).format("DD/MM/YYYY")}</span>

@@ -56,7 +56,7 @@ const Profile = () => {
   });
 
   const { fullName, email } = form;
-  const username = currentUser?.userName || "";
+  const username = currentUser?.username ?? currentUser?.userName ?? "";
   const displayPhone = toE164(currentUser?.phoneNumber);
 
   useEffect(() => {

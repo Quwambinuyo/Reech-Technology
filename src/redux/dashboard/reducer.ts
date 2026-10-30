@@ -7,6 +7,7 @@ import {
   fetchCustomerDashboardOverview,
   fetchCustomerRecentTransactions,
   fetchCustomerTransactionDetails,
+  fetchWaysToEarn,
   fetchAdminDashboardOverview,
   fetchAdminRewardPerformance,
 } from "./action";
@@ -65,6 +66,7 @@ interface RecentTransaction {
   type: string;
   reference: string;
   time: string;
+  description?: string;
 }
 
 interface RecentTransactionsData {
@@ -85,10 +87,31 @@ interface CustomerRecentTransaction {
   status: string;
   reference: string;
   time: string;
+  description?: string;
 }
 
 interface CustomerRecentTransactionsData {
   result: CustomerRecentTransaction[];
+  pageNumber: number;
+  totalPages: number;
+  totalCount: number;
+}
+
+export interface WayToEarn {
+  activityId: string;
+  name: string;
+  description: string | null;
+  rewardType: number;
+  points: number;
+  percentage: number;
+  maxPoints: number | null;
+  businessId: string;
+  businessName: string;
+  businessLogo: string | null;
+}
+
+interface WaysToEarnData {
+  result: WayToEarn[];
   pageNumber: number;
   totalPages: number;
   totalCount: number;
@@ -108,6 +131,8 @@ interface DashboardState {
   customerRecentTransactionsRequestId: string | null;
   customerTransactionDetails: CustomerRecentTransaction | null;
   customerTransactionDetailsRequestId: string | null;
+  waysToEarn: WaysToEarnData | null;
+  waysToEarnRequestId: string | null;
   adminOverview: AdminDashboardOverview | null;
   adminRewardPerformance: RewardPerformanceItem[];
   loading: {
@@ -118,6 +143,7 @@ interface DashboardState {
     customerOverview: boolean;
     customerRecentTransactions: boolean;
     customerTransactionDetails: boolean;
+    waysToEarn: boolean;
     adminOverview: boolean;
     adminRewardPerformance: boolean;
   };
@@ -129,6 +155,7 @@ interface DashboardState {
     customerOverview: string | null;
     customerRecentTransactions: string | null;
     customerTransactionDetails: string | null;
+    waysToEarn: string | null;
     adminOverview: string | null;
     adminRewardPerformance: string | null;
   };
@@ -148,6 +175,8 @@ const initialState: DashboardState = {
   customerRecentTransactionsRequestId: null,
   customerTransactionDetails: null,
   customerTransactionDetailsRequestId: null,
+  waysToEarn: null,
+  waysToEarnRequestId: null,
   adminOverview: null,
   adminRewardPerformance: [],
   loading: {
@@ -158,6 +187,7 @@ const initialState: DashboardState = {
     customerOverview: false,
     customerRecentTransactions: false,
     customerTransactionDetails: false,
+    waysToEarn: false,
     adminOverview: false,
     adminRewardPerformance: false,
   },
@@ -169,6 +199,7 @@ const initialState: DashboardState = {
     customerOverview: null,
     customerRecentTransactions: null,
     customerTransactionDetails: null,
+    waysToEarn: null,
     adminOverview: null,
     adminRewardPerformance: null,
   },
@@ -308,6 +339,22 @@ const dashboardSlice = createSlice({
         if (state.customerTransactionDetailsRequestId !== action.meta.requestId) return;
         state.loading.customerTransactionDetails = false;
         state.error.customerTransactionDetails = action.payload as string;
+      })
+
+      .addCase(fetchWaysToEarn.pending, (state, action) => {
+        state.waysToEarnRequestId = action.meta.requestId;
+        state.loading.waysToEarn = true;
+        state.error.waysToEarn = null;
+      })
+      .addCase(fetchWaysToEarn.fulfilled, (state, action) => {
+        if (state.waysToEarnRequestId !== action.meta.requestId) return;
+        state.loading.waysToEarn = false;
+        state.waysToEarn = action.payload ?? null;
+      })
+      .addCase(fetchWaysToEarn.rejected, (state, action) => {
+        if (state.waysToEarnRequestId !== action.meta.requestId) return;
+        state.loading.waysToEarn = false;
+        state.error.waysToEarn = action.payload as string;
       })
 
       .addCase(fetchAdminDashboardOverview.pending, (state) => {

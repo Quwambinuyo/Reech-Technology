@@ -31,7 +31,7 @@ const SendPointFlow = ({ onClose }: Props) => {
 
     const response = await dispatch(
       transferFunds({
-        recipientEmail: recipient.username,
+        recipientUsername: recipient.username,
         points,
         note,
         pin,
