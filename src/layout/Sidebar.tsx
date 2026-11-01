@@ -8,8 +8,8 @@ import ac_transaction from "../assets/ac-transaction.png";
 import in_transaction from "../assets/in-transaction.png";
 import ac_profile from "../assets/ac-profile.png";
 import in_profile from "../assets/in-profile.png";
-// import ac_task from "../assets/ac-task.png";
-// import in_task from "../assets/in-task.png";
+import ac_task from "../assets/ac-task.png";
+import in_task from "../assets/in-task.png";
 import ac_user from "../assets/ac-user.png";
 import ac_merchant from "../assets/ac-merchant.png";
 import in_merchant from "../assets/inac-merchant.png";
@@ -21,6 +21,8 @@ import { useAppDispatch } from "../redux/hooks";
 import { toast } from "react-toastify";
 import { clearUserSession, getOrCreateTabId } from "../utils";
 import { onToggleMobileSidebar } from "../redux/auth/authReducer";
+
+export const toPath = (text: string) => text.trim().replace(/\s+/g, "-");
 
 const Sidebar = () => {
   const { pathname } = useLocation();
@@ -36,7 +38,7 @@ const Sidebar = () => {
   };
 
   const getActivePath = (path: string) => {
-    const updPath = `/${path.replace(" ", "-")}`;
+    const updPath = `/${toPath(path)}`;
     return pathname.includes(updPath);
   };
 
@@ -50,10 +52,18 @@ const Sidebar = () => {
         : adminLinks;
 
   return (
-    <aside className="w-full bg-primary-purple h-full py-6 xl:py-7 md:px-4 lg:px-5 xl:px-6">
+    <aside className="relative w-full h-full overflow-hidden bg-gradient-to-b from-primary-purple via-primary-purple to-[#1c0838] py-6 xl:py-7 md:px-4 lg:px-5 xl:px-6">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.08), transparent 40%), radial-gradient(circle at 0% 100%, rgba(255,255,255,0.05), transparent 40%)",
+        }}
+      />
+
       <Link
         to="/dashboard"
-        className="hidden bg-white md:inline-flex items-center justify-center gap-1 rounded-[20px] h-[50px] w-[130px]"
+        className="relative hidden bg-white md:inline-flex items-center justify-center gap-1 rounded-[20px] h-[50px] w-[130px] shadow-md"
       >
         <img src={logo} alt="logo" className="w-[40px]" />
         <span className="font-poppins text-lg font-medium text-[#000000]">
@@ -61,7 +71,9 @@ const Sidebar = () => {
         </span>
       </Link>
 
-      <div className="grid gap-4 mt-20 xl:mt-24">
+      <div className="relative mt-8 xl:mt-10 hidden md:block h-px bg-gradient-to-r from-white/30 to-transparent" />
+
+      <div className="relative grid gap-2 xl:gap-2.5 mt-8 xl:mt-10">
         {links.map((link) => (
           <SidebarLink
             link={link}
@@ -73,7 +85,7 @@ const Sidebar = () => {
 
       <button
         onClick={handleLogout}
-        className="md:hidden flex mt-18 items-center gap-2 capitalize px-4 py-3.5 text-sm text-nowrap bg-white text-red-600 rounded-[30px] font-medium w-full"
+        className="relative md:hidden flex mt-18 items-center justify-center gap-2 capitalize px-4 py-3.5 text-sm text-nowrap bg-white/10 text-white border border-white/15 rounded-[30px] font-medium w-full transition-[transform,background-color] active:scale-[0.98] active:bg-white/20"
       >
         <FiLogOut size={18} />
         <span>logout</span>
@@ -87,6 +99,7 @@ export default Sidebar;
 export const customerLinks = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   { text: "make payments", icon: { active: ac_payment, inactive: in_payment } },
+  { text: "ways to earn", icon: { active: ac_task, inactive: in_task } },
   {
     text: "transactions",
     icon: { active: ac_transaction, inactive: in_transaction },
@@ -140,17 +153,17 @@ const SidebarLink = ({
   link: SidebarLinkProps;
   isActive: boolean;
 }) => {
-  const path = link.text.replace(" ", "-");
+  const path = toPath(link.text);
   const dispatch = useAppDispatch();
 
   return (
     <Link
       to={`/${path}`}
       onClick={() => dispatch(onToggleMobileSidebar())}
-      className={`flex items-center gap-2 xl:gap-3 capitalize px-4 xl:px-5 py-3.5 xl:py-4 text-sm xl:text-[14.5px] text-nowrap ${
+      className={`flex items-center gap-2 xl:gap-3 capitalize px-4 xl:px-5 py-3.5 xl:py-4 text-sm xl:text-[14.5px] text-nowrap rounded-[30px] transition-colors duration-200 ${
         isActive
-          ? "bg-white text-primary-purple rounded-[30px] font-medium"
-          : "text-white"
+          ? "bg-white text-primary-purple font-medium shadow-lg shadow-black/20"
+          : "text-white/80 hover:bg-white/10 hover:text-white"
       } ${
         link.text.includes("categories")
           ? "lg:w-[187px] xl:w-[205px]"
@@ -158,7 +171,10 @@ const SidebarLink = ({
       }`}
     >
       <img src={isActive ? link.icon.active : link.icon.inactive} alt="" />
-      <span>{link.text}</span>
+      <span className="flex-1">{link.text}</span>
+      {isActive && (
+        <span className="size-1.5 shrink-0 rounded-full bg-primary-purple" />
+      )}
     </Link>
   );
 };

@@ -30,6 +30,7 @@ import SingleMerchant from "../pages/manage-merchant/SingleMerchant";
 import ReceivePayments from "../merchant/ReceivePayments";
 import AuthVerify from "../pages/auth/AuthVerify";
 import GoogleCallback from "../pages/auth/GoogleCallback";
+import WaysToEarnPage from "../customer/WaysToEarn";
 
 export default function BaseRoutes() {
   const dispatch = useAppDispatch();
@@ -71,6 +72,7 @@ export default function BaseRoutes() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route element={<RoleProtectedRoute allowedRoles={["User"]} />}>
               <Route path="/make-payments" element={<MakePayment />} />
+              <Route path="/ways-to-earn" element={<WaysToEarnPage />} />
             </Route>
             <Route
               element={<RoleProtectedRoute allowedRoles={["BusinessAdmin"]} />}

@@ -21,7 +21,9 @@ const handleRedemptionError = (error: any, rejectWithValue: (value: string) => a
     toast.error(errorMessage);
     return rejectWithValue(errorMessage);
   } else if (error?.response?.status === 429) {
-    const errorMessage = "Too many attempts. Wait a minute.";
+    const errorMessage =
+      error?.response?.data?.message ||
+      "Too many attempts. Please try again later.";
     toast.error(errorMessage);
     return rejectWithValue(errorMessage);
   } else {
@@ -215,7 +217,7 @@ export const cancelActiveToken = createAsyncThunk(
 
 export const validateToken = createAsyncThunk(
   "wallet/validateToken",
-  async (reqBody: { code: string }, { rejectWithValue }) => {
+  async (reqBody: { code: string; pin: string }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
         `${baseURL}/redemptions/validate`,

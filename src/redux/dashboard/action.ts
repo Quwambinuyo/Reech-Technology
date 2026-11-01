@@ -311,8 +311,8 @@ export const fetchWaysToEarn = createAsyncThunk(
         {
           params: {
             pageNumber: params.pageNumber ?? 1,
-            pageSize: params.pageSize ?? 10,
-            search: params.search ?? "",
+            pageSize: Math.min(params.pageSize ?? 10, 100),
+            search: params.search?.trim() ?? "",
           },
         },
       );
@@ -323,26 +323,28 @@ export const fetchWaysToEarn = createAsyncThunk(
 
       throw new Error(response.data?.message || "Failed to fetch ways to earn");
     } catch (error: any) {
-      console.log(error, error?.response?.status);
-
       if (error?.message === "Network Error") {
         toast.error("You are not connected to the internet.");
         return rejectWithValue("Network error");
-      } else if (error?.response?.status === 401) {
+      }
+
+      if (error?.response?.status === 401) {
         toast.error("Authorization failed. Please login again.");
         clearUserSession(tabId);
 
         setTimeout(() => {
           window.location.href = "/sign-in";
         }, 1000);
-      } else {
-        const errorMessage =
-          error?.response?.data?.message ||
-          error?.response?.data?.error ||
-          error?.message;
-        toast.error(errorMessage);
-        return rejectWithValue(errorMessage);
+
+        return rejectWithValue("Authorization failed");
       }
+
+      return rejectWithValue(
+        error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
+          "Failed to fetch ways to earn",
+      );
     }
   },
 );
@@ -413,3 +415,5 @@ export const fetchAdminRewardPerformance = createAsyncThunk(
     }
   },
 );
+
+

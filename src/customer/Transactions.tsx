@@ -128,34 +128,36 @@ const CustomerTransactions = ({
           activeTab={activeTab}
           onSelect={setActiveTab}
         />
-        <div className="overflow-x-auto">
-          <div
-            className="font-montserrat grid gap-3 font-semibold text-sm px-2 min-w-[1000px]"
-            style={{ gridTemplateColumns: "repeat(15, 1fr)" }}
-          >
-            <p className="col-span-4 ml-5">Product</p>
-            <p className="col-span-3">Point Earned</p>
-            <p className="col-span-3">Status</p>
-            <p className="col-span-3">Date/Time</p>
-            <p className="col-span-2">Action</p>
-          </div>
-          <div className="bg-[#F5F6FF] mt-3 px-2 py-4 lg:py-5 lg:px-3 min-h-[250px] min-w-[1000px]">
-            {loading.customerRecentTransactions ? (
-              <Skeleton />
-            ) : selectedTransactions.length === 0 ? (
-              <div className="h-[200px]">
-                <Empty text="No Transaction has been made yet" />
-              </div>
-            ) : (
-              <div className="grid gap-8">
-                {selectedTransactions.map((transaction) => (
+        <div className="overflow-x-auto hide-scroll">
+          <div className="min-w-[1000px]">
+            <div
+              className="font-montserrat grid gap-3 font-semibold text-sm whitespace-nowrap px-5 pb-3"
+              style={{ gridTemplateColumns: "repeat(15, 1fr)" }}
+            >
+              <p className="col-span-4">Product</p>
+              <p className="col-span-3">Point Earned</p>
+              <p className="col-span-3">Status</p>
+              <p className="col-span-3">Date/Time</p>
+              <p className="col-span-2">Action</p>
+            </div>
+
+            <div className="rounded-xl bg-[#F5F6FF] overflow-hidden divide-y divide-primary-purple/10 min-h-[250px]">
+              {loading.customerRecentTransactions ? (
+                <Skeleton />
+              ) : selectedTransactions.length === 0 ? (
+                <div className="h-[200px]">
+                  <Empty text="No Transaction has been made yet" />
+                </div>
+              ) : (
+                selectedTransactions.map((transaction) => (
                   <TransactionCard
                     transaction={transaction}
                     key={transaction.id}
+                    page="all"
                   />
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
           </div>
         </div>
       </section>

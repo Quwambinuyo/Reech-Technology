@@ -4,13 +4,15 @@ import Button from "../../components/Button";
 import type { InputEvent } from "../../types";
 import { PIN_LENGTH } from "./constants";
 
-type PinStepProps = {
+interface PinStepProps {
   pin: string;
   pinError: boolean;
+  loading?: boolean;
   onChange: (e: InputEvent) => void;
-  onContinue: () => void;
+  onContinue: () => void | Promise<void>;
   onBack: () => void;
-};
+}
+
 
 const PinStep = ({
   pin,

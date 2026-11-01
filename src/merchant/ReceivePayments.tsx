@@ -36,40 +36,45 @@ const ReceivePayments = () => {
     setPinError(false);
   };
 
-  const handleValidate = async () => {
-    if (validating) return;
-
+  const handleCodeContinue = () => {
     if (code.length < CODE_LENGTH) {
       setOtpError(true);
+      return;
+    }
+
+    setStep("pin");
+  };
+
+  const handlePinContinue = async () => {
+    if (validating) return;
+
+    if (pin.length < PIN_LENGTH) {
+      setPinError(true);
       return;
     }
 
     setValidating(true);
 
     try {
-      const result = await dispatch(validateToken({ code })).unwrap();
+      const result = await dispatch(validateToken({ code, pin })).unwrap();
       setValidated(result);
-      setStep("pin");
-    } catch {
-      setOtpError(true);
+      setStep("validate");
+    } catch (message) {
+      setPin("");
+      if (String(message).includes("Code not found")) {
+        setOtpError(true);
+        setStep("otp");
+      } else {
+        setPinError(true);
+      }
     } finally {
       setValidating(false);
     }
   };
 
-  const handlePinContinue = () => {
-    if (pin.length < PIN_LENGTH) {
-      setPinError(true);
-      return;
-    }
-
-    setStep("validate");
-  };
-
   const handlePinBack = () => {
     setPin("");
     setPinError(false);
-    setValidated(null);
     setStep("otp");
   };
 
@@ -81,9 +86,15 @@ const ReceivePayments = () => {
     try {
       const result = await dispatch(redeemToken({ code, pin })).unwrap();
       setReceipt(result);
+      setPin("");
       setStep("receipt");
-    } catch {
-      return;
+    } catch (message) {
+      if (/pin/i.test(String(message))) {
+        setPin("");
+        setPinError(true);
+        setValidated(null);
+        setStep("pin");
+      }
     } finally {
       setRedeeming(false);
     }
@@ -115,15 +126,16 @@ const ReceivePayments = () => {
           <OtpStep
             code={code}
             otpError={otpError}
-            loading={validating}
+            loading={false}
             onChange={handleCodeChange}
-            onValidate={handleValidate}
+            onValidate={handleCodeContinue}
           />
         )}
         {step === "pin" && (
           <PinStep
             pin={pin}
             pinError={pinError}
+            loading={validating}
             onChange={handlePinChange}
             onContinue={handlePinContinue}
             onBack={handlePinBack}

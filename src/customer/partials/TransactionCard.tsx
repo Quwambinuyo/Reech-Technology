@@ -21,12 +21,14 @@ const TransactionCard = ({
 
   return (
     <div
-      className="grid font-ibmplex font-semibold text-neutral-900 gap-3 text-sm xl:text-[14.5px] items-center"
+      className={`grid font-ibmplex font-semibold text-neutral-900 gap-3 text-sm xl:text-[14.5px] items-center ${
+        page === "all" ? "py-4 px-5" : ""
+      }`}
       style={{ gridTemplateColumns: "repeat(15,1fr)" }}
     >
       <div
         className={`col-span-4 flex items-center gap-3 ${
-          page === "all" ? "xl:pl-5" : "ml-5"
+          page === "all" ? "" : "ml-5"
         }`}
       >
         {transaction.businessLogo ? (
