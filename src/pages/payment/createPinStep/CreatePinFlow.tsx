@@ -85,14 +85,6 @@ const CreatePinFlow = ({ onClose, onComplete, onForgotPin }: Props) => {
   };
 
   const renderStep = () => {
-    if (step === "checking") {
-      return (
-        <div className="flex items-center justify-center h-[200px]">
-          <Spinner size="32px" borderWidth="4px" />
-        </div>
-      );
-    }
-
     if (step === 0) {
       return <PinIntroStep onBack={onClose} onNext={() => goTo(1)} />;
     }
@@ -156,6 +148,16 @@ const CreatePinFlow = ({ onClose, onComplete, onForgotPin }: Props) => {
 
     return null;
   };
+
+  if (step === "checking") {
+    return (
+      <PinCardFrame onClose={onClose}>
+        <div className="flex items-center justify-center h-[200px]">
+          <Spinner size="32px" borderWidth="4px" />
+        </div>
+      </PinCardFrame>
+    );
+  }
 
   return (
     <PinCardFrame onClose={onClose}>
