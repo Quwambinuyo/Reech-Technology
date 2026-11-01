@@ -103,7 +103,7 @@ const AwardActivityPointForm = () => {
 
         <div>
           <CustomTextInput
-            label="Customer Username"
+            label="Customer Email"
             placeholder="ada@example.com"
             id="email"
             value={email}

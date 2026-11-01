@@ -14,6 +14,7 @@ import PayBillCard from "../../customer/partials/PaybillCard";
 import SendPointFlow from "./sendCreditSteps/SendpointFlow";
 import TokenGenerationFlow from "./tokenGenerationStep/TokenGenerationFlow";
 import CreatePinFlow from "../../pages/payment/createPinStep/CreatePinFlow";
+import ForgotPinStep from "../../pages/payment/createPinStep/ForgotPinStep";
 import Modal from "../../layout/Modal";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -25,7 +26,7 @@ import Spinner from "../../components/Spinner";
 import Empty from "../../components/Empty";
 import { timeRangeOptions, getDateRangeFromOption } from "../../utils";
 
-type ActiveModal = "send" | "bill" | "token" | "pin" | null;
+type ActiveModal = "send" | "bill" | "token" | "pin" | "forgot" | null;
 
 const MakePayment = () => {
   const navigate = useNavigate();
@@ -258,7 +259,21 @@ const MakePayment = () => {
 
       {activeModal === "pin" && (
         <Modal modal={activeModal === "pin"} onClose={closeModal}>
-          <CreatePinFlow onClose={closeModal} onComplete={handlePinComplete} />
+          <CreatePinFlow
+            onClose={closeModal}
+            onComplete={handlePinComplete}
+            onForgotPin={() => setActiveModal("forgot")}
+          />
+        </Modal>
+      )}
+
+      {activeModal === "forgot" && (
+        <Modal modal={activeModal === "forgot"} onClose={closeModal}>
+          <ForgotPinStep
+            onClose={closeModal}
+            onBack={() => setActiveModal("pin")}
+            onComplete={handlePinComplete}
+          />
         </Modal>
       )}
     </>

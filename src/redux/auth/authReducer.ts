@@ -12,6 +12,8 @@ import {
   updateUsername,
   updateUserPin,
   fetchUserPinStatus,
+  requestPinReset,
+  resetUserPin,
 } from "./authActions";
 import type { StateType } from "./authTypes";
 import { getUserFromStorage } from "../../utils";
@@ -52,6 +54,11 @@ const initialState: StateType = {
   pinStatusLoading: false,
   pinStatus: null,
   pinStatusError: "",
+  pinResetChallenge: null,
+  requestPinResetLoading: false,
+  requestPinResetError: "",
+  resetPinLoading: false,
+  resetPinError: "",
 };
 
 const authSlice = createSlice({
@@ -77,6 +84,13 @@ const authSlice = createSlice({
       state.phoneCodeError = "";
       state.verifyPhoneError = "";
       state.verifyPhoneSuccess = false;
+    },
+    onClearPinReset: (state) => {
+      state.pinResetChallenge = null;
+      state.requestPinResetLoading = false;
+      state.requestPinResetError = "";
+      state.resetPinLoading = false;
+      state.resetPinError = "";
     },
     onToggleLandingHamburger: (state) => {
       state.landingPageHamburgerToggle = !state.landingPageHamburgerToggle;
@@ -117,6 +131,12 @@ const authSlice = createSlice({
       state.pinStatusLoading = false;
       state.pinStatus = null;
       state.pinStatusError = "";
+
+      state.pinResetChallenge = null;
+      state.requestPinResetLoading = false;
+      state.requestPinResetError = "";
+      state.resetPinLoading = false;
+      state.resetPinError = "";
     },
     onUpdateBusinessStatus: (state, action: PayloadAction<string>) => {
       if (state.currentUser?.business) {
@@ -330,6 +350,34 @@ const authSlice = createSlice({
         state.pinStatusLoading = false;
         state.pinStatusError =
           (action.payload as string) || "Failed to fetch PIN status";
+      })
+
+      .addCase(requestPinReset.pending, (state) => {
+        state.requestPinResetLoading = true;
+        state.requestPinResetError = "";
+      })
+      .addCase(requestPinReset.fulfilled, (state, action) => {
+        state.requestPinResetLoading = false;
+        state.pinResetChallenge = action.payload;
+      })
+      .addCase(requestPinReset.rejected, (state, action) => {
+        state.requestPinResetLoading = false;
+        state.requestPinResetError =
+          (action.payload as string) || "Failed to send code";
+      })
+
+      .addCase(resetUserPin.pending, (state) => {
+        state.resetPinLoading = true;
+        state.resetPinError = "";
+      })
+      .addCase(resetUserPin.fulfilled, (state) => {
+        state.resetPinLoading = false;
+        state.pinResetChallenge = null;
+      })
+      .addCase(resetUserPin.rejected, (state, action) => {
+        state.resetPinLoading = false;
+        state.resetPinError =
+          (action.payload as string) || "Failed to reset PIN";
       });
   },
 });
@@ -339,6 +387,7 @@ export const {
   onClearSignupChallenge,
   onClearVerifySignupSuccess,
   onClearPhoneChange,
+  onClearPinReset,
   onToggleLandingHamburger,
   onToggleMobileSidebar,
   onLogout,

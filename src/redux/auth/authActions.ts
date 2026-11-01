@@ -439,8 +439,7 @@ export const updateUserPin = createAsyncThunk(
         toast.error("The provided current PIN is incorrect.");
         return rejectWithValue("Invalid current PIN");
       } else {
-        toast.error(error?.response?.data?.message || error?.message);
-        return rejectWithValue(error?.message || error?.response?.data?.error);
+        return rejectWithValue(extractErrorMessage(error, "Failed to update PIN"));
       }
     }
   },
@@ -466,6 +465,66 @@ export const fetchUserPinStatus = createAsyncThunk(
         toast.error(error?.response?.data?.message || error?.message);
         return rejectWithValue(error?.message || error?.response?.data?.error);
       }
+    }
+  },
+);
+
+export const requestPinReset = createAsyncThunk(
+  "auth/requestPinReset",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`${baseURL}/users/pin/forgot`);
+
+      if (response.data?.isSuccess || response.data?.statusCode === 200) {
+        toast.success("A 6-digit code has been sent to your email.");
+        const data = response.data?.data;
+        return {
+          challengeId: data?.challengeId as string,
+          expiresAt: data?.expiresAt ?? data?.otpExpiresAt ?? null,
+        };
+      } else {
+        throw new Error(response.data?.message || "Failed to send code");
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      }
+      const message = extractErrorMessage(error, "Failed to send code");
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const resetUserPin = createAsyncThunk(
+  "auth/resetUserPin",
+  async (
+    reqBody: { challengeId: string; code: string; pin: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.post(
+        `${baseURL}/users/pin/reset`,
+        reqBody,
+      );
+
+      if (response.data?.isSuccess || response.data?.statusCode === 200) {
+        toast.success("Your PIN has been reset successfully.");
+        return response.data?.data ?? true;
+      } else {
+        throw new Error(response.data?.message || "Failed to reset PIN");
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      }
+      const message = extractErrorMessage(error, "Failed to reset PIN");
+      toast.error(message);
+      return rejectWithValue(message);
     }
   },
 );

@@ -1,5 +1,4 @@
 import { FiCheck } from "react-icons/fi";
-import logo from "../../../assets/logo-s.png";
 
 interface Props {
   onComplete: () => void;
@@ -7,7 +6,7 @@ interface Props {
 
 const PinSuccessStep = ({ onComplete }: Props) => {
   return (
-    <div className="bg-white rounded-2xl  w-full max-w-[370px] sm:max-w-[500px] md:max-w-[606px] mx-auto p-6 flex flex-col items-center gap-5 text-center">
+    <div className="flex flex-col items-center gap-5 text-center">
       <div className="flex-center h-16 w-16 rounded-full bg-[#E9F9EC]">
         <div className="flex-center h-10 w-10 rounded-full bg-[#1A932E]">
           <FiCheck size={22} color="#FFFFFF" />
@@ -31,11 +30,6 @@ const PinSuccessStep = ({ onComplete }: Props) => {
       >
         Complete
       </button>
-
-      <div className="flex-center gap-1.5 opacity-80">
-        <img src={logo} alt="reech" className="w-[40px]" />
-        <span className="text-[#030649] text-sm font-semibold">Reech</span>
-      </div>
     </div>
   );
 };

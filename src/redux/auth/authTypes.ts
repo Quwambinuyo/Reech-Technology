@@ -9,6 +9,11 @@ export interface PinStatusType {
   hasPin: boolean;
 }
 
+export interface PinResetChallengeType {
+  challengeId: string;
+  expiresAt: string | null;
+}
+
 export interface SignupChallengeType {
   id: string | null;
   phoneNumber: string | null;
@@ -58,6 +63,11 @@ export interface StateType {
   pinStatusLoading: boolean;
   pinStatus: PinStatusType | null;
   pinStatusError: string;
+  pinResetChallenge: PinResetChallengeType | null;
+  requestPinResetLoading: boolean;
+  requestPinResetError: string;
+  resetPinLoading: boolean;
+  resetPinError: string;
 }
 
 export interface SigninDataType {
@@ -79,4 +89,10 @@ export interface VerifyPhoneChangeDataType {
   challengeId: string;
   code: string;
   phoneNumber: string;
+}
+
+export interface ResetUserPinDataType {
+  challengeId: string;
+  code: string;
+  pin: string;
 }
