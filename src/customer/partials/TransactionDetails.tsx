@@ -66,6 +66,7 @@ const TransactionDetails = () => {
       amount,
       status,
       reference,
+      description,
       time,
     } = customerTransactionDetails;
 
@@ -108,6 +109,7 @@ const TransactionDetails = () => {
           <DetailRow label="Amount" value={`₦${amount.toLocaleString()}`} />
           <DetailRow label="Status" value={<StatusDisplay status={status} />} />
           <DetailRow label="Reference" value={reference} />
+          <DetailRow label="Description" value={description} />
           <DetailRow label="Date/Time" value={formatDateTime(time)} />
         </div>
       </>

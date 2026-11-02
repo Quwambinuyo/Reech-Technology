@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,6 +5,7 @@ import { FaArrowLeft, FaSpinner } from "react-icons/fa6";
 import { PlainInput } from "../profile/partial/ProfileInputs";
 import DeclineMerchantModal from "./DeclineMerchantModal";
 import MerchantDocument from "./MerchantDocument";
+import OfflinePointsSection from "./OfflinePointSection";
 import {
   MerchantStatusBadge,
   formatMerchantDate,
@@ -300,6 +300,11 @@ const SingleMerchant = () => {
               </div>
             )}
           </section>
+
+          <OfflinePointsSection
+            businessId={String(merchant.id)}
+            canGenerate={merchant.status === 1}
+          />
         </>
       )}
 

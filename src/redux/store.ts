@@ -10,6 +10,7 @@ import { dashboardReducer } from "./dashboard/reducer";
 import { currencyReducer } from "./currency/reducer";
 import { walletReducer } from "./wallet/reducer";
 import { userReducer } from "./users/reducer";
+import { offlinePointsReducer } from "./offline/reducer";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     currency: currencyReducer,
     wallet: walletReducer,
     user: userReducer,
+    offlinePoints: offlinePointsReducer,
   },
 });
 

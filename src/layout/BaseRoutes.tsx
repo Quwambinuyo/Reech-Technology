@@ -31,6 +31,9 @@ import ReceivePayments from "../merchant/ReceivePayments";
 import AuthVerify from "../pages/auth/AuthVerify";
 import GoogleCallback from "../pages/auth/GoogleCallback";
 import WaysToEarnPage from "../customer/WaysToEarn";
+import OfflinePoints from "../pages/offline/OfflinePoints";
+import GenerateBatch from "../pages/offline/GenerateBatch";
+import BatchDetail from "../pages/offline/BatchDetail";
 
 export default function BaseRoutes() {
   const dispatch = useAppDispatch();
@@ -113,6 +116,10 @@ export default function BaseRoutes() {
             >
               <Route path="/merchants" element={<ManageMerchants />} />
               <Route path="/merchants/:id" element={<SingleMerchant />} />
+              <Route path="/merchants" element={<ManageMerchants />} />
+<Route path="/offline-points" element={<OfflinePoints />} />
+<Route path="/offline-points/new" element={<GenerateBatch />} />
+<Route path="/offline-points/:id" element={<BatchDetail />} />
             </Route>
 
             <Route path="/transactions" element={<Transaction />} />

@@ -349,6 +349,53 @@ export const fetchWaysToEarn = createAsyncThunk(
   },
 );
 
+export const redeemOfflineCode = createAsyncThunk(
+  "dashboard/redeemOfflineCode",
+  async (code: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        `${baseURL}/offline-points/redeem`,
+        { code: code.trim() },
+      );
+
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      }
+
+      throw new Error(response.data?.message || "Failed to redeem code");
+    } catch (error: any) {
+      if (error?.message === "Network Error") {
+        toast.error("You are not connected to the internet.");
+        return rejectWithValue("Network error");
+      }
+
+      if (error?.response?.status === 401) {
+        toast.error("Authorization failed. Please login again.");
+        clearUserSession(tabId);
+
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+
+        return rejectWithValue("Authorization failed");
+      }
+
+      if (error?.response?.status === 429) {
+        return rejectWithValue(
+          "Too many attempts. Please wait a minute and try again.",
+        );
+      }
+
+      return rejectWithValue(
+        error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
+          "Failed to redeem code",
+      );
+    }
+  },
+);
+
 export const fetchAdminDashboardOverview = createAsyncThunk(
   "dashboard/fetchAdminDashboardOverview",
   async (
@@ -415,5 +462,3 @@ export const fetchAdminRewardPerformance = createAsyncThunk(
     }
   },
 );
-
-

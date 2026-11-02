@@ -8,6 +8,7 @@ import {
   fetchCustomerRecentTransactions,
   fetchCustomerTransactionDetails,
   fetchWaysToEarn,
+  redeemOfflineCode,
   fetchAdminDashboardOverview,
   fetchAdminRewardPerformance,
 } from "./action";
@@ -117,6 +118,13 @@ interface WaysToEarnData {
   totalCount: number;
 }
 
+export interface OfflineRedeemResult {
+  transactionId: string;
+  pointsAwarded: number;
+  balanceAfter: number;
+  activityName: string;
+}
+
 interface DashboardState {
   overview: DashboardOverview | null;
   rewardPerformance: RewardPerformanceItem[];
@@ -133,6 +141,8 @@ interface DashboardState {
   customerTransactionDetailsRequestId: string | null;
   waysToEarn: WaysToEarnData | null;
   waysToEarnRequestId: string | null;
+  redeemResult: OfflineRedeemResult | null;
+  redeemRequestId: string | null;
   adminOverview: AdminDashboardOverview | null;
   adminRewardPerformance: RewardPerformanceItem[];
   loading: {
@@ -144,6 +154,7 @@ interface DashboardState {
     customerRecentTransactions: boolean;
     customerTransactionDetails: boolean;
     waysToEarn: boolean;
+    redeemCode: boolean;
     adminOverview: boolean;
     adminRewardPerformance: boolean;
   };
@@ -156,6 +167,7 @@ interface DashboardState {
     customerRecentTransactions: string | null;
     customerTransactionDetails: string | null;
     waysToEarn: string | null;
+    redeemCode: string | null;
     adminOverview: string | null;
     adminRewardPerformance: string | null;
   };
@@ -177,6 +189,8 @@ const initialState: DashboardState = {
   customerTransactionDetailsRequestId: null,
   waysToEarn: null,
   waysToEarnRequestId: null,
+  redeemResult: null,
+  redeemRequestId: null,
   adminOverview: null,
   adminRewardPerformance: [],
   loading: {
@@ -188,6 +202,7 @@ const initialState: DashboardState = {
     customerRecentTransactions: false,
     customerTransactionDetails: false,
     waysToEarn: false,
+    redeemCode: false,
     adminOverview: false,
     adminRewardPerformance: false,
   },
@@ -200,6 +215,7 @@ const initialState: DashboardState = {
     customerRecentTransactions: null,
     customerTransactionDetails: null,
     waysToEarn: null,
+    redeemCode: null,
     adminOverview: null,
     adminRewardPerformance: null,
   },
@@ -221,6 +237,12 @@ const dashboardSlice = createSlice({
       state.customerTransactionDetailsRequestId = null;
       state.loading.customerTransactionDetails = false;
       state.error.customerTransactionDetails = null;
+    },
+    clearRedeemResult: (state) => {
+      state.redeemResult = null;
+      state.redeemRequestId = null;
+      state.loading.redeemCode = false;
+      state.error.redeemCode = null;
     },
   },
   extraReducers: (builder) => {
@@ -357,6 +379,23 @@ const dashboardSlice = createSlice({
         state.error.waysToEarn = action.payload as string;
       })
 
+      .addCase(redeemOfflineCode.pending, (state, action) => {
+        state.redeemResult = null;
+        state.redeemRequestId = action.meta.requestId;
+        state.loading.redeemCode = true;
+        state.error.redeemCode = null;
+      })
+      .addCase(redeemOfflineCode.fulfilled, (state, action) => {
+        if (state.redeemRequestId !== action.meta.requestId) return;
+        state.loading.redeemCode = false;
+        state.redeemResult = action.payload ?? null;
+      })
+      .addCase(redeemOfflineCode.rejected, (state, action) => {
+        if (state.redeemRequestId !== action.meta.requestId) return;
+        state.loading.redeemCode = false;
+        state.error.redeemCode = action.payload as string;
+      })
+
       .addCase(fetchAdminDashboardOverview.pending, (state) => {
         state.loading.adminOverview = true;
         state.error.adminOverview = null;
@@ -389,5 +428,6 @@ export const {
   resetDashboardState,
   clearMerchantTransactionDetails,
   clearCustomerTransactionDetails,
+  clearRedeemResult,
 } = dashboardSlice.actions;
 export const dashboardReducer = dashboardSlice.reducer;
