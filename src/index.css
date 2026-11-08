@@ -87,6 +87,39 @@ body {
 	display: none;
 }
 
+*::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: var(--color-purple-300);
+	border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+	background-color: color-mix(in srgb, var(--color-primary-purple) 80%, white);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-primary-purple) transparent;
+	}
+
+	.hide-scroll {
+		scrollbar-width: none;
+	}
+}
+
 button {
 	cursor: pointer;
 }

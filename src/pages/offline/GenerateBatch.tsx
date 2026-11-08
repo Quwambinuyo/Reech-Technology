@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   fetchOfflineActivities,
   generateOfflineBatch,
+  getOfflineScope,
 } from "../../redux/offline/action";
 import {
   MerchantSelect,
@@ -13,7 +14,7 @@ import {
   primaryButton,
 } from "../manage-merchant/OfflineHelpers";
 
-const MAX_CODES = 1000;
+const MAX_CODES = 10000;
 
 type Row = { key: number; activityId: string; quantity: string };
 
@@ -27,26 +28,33 @@ const GenerateBatch = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const nextKey = useRef(1);
+  const isMerchant = getOfflineScope() === "merchant";
 
   const { allActivities, fetchActivitiesLoading, generateBatchLoading } =
     useAppSelector((state) => state.offlinePoints);
 
-  const [businessId, setBusinessId] = useState(params.get("businessId") ?? "");
+  const [businessId, setBusinessId] = useState(
+    isMerchant ? "" : (params.get("businessId") ?? ""),
+  );
   const [reference, setReference] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
   const [rows, setRows] = useState<Row[]>([
     { key: 0, activityId: "", quantity: "" },
   ]);
 
+  const hasTarget = isMerchant || businessId !== "";
+
   useEffect(() => {
-    if (businessId) {
+    if (hasTarget) {
       dispatch(
         fetchOfflineActivities({ businessId, page: 1, pageSize: 100 }),
       );
     }
-  }, [dispatch, businessId]);
+  }, [dispatch, businessId, hasTarget]);
 
-  const activities = allActivities.items;
+  const activities = allActivities.items.filter(
+    (activity) => isMerchant || activity.businessId === businessId,
+  );
 
   const total = rows.reduce((sum, row) => sum + (Number(row.quantity) || 0), 0);
   const rowsValid = rows.every(
@@ -58,7 +66,7 @@ const GenerateBatch = () => {
   const expiryValid =
     expiresAt !== "" && new Date(expiresAt).getTime() > Date.now();
   const canSubmit =
-    businessId !== "" &&
+    hasTarget &&
     reference.trim() !== "" &&
     expiryValid &&
     rowsValid &&
@@ -111,7 +119,7 @@ const GenerateBatch = () => {
   };
 
   const hasNoActivities =
-    businessId !== "" && !fetchActivitiesLoading && activities.length === 0;
+    hasTarget && !fetchActivitiesLoading && activities.length === 0;
   const canAddRow = rows.length < activities.length;
 
   return (
@@ -133,14 +141,16 @@ const GenerateBatch = () => {
         className="bg-white rounded-xl p-5 md:p-6 lg:p-7 flex flex-col gap-6 max-w-3xl"
       >
         <div className="grid md:grid-cols-2 gap-5">
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#1E293B]">
-            Merchant
-            <MerchantSelect
-              value={businessId}
-              onChange={handleMerchantChange}
-              disabled={generateBatchLoading}
-            />
-          </label>
+          {!isMerchant && (
+            <label className="flex flex-col gap-2 text-sm font-medium text-[#1E293B]">
+              Merchant
+              <MerchantSelect
+                value={businessId}
+                onChange={handleMerchantChange}
+                disabled={generateBatchLoading}
+              />
+            </label>
+          )}
 
           <label className="flex flex-col gap-2 text-sm font-medium text-[#1E293B]">
             Batch reference
@@ -175,7 +185,7 @@ const GenerateBatch = () => {
             Activities and quantities
           </p>
 
-          {businessId === "" && (
+          {!hasTarget && (
             <p className="text-sm text-[#64748B]">
               Select a merchant to load its activities.
             </p>
@@ -183,18 +193,23 @@ const GenerateBatch = () => {
 
           {hasNoActivities && (
             <p className="text-sm text-[#475569]">
-              This merchant has no offline activities yet. Add some from the
-              merchant page first.{" "}
+              {isMerchant
+                ? "You have no offline activities yet. Add some on the activities page first."
+                : "This merchant has no offline activities yet. Add some from the merchant page first."}{" "}
               <Link
-                to={`/merchants/${businessId}`}
+                to={
+                  isMerchant
+                    ? "/offline-points/activities"
+                    : `/merchants/${businessId}`
+                }
                 className="text-[#4A148C] font-semibold"
               >
-                Open merchant
+                {isMerchant ? "Open activities" : "Open merchant"}
               </Link>
             </p>
           )}
 
-          {businessId !== "" && activities.length > 0 && (
+          {hasTarget && activities.length > 0 && (
             <>
               {rows.map((row) => (
                 <div key={row.key} className="flex items-center gap-3">

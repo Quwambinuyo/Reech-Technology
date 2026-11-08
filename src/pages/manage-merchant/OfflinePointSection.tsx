@@ -55,6 +55,8 @@ const OfflinePointsSection = ({
     deleteActivityLoading,
   } = useAppSelector((state) => state.offlinePoints);
 
+  const query = businessId ? `?businessId=${businessId}` : "";
+
   const load = useCallback(() => {
     dispatch(fetchOfflineActivities({ businessId, page, pageSize: PAGE_SIZE }));
   }, [dispatch, businessId, page]);
@@ -63,9 +65,8 @@ const OfflinePointsSection = ({
     load();
   }, [load]);
 
-  // The slice is shared with the generate form, so never show another merchant's rows.
   const items = allActivities.items.filter(
-    (activity) => activity.businessId === businessId,
+    (activity) => !businessId || activity.businessId === businessId,
   );
   const totalPages = Math.max(1, Math.ceil(allActivities.totalCount / PAGE_SIZE));
   const showSkeleton = fetchActivitiesLoading && items.length === 0;
@@ -123,18 +124,12 @@ const OfflinePointsSection = ({
             New activity
           </button>
 
-          <Link
-            to={`/offline-points?businessId=${businessId}`}
-            className={outlineButton}
-          >
+          <Link to={`/offline-points${query}`} className={outlineButton}>
             View batches
           </Link>
 
           {canGenerate ? (
-            <Link
-              to={`/offline-points/new?businessId=${businessId}`}
-              className={primaryButton}
-            >
+            <Link to={`/offline-points/new${query}`} className={primaryButton}>
               Generate codes
             </Link>
           ) : (

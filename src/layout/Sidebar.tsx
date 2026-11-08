@@ -110,6 +110,7 @@ export const customerLinks = [
 export const merchantLinks = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   { text: "upload points", icon: { active: ac_payment, inactive: in_payment } },
+  { text: "offline points", icon: { active: ac_task, inactive: in_task } },
   // {
   //   text: "rewards settings",
   //   icon: { active: ac_task, inactive: in_task },
@@ -138,6 +139,7 @@ export const adminLinks = [
     text: "merchants",
     icon: { active: ac_merchant, inactive: in_merchant },
   },
+  { text: "offline points", icon: { active: ac_task, inactive: in_task } },
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
 

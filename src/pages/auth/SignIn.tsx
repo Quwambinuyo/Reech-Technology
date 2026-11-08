@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { userAccountLogin } from "../../redux/auth/authActions";
 import { onClearSignupChallenge } from "../../redux/auth/authReducer";
 import SignupOtp from "./partial/SignupOtp";
+import { getPostAuthPath } from "../claim/ClaimRedirect";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const SignIn = () => {
 
   useEffect(() => {
     if (currentUser) {
-      navigate("/dashboard");
+      navigate(getPostAuthPath(currentUser.roles[0]))
     }
   }, [currentUser]);
 

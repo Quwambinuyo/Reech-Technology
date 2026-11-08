@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { FaSpinner, FaXmark } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { fetchAdminMerchants } from "../../redux/merchant/action";
+import { getOfflineScope } from "../../redux/offline/action";
 import type { OfflineBatch } from "../../redux/offline/reducer";
 
 export const NOT_SET = "—";
@@ -72,20 +73,31 @@ export const BatchStatusBadge = ({ batch }: { batch: OfflineBatch }) => {
   );
 };
 
-   export const useMerchantName = () => {
-     const dispatch = useAppDispatch();
-     const { adminMerchants } = useAppSelector((s) => s.merchant);
+export const useMerchantName = () => {
+  const dispatch = useAppDispatch();
+  const { adminMerchants } = useAppSelector((s) => s.merchant);
+  const isMerchant = getOfflineScope() === "merchant";
 
-     useEffect(() => {
-       if (adminMerchants.length === 0) {
-         dispatch(fetchAdminMerchants({ pageNumber: 1, pageSize: 100, search: "", status: 1 }));
-       }
-     }, [dispatch, adminMerchants.length]);
+  useEffect(() => {
+    if (!isMerchant && adminMerchants.length === 0) {
+      dispatch(
+        fetchAdminMerchants({
+          pageNumber: 1,
+          pageSize: 100,
+          search: "",
+          status: 1,
+        }),
+      );
+    }
+  }, [dispatch, adminMerchants.length, isMerchant]);
 
-     return (businessId: string) =>
-       adminMerchants.find((m) => String(m.id) === businessId)?.name ?? NOT_SET;
-   };
-   
+  return (businessId: string) =>
+    isMerchant
+      ? "Your business"
+      : (adminMerchants.find((m) => String(m.id) === businessId)?.name ??
+        NOT_SET);
+};
+
 type MerchantSelectProps = {
   value: string;
   onChange: (value: string) => void;

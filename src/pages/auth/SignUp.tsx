@@ -20,6 +20,7 @@ import {
 	onClearAccountCreationSuccess,
 	onClearSignupChallenge,
 } from "../../redux/auth/authReducer";
+import { getPostAuthPath } from "../claim/ClaimRedirect";
 
 const COUNTRY_PREFIX = "+234";
 const LOCAL_DIGITS = 10;
@@ -179,7 +180,8 @@ const SignUp = () => {
 
 	useEffect(() => {
 		if (currentUser) {
-			navigate("/dashboard");
+			// navigate(getPostAuthPath());
+			navigate(getPostAuthPath(currentUser.roles[0]))
 		}
 	}, [currentUser]);
 

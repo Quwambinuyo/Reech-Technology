@@ -12,11 +12,20 @@ import {
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { fetchWaysToEarn, redeemOfflineCode } from "../redux/dashboard/action";
 import { clearRedeemResult } from "../redux/dashboard/reducer";
+import { PENDING_CODE_KEY } from "../pages/claim/ClaimRedirect";
 
 const PAGE_SIZE = 12;
 const SEARCH_DELAY = 400;
 const CODE_LENGTH = 32;
 const FALLBACK_DESCRIPTION = "Complete this activity to earn points.";
+
+const KEEP_CODE_ERRORS = [
+  "Network error",
+  "Authorization failed",
+  "Too many attempts. Please wait a minute and try again.",
+  "Code is currently unavailable",
+  "Code is unavailable",
+];
 
 const redeemSteps = [
   "Buy from a partner shop",
@@ -120,7 +129,13 @@ const RedeemCode = () => {
     (state) => state.dashboard,
   );
 
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(() =>
+    formatCode(sessionStorage.getItem(PENDING_CODE_KEY) ?? ""),
+  );
+
+  const isComplete = code.replace(/-/g, "").length === CODE_LENGTH;
+  const isRedeeming = loading.redeemCode;
+  const errorMessage = error.redeemCode;
 
   useEffect(() => {
     return () => {
@@ -128,9 +143,17 @@ const RedeemCode = () => {
     };
   }, [dispatch]);
 
-  const isComplete = code.replace(/-/g, "").length === CODE_LENGTH;
-  const isRedeeming = loading.redeemCode;
-  const errorMessage = error.redeemCode;
+  useEffect(() => {
+    if (redeemResult) {
+      sessionStorage.removeItem(PENDING_CODE_KEY);
+    }
+  }, [redeemResult]);
+
+  useEffect(() => {
+    if (errorMessage && !KEEP_CODE_ERRORS.includes(errorMessage)) {
+      sessionStorage.removeItem(PENDING_CODE_KEY);
+    }
+  }, [errorMessage]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (errorMessage) {
@@ -151,6 +174,7 @@ const RedeemCode = () => {
   };
 
   const handleAnother = () => {
+    sessionStorage.removeItem(PENDING_CODE_KEY);
     dispatch(clearRedeemResult());
     setCode("");
   };

@@ -6,6 +6,8 @@ const RoleProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
 
 	if (!role) return <Navigate to="/sign-in" replace />;
 
+	
+
 	return allowedRoles.includes(role) ? (
 		<Outlet />
 	) : (

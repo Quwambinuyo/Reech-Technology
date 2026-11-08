@@ -24,6 +24,7 @@ import {
 } from "../manage-merchant/OfflineHelpers";
 
 const RECIPIENT_MAX = 200;
+const PRINT_PAGE_SIZE = 200;
 
 const DetailSkeleton = () => (
   <div className="bg-white p-5 md:p-6 rounded-xl mt-5 flex flex-col gap-6 animate-pulse">
@@ -61,6 +62,7 @@ const BatchDetail = () => {
 
   const [isHandOverOpen, setIsHandOverOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [isPrintOpen, setIsPrintOpen] = useState(false);
   const [recipient, setRecipient] = useState("");
 
   useEffect(() => {
@@ -77,9 +79,11 @@ const BatchDetail = () => {
     dispatch(fetchOfflineBatchDetail(id));
   };
 
-  const handlePrint = async () => {
+  const handlePrint = async (page: number) => {
     const tab = window.open("", "_blank");
-    const result = await dispatch(printOfflineBatch(id));
+    const result = await dispatch(
+      printOfflineBatch({ id, page, pageSize: PRINT_PAGE_SIZE }),
+    );
 
     if (!printOfflineBatch.fulfilled.match(result)) {
       tab?.close();
@@ -93,6 +97,15 @@ const BatchDetail = () => {
     }
 
     reload();
+  };
+
+  const handlePrintClick = () => {
+    if (printPages > 1) {
+      setIsPrintOpen(true);
+      return;
+    }
+
+    handlePrint(1);
   };
 
   const handleHandOver = async (e: React.FormEvent) => {
@@ -125,6 +138,8 @@ const BatchDetail = () => {
   const canHandOver = !isCancelled && detail !== null && !detail.batch.distributedAt;
   const isRecipientValid =
     recipient.trim() !== "" && recipient.trim().length <= RECIPIENT_MAX;
+  const codeCount = detail?.batch.codeCount ?? 0;
+  const printPages = Math.max(1, Math.ceil(codeCount / PRINT_PAGE_SIZE));
 
   return (
     <div className="mt-2 flex flex-col gap-5">
@@ -170,7 +185,7 @@ const BatchDetail = () => {
                 <button
                   type="button"
                   disabled={!canPrint || printBatchLoading}
-                  onClick={handlePrint}
+                  onClick={handlePrintClick}
                   className={primaryButton}
                 >
                   {printBatchLoading && <FaSpinner className="animate-spin" />}
@@ -281,6 +296,47 @@ const BatchDetail = () => {
             )}
           </section>
         </>
+      )}
+
+      {isPrintOpen && (
+        <ModalShell title="Print codes" onClose={() => setIsPrintOpen(false)}>
+          <p className="text-sm text-[#475569] leading-relaxed">
+            This batch prints in {printPages} pages. Print each page in turn.
+          </p>
+
+          <div className="flex flex-col gap-3 max-h-[320px] overflow-y-auto">
+            {Array.from({ length: printPages }).map((_, index) => {
+              const page = index + 1;
+              const from = index * PRINT_PAGE_SIZE + 1;
+              const to = Math.min(page * PRINT_PAGE_SIZE, codeCount);
+
+              return (
+                <button
+                  key={page}
+                  type="button"
+                  disabled={printBatchLoading}
+                  onClick={() => handlePrint(page)}
+                  className={outlineButton}
+                >
+                  {printBatchLoading && <FaSpinner className="animate-spin" />}
+                  Page {page} · codes {from.toLocaleString()}–
+                  {to.toLocaleString()}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              disabled={printBatchLoading}
+              onClick={() => setIsPrintOpen(false)}
+              className={outlineButton}
+            >
+              Close
+            </button>
+          </div>
+        </ModalShell>
       )}
 
       {isHandOverOpen && (

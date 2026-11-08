@@ -5,6 +5,23 @@ import { clearUserSession, getOrCreateTabId } from "../../utils";
 
 const tabId = getOrCreateTabId();
 
+export type OfflineScope = "admin" | "merchant";
+
+let offlineScope: OfflineScope = "admin";
+
+export const setOfflineScope = (scope: OfflineScope) => {
+  offlineScope = scope;
+};
+
+export const getOfflineScope = () => offlineScope;
+
+const offlineBase = () => `${baseURL}/${offlineScope}/offline-points`;
+
+const withBusiness = <T extends { businessId: string }>(body: T) => ({
+  ...body,
+  businessId: body.businessId || undefined,
+});
+
 const extractMessage = async (error: any): Promise<string | undefined> => {
   const data = error?.response?.data;
 
@@ -62,10 +79,10 @@ export const fetchOfflineActivities = createAsyncThunk(
   ) => {
     try {
       const response = await axiosInstance.get(
-        `${baseURL}/admin/offline-points/activities`,
+        `${offlineBase()}/activities`,
         {
           params: {
-            businessId: params.businessId,
+            businessId: params.businessId || undefined,
             page: params.page ?? 1,
             pageSize: params.pageSize ?? 25,
           },
@@ -96,8 +113,8 @@ export const createOfflineActivity = createAsyncThunk(
   ) => {
     try {
       const response = await axiosInstance.post(
-        `${baseURL}/admin/offline-points/activities`,
-        reqBody,
+        `${offlineBase()}/activities`,
+        withBusiness(reqBody),
       );
 
       if (response.data?.isSuccess) {
@@ -127,8 +144,8 @@ export const updateOfflineActivity = createAsyncThunk(
     try {
       const { id, ...reqBody } = params;
       const response = await axiosInstance.put(
-        `${baseURL}/admin/offline-points/activities/${id}`,
-        reqBody,
+        `${offlineBase()}/activities/${id}`,
+        withBusiness(reqBody),
       );
 
       if (response.data?.isSuccess) {
@@ -148,7 +165,7 @@ export const deleteOfflineActivity = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete(
-        `${baseURL}/admin/offline-points/activities/${id}`,
+        `${offlineBase()}/activities/${id}`,
       );
 
       if (response.data?.isSuccess) {
@@ -171,7 +188,7 @@ export const fetchOfflineBatches = createAsyncThunk(
   ) => {
     try {
       const response = await axiosInstance.get(
-        `${baseURL}/admin/offline-points/batches`,
+        `${offlineBase()}/batches`,
         {
           params: {
             businessId: params.businessId || undefined,
@@ -197,7 +214,7 @@ export const fetchOfflineBatchDetail = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
-        `${baseURL}/admin/offline-points/batches/${id}`,
+        `${offlineBase()}/batches/${id}`,
       );
 
       if (response.data?.isSuccess) {
@@ -224,8 +241,8 @@ export const generateOfflineBatch = createAsyncThunk(
   ) => {
     try {
       const response = await axiosInstance.post(
-        `${baseURL}/admin/offline-points/batches`,
-        reqBody,
+        `${offlineBase()}/batches`,
+        withBusiness(reqBody),
       );
 
       if (response.data?.isSuccess) {
@@ -242,12 +259,21 @@ export const generateOfflineBatch = createAsyncThunk(
 
 export const printOfflineBatch = createAsyncThunk(
   "offlinePoints/printOfflineBatch",
-  async (id: string, { rejectWithValue }) => {
+  async (
+    params: { id: string; page?: number; pageSize?: number },
+    { rejectWithValue },
+  ) => {
     try {
       const response = await axiosInstance.post(
-        `${baseURL}/admin/offline-points/batches/${id}/print`,
+        `${offlineBase()}/batches/${params.id}/print`,
         undefined,
-        { responseType: "blob" },
+        {
+          params: {
+            page: params.page ?? 1,
+            pageSize: params.pageSize ?? 200,
+          },
+          responseType: "blob",
+        },
       );
 
       const blob: Blob = response.data;
@@ -273,7 +299,7 @@ export const distributeOfflineBatch = createAsyncThunk(
   ) => {
     try {
       const response = await axiosInstance.post(
-        `${baseURL}/admin/offline-points/batches/${params.id}/distribute`,
+        `${offlineBase()}/batches/${params.id}/distribute`,
         { recipient: params.recipient.trim() },
       );
 
@@ -294,7 +320,7 @@ export const cancelOfflineBatch = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
-        `${baseURL}/admin/offline-points/batches/${id}/cancel`,
+        `${offlineBase()}/batches/${id}/cancel`,
       );
 
       if (response.data?.isSuccess) {
