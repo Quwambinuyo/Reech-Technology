@@ -30,9 +30,10 @@ const PartSix = () => {
 						</button>
 					</div>
 					<div className="md:w-[52%] grid gap-4 md:gap-5">
-						{faqs.map((faq) => (
+						{faqs.map((faq, index) => (
 							<FaqCard
 								faq={faq}
+								index={index}
 								key={faq.id}
 								onToggle={() => onToggleClick(faq.id)}
 								isOpened={toggleFaq === faq.id}
@@ -56,32 +57,34 @@ const faqs = [
 	{
 		id: 2,
 		header: "How do I sign up for Reech",
-		text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum error laborum dicta amet, itaque in quisquam saepe optio repudiandae hic?",
+		text: "Register your business on Reech by providing the required business documentation. Your business will be verified within 5 hours, after which you can define activities that earn points. Your users can then start earning rewards by completing these activities on your platform.",
 	},
 	{
 		id: 3,
-		header: "Is Reech safe to use",
-		text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum error laborum dicta amet, itaque in quisquam saepe optio repudiandae hic?",
+		header: "How can I contact Reech",
+		text: "We're happy to hear from you! Reach us through:Email: support@reach.com Website: reechtechnologies.com",
 	},
 	{
 		id: 4,
-		header: "What payment does Reech support",
-		text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum error laborum dicta amet, itaque in quisquam saepe optio repudiandae hic?",
+		header: "Is Reech safe to use",
+		text: "Absolutely! Reech is designed to provide a secure and reliable rewards experience for businesses and their users. We prioritise the protection of user information and the integrity of reward transactions.",
 	},
 	{
 		id: 5,
-		header: "Can I pay bills using Reech",
-		text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum error laborum dicta amet, itaque in quisquam saepe optio repudiandae hic?",
+		header: "What payment currencies does Reech support",
+		text: "Reech allows businesses to fund their reward points in their preferred currency. Businesses pay the equivalent value of the points assigned to their users, making it easy for users to redeem earned points as discounts on subsequent purchases at the same or other Reech-partnered merchants.",
 	},
 ];
 
 type FaqCardProps = { id: number; header: string; text: string };
 const FaqCard = ({
 	faq,
+	index,
 	onToggle,
 	isOpened,
 }: {
 	faq: FaqCardProps;
+	index: number;
 	isOpened: boolean;
 	onToggle: () => void;
 }) => {
@@ -92,7 +95,7 @@ const FaqCard = ({
 				onClick={onToggle}
 			>
 				<h4 className="font-bold text-[15px] sm:text-base xl:text-[17px]">
-					{faq.header}?
+					{index + 1}. {faq.header}?
 				</h4>
 				<p className={isOpened ? "down" : "up"}>
 					<IoMdArrowDropdown size={24} />

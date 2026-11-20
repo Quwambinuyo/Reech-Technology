@@ -16,7 +16,7 @@ const PartFive = () => {
 					</h3>
 					<p className="text-[15px] md:text-base">
 						Empower your customers with cashback, loyalty points, and exclusive
-						discounts while boosting retention. Seamlessly integrate giftMe into
+						discounts while boosting retention. Seamlessly integrate reech into
 						your business and watch customer engagement soar!
 					</p>
 				</div>

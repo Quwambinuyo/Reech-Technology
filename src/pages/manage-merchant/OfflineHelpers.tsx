@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { FaSpinner, FaXmark } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { fetchAdminMerchants } from "../../redux/merchant/action";
@@ -156,30 +157,36 @@ type ModalShellProps = {
   children: ReactNode;
 };
 
-export const ModalShell = ({ title, onClose, children }: ModalShellProps) => (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-    onClick={onClose}
-  >
+export const ModalShell = ({ title, onClose, children }: ModalShellProps) =>
+  createPortal(
     <div
-      className="w-full max-w-md rounded-xl bg-white p-6 flex flex-col gap-5"
-      onClick={(e) => e.stopPropagation()}
+      className="fixed inset-0 flex items-center justify-center bg-black/40 p-4"
+      style={{ zIndex: 2000 }}
+      onClick={onClose}
     >
-      <div className="flex items-center justify-between gap-4">
-        <h4 className="font-semibold text-[#1E293B]">{title}</h4>
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={onClose}
-          className="text-[#64748B] hover:text-[#1E293B]"
-        >
-          <FaXmark />
-        </button>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="w-full max-w-md rounded-xl bg-white p-6 flex flex-col gap-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between gap-4">
+          <h4 className="font-semibold text-[#1E293B]">{title}</h4>
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            className="text-[#64748B] hover:text-[#1E293B]"
+          >
+            <FaXmark />
+          </button>
+        </div>
+        {children}
       </div>
-      {children}
-    </div>
-  </div>
-);
+    </div>,
+    document.body,
+  );
 
 type ConfirmDialogProps = {
   title: string;

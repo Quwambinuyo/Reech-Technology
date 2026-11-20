@@ -20,7 +20,7 @@ const PartOne = () => {
 							<p className="text-[#64748B] text-base md:text-[15px] lg:text-base">
 								Empower your customers with cashback, loyalty points, and
 								exclusive discounts while boosting retention. Seamlessly
-								integrate giftMe into your business and watch customer
+								integrate reech into your business and watch customer
 								engagement soar!
 							</p>
 							<div className="flex gap-3 sm:gap-4 xl:gap-5">
