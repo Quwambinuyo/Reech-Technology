@@ -124,6 +124,10 @@ const OfflinePointsSection = ({
             New activity
           </button>
 
+          <Link to={`/offline-points/products${query}`} className={outlineButton}>
+            Products
+          </Link>
+
           <Link to={`/offline-points${query}`} className={outlineButton}>
             View batches
           </Link>

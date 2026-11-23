@@ -33,6 +33,8 @@ import GoogleCallback from "../pages/auth/GoogleCallback";
 import WaysToEarnPage from "../customer/WaysToEarn";
 import OfflinePoints from "../pages/offline/OfflinePoints";
 import OfflineActivities from "../pages/offline/OfflineActivities";
+import OfflineProducts from "../pages/offline/OfflineProducts";
+import OfflineProductForm from "../pages/offline/OfflineProductForm";
 import GenerateBatch from "../pages/offline/GenerateBatch";
 import BatchDetail from "../pages/offline/BatchDetail";
 import VerifyProduct from "../pages/verify/VerifyProduct";
@@ -132,6 +134,18 @@ export default function BaseRoutes() {
               >
                 <Route path="/offline-points" element={<OfflinePoints />} />
                 <Route path="/offline-points/new" element={<GenerateBatch />} />
+                <Route
+                  path="/offline-points/products"
+                  element={<OfflineProducts />}
+                />
+                <Route
+                  path="/offline-points/products/new"
+                  element={<OfflineProductForm />}
+                />
+                <Route
+                  path="/offline-points/products/:id"
+                  element={<OfflineProductForm />}
+                />
                 <Route path="/offline-points/:id" element={<BatchDetail />} />
               </Route>
 

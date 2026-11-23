@@ -11,6 +11,7 @@ import {
 import type { OfflineBatch } from "../../redux/offline/reducer";
 import { formatDateTime } from "../../utils";
 import {
+  BATCH_KIND_LABELS,
   BatchStatusBadge,
   MerchantSelect,
   NOT_SET,
@@ -67,6 +68,12 @@ const OfflinePoints = () => {
       ),
     },
     {
+      key: "type",
+      header: "Type",
+      skeletonWidth: "w-28",
+      render: (batch) => BATCH_KIND_LABELS[batch.kind ?? 0],
+    },
+    {
       key: "merchant",
       header: "Merchant",
       hidden: isMerchant,
@@ -79,20 +86,23 @@ const OfflinePoints = () => {
       key: "redeemed",
       header: "Redeemed",
       skeletonWidth: "w-24",
-      render: (batch) => (
-        <div>
-          <p className="font-medium text-[#1E293B]">
-            {batch.redeemedCount.toLocaleString()} /{" "}
-            {batch.codeCount.toLocaleString()}
-          </p>
-          <ProgressBar
-            value={batch.redeemedCount}
-            max={batch.codeCount}
-            label="Codes redeemed"
-            className="mt-1.5 w-28"
-          />
-        </div>
-      ),
+      render: (batch) =>
+        batch.kind === 1 ? (
+          NOT_SET
+        ) : (
+          <div>
+            <p className="font-medium text-[#1E293B]">
+              {batch.redeemedCount.toLocaleString()} /{" "}
+              {batch.codeCount.toLocaleString()}
+            </p>
+            <ProgressBar
+              value={batch.redeemedCount}
+              max={batch.codeCount}
+              label="Codes redeemed"
+              className="mt-1.5 w-28"
+            />
+          </div>
+        ),
     },
     {
       key: "status",
@@ -148,6 +158,9 @@ const OfflinePoints = () => {
   const generateLink = businessId
     ? `/offline-points/new?businessId=${businessId}`
     : "/offline-points/new";
+  const productsLink = businessId
+    ? `/offline-points/products?businessId=${businessId}`
+    : "/offline-points/products";
 
   return (
     <section className="rounded-xl bg-white p-4 lg:p-5 mt-2 flex flex-col gap-4">
@@ -173,6 +186,10 @@ const OfflinePoints = () => {
             />
           )}
 
+          <Link to={productsLink} className={outlineButton}>
+            Products
+          </Link>
+
           <Link to={generateLink} className={primaryButton}>
             Generate codes
           </Link>
@@ -181,7 +198,7 @@ const OfflinePoints = () => {
 
       <DataTable
         className="mt-3"
-        minWidth={1280}
+        minWidth={1380}
         columns={columns}
         rows={allBatches.items}
         getRowKey={(batch) => batch.id}

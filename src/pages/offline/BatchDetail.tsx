@@ -10,6 +10,7 @@ import {
 } from "../../redux/offline/action";
 import { clearBatchDetail } from "../../redux/offline/reducer";
 import {
+  BATCH_KIND_LABELS,
   BatchStatusBadge,
   ConfirmDialog,
   ModalShell,
@@ -140,6 +141,10 @@ const BatchDetail = () => {
     recipient.trim() !== "" && recipient.trim().length <= RECIPIENT_MAX;
   const codeCount = detail?.batch.codeCount ?? 0;
   const printPages = Math.max(1, Math.ceil(codeCount / PRINT_PAGE_SIZE));
+  const kind = detail?.batch.kind ?? 0;
+  const showActivity = kind !== 1;
+  const showLot = kind !== 0;
+  const showPoints = kind !== 1;
 
   return (
     <div className="mt-2 flex flex-col gap-5">
@@ -210,16 +215,19 @@ const BatchDetail = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              <Stat label="Type" value={BATCH_KIND_LABELS[kind]} />
               <Stat label="Merchant" value={merchantName(detail.batch.businessId)} />
               <Stat
                 label="Codes"
                 value={detail.batch.codeCount.toLocaleString()}
               />
-              <Stat
-                label="Redeemed"
-                value={detail.batch.redeemedCount.toLocaleString()}
-              />
+              {showPoints && (
+                <Stat
+                  label="Redeemed"
+                  value={detail.batch.redeemedCount.toLocaleString()}
+                />
+              )}
               <Stat
                 label="Given to"
                 value={detail.batch.distributedTo ?? NOT_SET}
@@ -232,34 +240,60 @@ const BatchDetail = () => {
             <h4 className="font-semibold text-[#1E293B]">Codes</h4>
 
             <div className="overflow-x-auto max-h-[480px] overflow-y-auto">
-              <table className="w-full min-w-[560px] text-sm">
+              <table className="w-full min-w-[720px] text-sm">
                 <thead className="sticky top-0 bg-white">
                   <tr className="text-left font-montserrat font-semibold text-[#1E293B]">
-                    <th className="py-2 pr-4">Activity</th>
-                    <th className="py-2 pr-4">Points</th>
-                    <th className="py-2 pr-4">Status</th>
-                    <th className="py-2">Redeemed at</th>
+                    <th className="py-2 pl-2 pr-4">Serial</th>
+                    {showActivity && <th className="py-2 pr-4">Activity</th>}
+                    {showLot && <th className="py-2 pr-4">Lot</th>}
+                    {showPoints && <th className="py-2 pr-4">Points</th>}
+                    <th className="py-2 pr-4">Scans</th>
+                    {showPoints && <th className="py-2 pr-4">Status</th>}
+                    {showPoints && <th className="py-2">Redeemed at</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {detail.codes.map((code) => (
                     <tr key={code.id} className="odd:bg-[#F5F6FF] text-[#475569]">
-                      <td className="py-3 pl-2 pr-4 text-[#1E293B]">
-                        {code.activityName}
+                      <td className="py-3 pl-2 pr-4 font-mono text-xs text-[#1E293B]">
+                        {code.serial ?? NOT_SET}
                       </td>
+                      {showActivity && (
+                        <td className="py-3 pr-4 text-[#1E293B]">
+                          {code.activityName ?? NOT_SET}
+                        </td>
+                      )}
+                      {showLot && (
+                        <td className="py-3 pr-4">
+                          {code.lotNumber ?? NOT_SET}
+                        </td>
+                      )}
+                      {showPoints && (
+                        <td className="py-3 pr-4">
+                          {code.points.toLocaleString()}
+                        </td>
+                      )}
                       <td className="py-3 pr-4">
-                        {code.points.toLocaleString()}
+                        {(code.checkCount ?? 0).toLocaleString()}
                       </td>
-                      <td className="py-3 pr-4">
-                        <span
-                          className={`text-xs font-semibold ${
-                            code.redeemedAt ? "text-[#15803D]" : "text-[#64748B]"
-                          }`}
-                        >
-                          {code.redeemedAt ? "Redeemed" : "Unused"}
-                        </span>
-                      </td>
-                      <td className="py-3">{formatDateTime(code.redeemedAt)}</td>
+                      {showPoints && (
+                        <td className="py-3 pr-4">
+                          <span
+                            className={`text-xs font-semibold ${
+                              code.redeemedAt
+                                ? "text-[#15803D]"
+                                : "text-[#64748B]"
+                            }`}
+                          >
+                            {code.redeemedAt ? "Redeemed" : "Unused"}
+                          </span>
+                        </td>
+                      )}
+                      {showPoints && (
+                        <td className="py-3">
+                          {formatDateTime(code.redeemedAt)}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

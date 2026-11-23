@@ -4,6 +4,12 @@ import {
   createOfflineActivity,
   updateOfflineActivity,
   deleteOfflineActivity,
+  fetchOfflineProducts,
+  fetchOfflineProductDetail,
+  createOfflineProduct,
+  updateOfflineProduct,
+  deleteOfflineProduct,
+  uploadOfflineProductImage,
   fetchOfflineBatches,
   fetchOfflineBatchDetail,
   generateOfflineBatch,
@@ -21,12 +27,44 @@ export type OfflineActivity = {
   description: string | null;
 };
 
+export type OfflineProductSpec = {
+  label: string;
+  value: string;
+};
+
+export type OfflineProductVariant = {
+  id: string;
+  name: string;
+  sku: string | null;
+  imageUrl: string | null;
+  specifications: OfflineProductSpec[];
+};
+
+export type OfflineProduct = {
+  id: string;
+  businessId: string;
+  name: string;
+  brand: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  manufacturer: string | null;
+  countryOfOrigin: string | null;
+  registrationNumber: string | null;
+  specifications: OfflineProductSpec[];
+  variants: OfflineProductVariant[];
+};
+
+export type OfflineProductImage = {
+  url: string;
+};
+
 export type OfflineBatch = {
   id: string;
   businessId: string;
+  kind: 0 | 1 | 2;
   reference: string;
   createdAt: string;
-  expiresAt: string;
+  expiresAt: string | null;
   codeCount: number;
   redeemedCount: number;
   distributedTo: string | null;
@@ -36,8 +74,12 @@ export type OfflineBatch = {
 
 export type OfflineBatchCode = {
   id: string;
-  activityId: string;
-  activityName: string;
+  serial: string;
+  checkCount: number;
+  activityId: string | null;
+  activityName: string | null;
+  variantId: string | null;
+  lotNumber: string | null;
   points: number;
   redeemedBy: string | null;
   redeemedAt: string | null;
@@ -64,6 +106,30 @@ export type OfflineRedeemResult = {
   activityName: string;
 };
 
+export type OfflineVerifyProduct = {
+  name: string;
+  variantName: string;
+  brand: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  manufacturer: string | null;
+  countryOfOrigin: string | null;
+  registrationNumber: string | null;
+  sku: string | null;
+  specifications: OfflineProductSpec[];
+  lotNumber: string | null;
+  manufacturedOn: string | null;
+  expiresOn: string | null;
+};
+
+export type OfflineVerifyResult = {
+  kind: 0 | 1 | 2;
+  status: number;
+  points: number;
+  expiresAt: string | null;
+  product: OfflineVerifyProduct | null;
+};
+
 type OfflinePage<T> = {
   items: T[];
   page: number;
@@ -85,6 +151,24 @@ interface OfflinePointsReducerProps {
   deleteActivityLoading: boolean;
   deleteActivitySuccess: string | null;
   deleteActivityError: string;
+  fetchProductsLoading: boolean;
+  allProducts: OfflinePage<OfflineProduct>;
+  fetchProductsError: string;
+  fetchProductDetailLoading: boolean;
+  productDetail: OfflineProduct | null;
+  fetchProductDetailError: string;
+  createProductLoading: boolean;
+  createProductSuccess: OfflineProduct | null;
+  createProductError: string;
+  updateProductLoading: boolean;
+  updateProductSuccess: OfflineProduct | null;
+  updateProductError: string;
+  deleteProductLoading: boolean;
+  deleteProductSuccess: string | null;
+  deleteProductError: string;
+  uploadProductImageLoading: boolean;
+  uploadProductImageSuccess: OfflineProductImage | null;
+  uploadProductImageError: string;
   fetchBatchesLoading: boolean;
   allBatches: OfflinePage<OfflineBatch>;
   fetchBatchesError: string;
@@ -124,6 +208,24 @@ const initialState: OfflinePointsReducerProps = {
   deleteActivityLoading: false,
   deleteActivitySuccess: null,
   deleteActivityError: "",
+  fetchProductsLoading: false,
+  allProducts: emptyPage,
+  fetchProductsError: "",
+  fetchProductDetailLoading: false,
+  productDetail: null,
+  fetchProductDetailError: "",
+  createProductLoading: false,
+  createProductSuccess: null,
+  createProductError: "",
+  updateProductLoading: false,
+  updateProductSuccess: null,
+  updateProductError: "",
+  deleteProductLoading: false,
+  deleteProductSuccess: null,
+  deleteProductError: "",
+  uploadProductImageLoading: false,
+  uploadProductImageSuccess: null,
+  uploadProductImageError: "",
   fetchBatchesLoading: false,
   allBatches: emptyPage,
   fetchBatchesError: "",
@@ -160,6 +262,14 @@ const offlinePointsSlice = createSlice({
       state.updateActivityError = "";
       state.deleteActivitySuccess = null;
       state.deleteActivityError = "";
+      state.createProductSuccess = null;
+      state.createProductError = "";
+      state.updateProductSuccess = null;
+      state.updateProductError = "";
+      state.deleteProductSuccess = null;
+      state.deleteProductError = "";
+      state.uploadProductImageSuccess = null;
+      state.uploadProductImageError = "";
       state.generateBatchSuccess = null;
       state.generateBatchError = "";
       state.printBatchSuccess = null;
@@ -177,6 +287,15 @@ const offlinePointsSlice = createSlice({
     clearBatchDetail: (state) => {
       state.batchDetail = null;
       state.fetchBatchDetailError = "";
+    },
+    clearProductDetail: (state) => {
+      state.productDetail = null;
+      state.fetchProductDetailError = "";
+    },
+    resetUploadProductImage: (state) => {
+      state.uploadProductImageLoading = false;
+      state.uploadProductImageSuccess = null;
+      state.uploadProductImageError = "";
     },
   },
   extraReducers(builder) {
@@ -237,6 +356,94 @@ const offlinePointsSlice = createSlice({
       .addCase(deleteOfflineActivity.rejected, (state, action) => {
         state.deleteActivityLoading = false;
         state.deleteActivityError = action.payload as string;
+      })
+
+      .addCase(fetchOfflineProducts.pending, (state) => {
+        state.fetchProductsLoading = true;
+        state.fetchProductsError = "";
+        state.offlineNetworkError = "";
+      })
+      .addCase(fetchOfflineProducts.fulfilled, (state, action) => {
+        state.fetchProductsLoading = false;
+        state.allProducts = action.payload ?? emptyPage;
+      })
+      .addCase(fetchOfflineProducts.rejected, (state, action) => {
+        state.fetchProductsLoading = false;
+        const error = action.payload as string;
+        state.offlineNetworkError = isNetwork(error) ? "Network Error" : "";
+        state.fetchProductsError = isNetwork(error) ? "" : error;
+      })
+
+      .addCase(fetchOfflineProductDetail.pending, (state) => {
+        state.fetchProductDetailLoading = true;
+        state.fetchProductDetailError = "";
+        state.offlineNetworkError = "";
+      })
+      .addCase(fetchOfflineProductDetail.fulfilled, (state, action) => {
+        state.fetchProductDetailLoading = false;
+        state.productDetail = action.payload ?? null;
+      })
+      .addCase(fetchOfflineProductDetail.rejected, (state, action) => {
+        state.fetchProductDetailLoading = false;
+        const error = action.payload as string;
+        state.offlineNetworkError = isNetwork(error) ? "Network Error" : "";
+        state.fetchProductDetailError = isNetwork(error) ? "" : error;
+      })
+
+      .addCase(createOfflineProduct.pending, (state) => {
+        state.createProductLoading = true;
+        state.createProductError = "";
+        state.createProductSuccess = null;
+      })
+      .addCase(createOfflineProduct.fulfilled, (state, action) => {
+        state.createProductLoading = false;
+        state.createProductSuccess = action.payload;
+      })
+      .addCase(createOfflineProduct.rejected, (state, action) => {
+        state.createProductLoading = false;
+        state.createProductError = action.payload as string;
+      })
+
+      .addCase(updateOfflineProduct.pending, (state) => {
+        state.updateProductLoading = true;
+        state.updateProductError = "";
+        state.updateProductSuccess = null;
+      })
+      .addCase(updateOfflineProduct.fulfilled, (state, action) => {
+        state.updateProductLoading = false;
+        state.updateProductSuccess = action.payload;
+      })
+      .addCase(updateOfflineProduct.rejected, (state, action) => {
+        state.updateProductLoading = false;
+        state.updateProductError = action.payload as string;
+      })
+
+      .addCase(deleteOfflineProduct.pending, (state) => {
+        state.deleteProductLoading = true;
+        state.deleteProductError = "";
+        state.deleteProductSuccess = null;
+      })
+      .addCase(deleteOfflineProduct.fulfilled, (state, action) => {
+        state.deleteProductLoading = false;
+        state.deleteProductSuccess = action.payload;
+      })
+      .addCase(deleteOfflineProduct.rejected, (state, action) => {
+        state.deleteProductLoading = false;
+        state.deleteProductError = action.payload as string;
+      })
+
+      .addCase(uploadOfflineProductImage.pending, (state) => {
+        state.uploadProductImageLoading = true;
+        state.uploadProductImageError = "";
+        state.uploadProductImageSuccess = null;
+      })
+      .addCase(uploadOfflineProductImage.fulfilled, (state, action) => {
+        state.uploadProductImageLoading = false;
+        state.uploadProductImageSuccess = action.payload;
+      })
+      .addCase(uploadOfflineProductImage.rejected, (state, action) => {
+        state.uploadProductImageLoading = false;
+        state.uploadProductImageError = action.payload as string;
       })
 
       .addCase(fetchOfflineBatches.pending, (state) => {
@@ -343,6 +550,11 @@ const offlinePointsSlice = createSlice({
   },
 });
 
-export const { resetOfflineMutations, resetRedeemCode, clearBatchDetail } =
-  offlinePointsSlice.actions;
+export const {
+  resetOfflineMutations,
+  resetRedeemCode,
+  clearBatchDetail,
+  clearProductDetail,
+  resetUploadProductImage,
+} = offlinePointsSlice.actions;
 export const offlinePointsReducer = offlinePointsSlice.reducer;

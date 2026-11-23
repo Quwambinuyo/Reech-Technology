@@ -1,6 +1,8 @@
 import { FaSpinner } from "react-icons/fa6";
 import { ProgressBar } from "../../components/ProgressBar";
+import type { OfflineCodeKind } from "../../redux/offline/action";
 import {
+  BATCH_KIND_LABELS,
   NOT_SET,
   outlineButton,
   primaryButton,
@@ -13,6 +15,7 @@ export type BatchSummaryLine = {
 };
 
 type BatchSummaryProps = {
+  kind: OfflineCodeKind;
   merchant: string | null;
   reference: string;
   expiryDate: Date | null;
@@ -44,6 +47,7 @@ const formatExpiry = (date: Date) =>
   });
 
 const BatchSummary = ({
+  kind,
   merchant,
   reference,
   expiryDate,
@@ -56,6 +60,8 @@ const BatchSummary = ({
   onCancel,
 }: BatchSummaryProps) => {
   const isOverLimit = total > maxCodes;
+  const hasPoints = kind !== 1;
+  const hasExpiry = kind !== 1;
 
   return (
     <aside className="flex flex-col gap-5 rounded-xl bg-white p-5 md:p-6 lg:sticky lg:top-4">
@@ -65,17 +71,20 @@ const BatchSummary = ({
       </div>
 
       <div className="flex flex-col gap-3">
+        <SummaryLine label="Type" value={BATCH_KIND_LABELS[kind]} />
         <SummaryLine label="Merchant" value={merchant ?? NOT_SET} />
         <SummaryLine label="Reference" value={reference || NOT_SET} />
-        <SummaryLine
-          label="Expires"
-          value={expiryDate ? formatExpiry(expiryDate) : NOT_SET}
-        />
+        {hasExpiry && (
+          <SummaryLine
+            label="Expires"
+            value={expiryDate ? formatExpiry(expiryDate) : NOT_SET}
+          />
+        )}
       </div>
 
       <div className="flex flex-col gap-2 border-t border-[#E2E8F0] pt-4">
         {lines.length === 0 ? (
-          <p className="text-sm text-[#64748B]">No activities added yet.</p>
+          <p className="text-sm text-[#64748B]">No lines added yet.</p>
         ) : (
           lines.map((line) => (
             <div
@@ -123,10 +132,12 @@ const BatchSummary = ({
           </p>
         )}
 
-        <SummaryLine
-          label="Points if all claimed"
-          value={totalPoints.toLocaleString()}
-        />
+        {hasPoints && (
+          <SummaryLine
+            label="Points if all claimed"
+            value={totalPoints.toLocaleString()}
+          />
+        )}
       </div>
 
       <div className="flex flex-col gap-3">

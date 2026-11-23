@@ -9,7 +9,24 @@ import {
 } from "react-icons/fa6";
 import { baseURL } from "../../components/api";
 
+type VerifyProductInfo = {
+  name: string;
+  variantName: string | null;
+  brand: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  manufacturer: string | null;
+  countryOfOrigin: string | null;
+  registrationNumber: string | null;
+  sku: string | null;
+  specifications: { label: string; value: string }[] | null;
+  lotNumber: string | null;
+  manufacturedOn: string | null;
+  expiresOn: string | null;
+};
+
 type VerifyResult = {
+  kind?: 0 | 1 | 2;
   status: number;
   productName: string | null;
   productDescription: string | null;
@@ -22,6 +39,7 @@ type VerifyResult = {
   checkCount: number;
   firstCheckedAt: string | null;
   warning: string | null;
+  product?: VerifyProductInfo | null;
 };
 
 type Tone = "green" | "amber" | "red";
@@ -38,6 +56,7 @@ const statusConfig: Record<number, { tone: Tone; title: string }> = {
   2: { tone: "green", title: "Genuine product" },
   3: { tone: "red", title: "Code withdrawn" },
   4: { tone: "red", title: "Code not released" },
+  5: { tone: "red", title: "Expired product" },
 };
 
 const fallbackConfig = { tone: "red" as Tone, title: "Unable to verify" };
@@ -51,10 +70,45 @@ const formatDate = (value: string | null) =>
       })
     : "";
 
+const formatDateOnly = (value: string | null) =>
+  value
+    ? new Date(value).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC",
+      })
+    : "";
+
+const getDetails = (product: VerifyProductInfo | null | undefined) => {
+  if (!product) return [];
+
+  const rows: { label: string; value: string | null }[] = [
+    { label: "Brand", value: product.brand },
+    { label: "Reg. no", value: product.registrationNumber },
+    { label: "Made by", value: product.manufacturer },
+    { label: "Country of origin", value: product.countryOfOrigin },
+    { label: "Lot", value: product.lotNumber },
+    { label: "Made", value: formatDateOnly(product.manufacturedOn) },
+    { label: "Expires", value: formatDateOnly(product.expiresOn) },
+    ...(product.specifications ?? []).map((spec) => ({
+      label: spec.label,
+      value: spec.value,
+    })),
+  ];
+
+  return rows.filter(
+    (row): row is { label: string; value: string } =>
+      row.value !== null && row.value.trim() !== "",
+  );
+};
+
 const getBody = (result: VerifyResult) => {
   switch (result.status) {
     case 0:
-      return `Earn ${result.points.toLocaleString()} points: scratch the panel after you buy.`;
+      return result.points > 0
+        ? `Earn ${result.points.toLocaleString()} points: scratch the panel after you buy.`
+        : "";
     case 1:
       return result.claimedAt
         ? `The points for this code were claimed on ${formatDate(result.claimedAt)}. If you've just bought this product, it may be a copy.`
@@ -67,6 +121,10 @@ const getBody = (result: VerifyResult) => {
       return "The merchant withdrew this code.";
     case 4:
       return "This code hasn't been released yet.";
+    case 5:
+      return result.product?.expiresOn
+        ? `This product expired on ${formatDateOnly(result.product.expiresOn)}. Don't use it.`
+        : "This product has expired. Don't use it.";
     default:
       return "";
   }
@@ -169,6 +227,14 @@ const VerifyProduct = () => {
         ? FaTriangleExclamation
         : FaCircleXmark;
   const body = getBody(result);
+  const product = result.product ?? null;
+  const displayName = product
+    ? product.variantName
+      ? `${product.name} · ${product.variantName}`
+      : product.name
+    : result.productName;
+  const displayDescription = product?.description || result.productDescription;
+  const details = getDetails(product);
 
   return (
     <Shell>
@@ -179,6 +245,14 @@ const VerifyProduct = () => {
             {headline || config.title}
           </h4>
         </div>
+
+        {product?.imageUrl && (
+          <img
+            src={product.imageUrl}
+            alt={displayName ?? "Product"}
+            className="w-full max-h-56 rounded-lg bg-[#F8FAFC] object-contain"
+          />
+        )}
 
         <div className="flex items-center gap-3 border-t border-[#E2E8F0] pt-5">
           {result.merchantLogo ? (
@@ -194,7 +268,7 @@ const VerifyProduct = () => {
           )}
           <div className="min-w-0">
             <p className="font-semibold text-[#1E293B] truncate">
-              {result.productName}
+              {displayName}
             </p>
             <p className="text-sm text-[#475569] truncate">
               {result.merchantName}
@@ -202,9 +276,9 @@ const VerifyProduct = () => {
           </div>
         </div>
 
-        {result.productDescription && (
+        {displayDescription && (
           <p className="text-sm text-[#475569] leading-relaxed">
-            {result.productDescription}
+            {displayDescription}
           </p>
         )}
 
@@ -212,6 +286,22 @@ const VerifyProduct = () => {
           <div className={`rounded-lg border p-4 text-sm ${styles.box}`}>
             <p className="text-[#1E293B] leading-relaxed">{body}</p>
           </div>
+        )}
+
+        {details.length > 0 && (
+          <dl className="flex flex-col border-t border-[#E2E8F0] pt-2">
+            {details.map((row, index) => (
+              <div
+                key={`${row.label}-${index}`}
+                className="flex items-start justify-between gap-4 border-b border-[#F1F5F9] py-2.5 text-sm last:border-b-0"
+              >
+                <dt className="text-[#64748B]">{row.label}</dt>
+                <dd className="min-w-0 break-words text-right font-medium text-[#1E293B]">
+                  {row.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         )}
 
         {result.warning && (

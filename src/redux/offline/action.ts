@@ -7,6 +7,46 @@ const tabId = getOrCreateTabId();
 
 export type OfflineScope = "admin" | "merchant";
 
+export type OfflineCodeKind = 0 | 1 | 2;
+
+export type OfflineProductSpecBody = {
+  label: string;
+  value: string;
+};
+
+export type OfflineProductVariantBody = {
+  id: string | null;
+  name: string;
+  sku?: string;
+  imageUrl?: string | null;
+  specifications: OfflineProductSpecBody[];
+};
+
+export type OfflineProductBody = {
+  businessId: string;
+  name: string;
+  brand?: string;
+  description?: string;
+  imageUrl?: string | null;
+  manufacturer?: string;
+  countryOfOrigin?: string;
+  registrationNumber?: string;
+  specifications: OfflineProductSpecBody[];
+  variants: OfflineProductVariantBody[];
+};
+
+export type OfflineBatchLine = {
+  activityId?: string;
+  variantId?: string;
+  quantity: number;
+  lotNumber?: string;
+  manufacturedOn?: string;
+  expiresOn?: string;
+};
+
+const MAX_PRODUCT_IMAGE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 let offlineScope: OfflineScope = "admin";
 
 export const setOfflineScope = (scope: OfflineScope) => {
@@ -180,6 +220,170 @@ export const deleteOfflineActivity = createAsyncThunk(
   },
 );
 
+export const fetchOfflineProducts = createAsyncThunk(
+  "offlinePoints/fetchOfflineProducts",
+  async (
+    params: {
+      businessId?: string;
+      search?: string;
+      page?: number;
+      pageSize?: number;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.get(`${offlineBase()}/products`, {
+        params: {
+          businessId: params.businessId || undefined,
+          search: params.search || undefined,
+          page: params.page ?? 1,
+          pageSize: params.pageSize ?? 25,
+        },
+      });
+
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      }
+
+      throw new Error(response.data?.message || "Failed to fetch products");
+    } catch (error: any) {
+      return handleError(error, rejectWithValue, "Failed to fetch products");
+    }
+  },
+);
+
+export const fetchOfflineProductDetail = createAsyncThunk(
+  "offlinePoints/fetchOfflineProductDetail",
+  async (
+    params: { id: string; businessId?: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.get(
+        `${offlineBase()}/products/${params.id}`,
+        { params: { businessId: params.businessId || undefined } },
+      );
+
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      }
+
+      throw new Error(response.data?.message || "Failed to fetch product");
+    } catch (error: any) {
+      return handleError(error, rejectWithValue, "Failed to fetch product");
+    }
+  },
+);
+
+export const createOfflineProduct = createAsyncThunk(
+  "offlinePoints/createOfflineProduct",
+  async (reqBody: OfflineProductBody, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        `${offlineBase()}/products`,
+        withBusiness(reqBody),
+      );
+
+      if (response.data?.isSuccess) {
+        toast.success("Product has been created successfully");
+        return response.data?.data;
+      }
+
+      throw new Error(response.data?.message || "Failed to create product");
+    } catch (error: any) {
+      return handleError(error, rejectWithValue, "Failed to create product");
+    }
+  },
+);
+
+export const updateOfflineProduct = createAsyncThunk(
+  "offlinePoints/updateOfflineProduct",
+  async (
+    params: OfflineProductBody & { id: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { id, ...reqBody } = params;
+      const response = await axiosInstance.put(
+        `${offlineBase()}/products/${id}`,
+        withBusiness(reqBody),
+      );
+
+      if (response.data?.isSuccess) {
+        toast.success("Product has been updated successfully");
+        return response.data?.data;
+      }
+
+      throw new Error(response.data?.message || "Failed to update product");
+    } catch (error: any) {
+      return handleError(error, rejectWithValue, "Failed to update product");
+    }
+  },
+);
+
+export const deleteOfflineProduct = createAsyncThunk(
+  "offlinePoints/deleteOfflineProduct",
+  async (
+    params: { id: string; businessId?: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.delete(
+        `${offlineBase()}/products/${params.id}`,
+        { params: { businessId: params.businessId || undefined } },
+      );
+
+      if (response.data?.isSuccess) {
+        toast.success("Product has been deleted successfully");
+        return params.id;
+      }
+
+      throw new Error(response.data?.message || "Failed to delete product");
+    } catch (error: any) {
+      return handleError(error, rejectWithValue, "Failed to delete product");
+    }
+  },
+);
+
+export const uploadOfflineProductImage = createAsyncThunk(
+  "offlinePoints/uploadOfflineProductImage",
+  async (
+    params: { file: File; businessId?: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      if (!ALLOWED_PRODUCT_IMAGE_TYPES.includes(params.file.type)) {
+        throw new Error("Image must be a JPG, PNG or WebP file");
+      }
+
+      if (params.file.size > MAX_PRODUCT_IMAGE_SIZE) {
+        throw new Error("Image must be 5 MB or smaller");
+      }
+
+      const formData = new FormData();
+      formData.append("file", params.file);
+
+      if (params.businessId) {
+        formData.append("businessId", params.businessId);
+      }
+
+      const response = await axiosInstance.post(
+        `${offlineBase()}/products/images`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } },
+      );
+
+      if (response.data?.isSuccess) {
+        return response.data?.data;
+      }
+
+      throw new Error(response.data?.message || "Failed to upload image");
+    } catch (error: any) {
+      return handleError(error, rejectWithValue, "Failed to upload image");
+    }
+  },
+);
+
 export const fetchOfflineBatches = createAsyncThunk(
   "offlinePoints/fetchOfflineBatches",
   async (
@@ -233,9 +437,10 @@ export const generateOfflineBatch = createAsyncThunk(
   async (
     reqBody: {
       businessId: string;
+      kind?: OfflineCodeKind;
       reference: string;
-      expiresAt: string;
-      activities: { activityId: string; quantity: number }[];
+      expiresAt?: string;
+      activities: OfflineBatchLine[];
     },
     { rejectWithValue },
   ) => {

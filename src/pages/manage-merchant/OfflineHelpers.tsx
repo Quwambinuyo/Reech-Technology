@@ -8,6 +8,12 @@ import type { OfflineBatch } from "../../redux/offline/reducer";
 
 export const NOT_SET = "—";
 
+export const BATCH_KIND_LABELS: Record<0 | 1 | 2, string> = {
+  0: "Scratch cards",
+  1: "Product labels",
+  2: "Labels with rewards",
+};
+
 export const inputClass =
   "w-full border border-[#CBD5E1] rounded px-3 py-2 text-sm text-[#1E293B] outline-none focus:border-[#4A148C] disabled:bg-[#F1F5F9] disabled:cursor-not-allowed";
 
@@ -46,7 +52,9 @@ export type BatchStatus =
 
 export const getBatchStatus = (batch: OfflineBatch): BatchStatus => {
   if (batch.cancelledAt) return "Cancelled";
-  if (new Date(batch.expiresAt).getTime() < Date.now()) return "Expired";
+  if (batch.expiresAt && new Date(batch.expiresAt).getTime() < Date.now()) {
+    return "Expired";
+  }
   if (batch.codeCount > 0 && batch.redeemedCount === batch.codeCount) {
     return "Fully redeemed";
   }
