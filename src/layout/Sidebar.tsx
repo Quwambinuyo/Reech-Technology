@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import type { IconType } from "react-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/reech-single.png";
 import ac_dashboard from "../assets/ac-dashboard.png";
@@ -15,7 +17,7 @@ import ac_merchant from "../assets/ac-merchant.png";
 import in_merchant from "../assets/inac-merchant.png";
 import in_user from "../assets/inac-user.png";
 import { useRole } from "../hooks/useRole";
-import { FiLogOut } from "react-icons/fi";
+import { FiAward, FiChevronDown, FiLogOut, FiPackage } from "react-icons/fi";
 import { onLogout } from "../redux/auth/authReducer";
 import { useAppDispatch } from "../redux/hooks";
 import { toast } from "react-toastify";
@@ -74,13 +76,17 @@ const Sidebar = () => {
       <div className="relative mt-8 xl:mt-10 hidden md:block h-px bg-gradient-to-r from-white/30 to-transparent" />
 
       <div className="relative grid gap-2 xl:gap-2.5 mt-8 xl:mt-10">
-        {links.map((link) => (
-          <SidebarLink
-            link={link}
-            key={link.text}
-            isActive={getActivePath(link.text)}
-          />
-        ))}
+        {links.map((link) =>
+          link.children ? (
+            <SidebarGroup key={link.text} link={link} pathname={pathname} />
+          ) : (
+            <SidebarLink
+              link={link}
+              key={link.text}
+              isActive={getActivePath(link.text)}
+            />
+          ),
+        )}
       </div>
 
       <button
@@ -96,7 +102,40 @@ const Sidebar = () => {
 
 export default Sidebar;
 
-export const customerLinks = [
+export type SidebarChild = {
+  text: string;
+  path: string;
+  icon: IconType;
+  match: (pathname: string) => boolean;
+};
+
+export type SidebarLinkProps = {
+  text: string;
+  icon: { active: string; inactive: string };
+  children?: SidebarChild[];
+};
+
+const OFFLINE_BASE = "/offline-points";
+const OFFLINE_PRODUCTS = `${OFFLINE_BASE}/products`;
+
+const offlineChildren: SidebarChild[] = [
+  {
+    text: "points",
+    path: OFFLINE_BASE,
+    icon: FiAward,
+    match: (pathname) =>
+      pathname.startsWith(OFFLINE_BASE) &&
+      !pathname.startsWith(OFFLINE_PRODUCTS),
+  },
+  {
+    text: "products",
+    path: OFFLINE_PRODUCTS,
+    icon: FiPackage,
+    match: (pathname) => pathname.startsWith(OFFLINE_PRODUCTS),
+  },
+];
+
+export const customerLinks: SidebarLinkProps[] = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   { text: "make payments", icon: { active: ac_payment, inactive: in_payment } },
   { text: "ways to earn", icon: { active: ac_task, inactive: in_task } },
@@ -107,10 +146,14 @@ export const customerLinks = [
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
 
-export const merchantLinks = [
+export const merchantLinks: SidebarLinkProps[] = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   { text: "upload points", icon: { active: ac_payment, inactive: in_payment } },
-  { text: "offline points", icon: { active: ac_task, inactive: in_task } },
+  {
+    text: "offline",
+    icon: { active: ac_task, inactive: in_task },
+    children: offlineChildren,
+  },
   // {
   //   text: "rewards settings",
   //   icon: { active: ac_task, inactive: in_task },
@@ -125,7 +168,7 @@ export const merchantLinks = [
   },
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
-export const adminLinks = [
+export const adminLinks: SidebarLinkProps[] = [
   { text: "dashboard", icon: { active: ac_dashboard, inactive: in_dashboard } },
   {
     text: "manage categories",
@@ -139,14 +182,13 @@ export const adminLinks = [
     text: "merchants",
     icon: { active: ac_merchant, inactive: in_merchant },
   },
-  { text: "offline points", icon: { active: ac_task, inactive: in_task } },
+  {
+    text: "offline",
+    icon: { active: ac_task, inactive: in_task },
+    children: offlineChildren,
+  },
   { text: "profile", icon: { active: ac_profile, inactive: in_profile } },
 ];
-
-export type SidebarLinkProps = {
-  text: string;
-  icon: { active: string; inactive: string };
-};
 
 const SidebarLink = ({
   link,
@@ -178,6 +220,91 @@ const SidebarLink = ({
         <span className="size-1.5 shrink-0 rounded-full bg-primary-purple" />
       )}
     </Link>
+  );
+};
+
+const SidebarGroup = ({
+  link,
+  pathname,
+}: {
+  link: SidebarLinkProps;
+  pathname: string;
+}) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const children = link.children ?? [];
+  const isActive = children.some((child) => child.match(pathname));
+  const [open, setOpen] = useState(isActive);
+
+  useEffect(() => {
+    if (isActive) setOpen(true);
+  }, [isActive]);
+
+  const showPill = isActive && !open;
+
+  const handleToggle = () => {
+    if (!isActive && children.length > 0) {
+      setOpen(true);
+      dispatch(onToggleMobileSidebar());
+      navigate(children[0].path);
+      return;
+    }
+
+    setOpen((prev) => !prev);
+  };
+
+  return (
+    <div className="grid gap-1.5">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={handleToggle}
+        className={`flex items-center gap-2 xl:gap-3 capitalize px-4 xl:px-5 py-3.5 xl:py-4 text-sm xl:text-[14.5px] text-nowrap rounded-[30px] transition-colors duration-200 lg:w-[180px] xl:w-[195px] ${
+          showPill
+            ? "bg-white text-primary-purple font-medium shadow-lg shadow-black/20"
+            : open
+              ? "bg-white/10 text-white"
+              : "text-white/80 hover:bg-white/10 hover:text-white"
+        }`}
+      >
+        <img src={showPill ? link.icon.active : link.icon.inactive} alt="" />
+        <span className="flex-1 text-left">{link.text}</span>
+        <FiChevronDown
+          size={16}
+          className={`shrink-0 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="ml-6 xl:ml-7 grid gap-1 border-l border-white/15 pl-3 lg:w-[150px] xl:w-[163px]">
+          {children.map((child) => {
+            const childActive = child.match(pathname);
+            const ChildIcon = child.icon;
+
+            return (
+              <Link
+                key={child.text}
+                to={child.path}
+                onClick={() => dispatch(onToggleMobileSidebar())}
+                className={`flex items-center gap-2 capitalize px-4 py-2.5 text-sm text-nowrap rounded-[30px] transition-colors duration-200 ${
+                  childActive
+                    ? "bg-white text-primary-purple font-medium shadow-lg shadow-black/20"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <ChildIcon size={16} className="shrink-0" />
+                <span className="flex-1">{child.text}</span>
+                {childActive && (
+                  <span className="size-1.5 shrink-0 rounded-full bg-primary-purple" />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 

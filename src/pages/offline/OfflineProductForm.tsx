@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { FaArrowLeft, FaPlus, FaSpinner, FaXmark } from "react-icons/fa6";
+import {
+  FaArrowLeft,
+  FaCircleExclamation,
+  FaCloudArrowUp,
+  FaImage,
+  FaPlus,
+  FaSpinner,
+  FaTrashCan,
+} from "react-icons/fa6";
 import { CustomTextInput } from "../../components/CustomInput";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -23,8 +31,13 @@ const MAX_VARIANTS = 50;
 const FOCUS_COLOR = "#4A148C";
 const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp";
 
-const cardClass = "bg-white rounded-xl p-5 md:p-6 flex flex-col gap-5";
-const labelClass = "text-sm md:text-[14.5px]";
+const cardClass =
+  "bg-white rounded-2xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.04)] p-5 md:p-6 flex flex-col gap-5";
+const labelClass = "text-sm md:text-[14.5px] text-[#334155]";
+const addButtonClass =
+  "inline-flex w-fit items-center gap-2 rounded-lg border border-dashed border-[#4A148C]/40 bg-[#F5F0FA]/60 px-4 py-2.5 text-sm font-semibold text-[#4A148C] transition-colors hover:border-[#4A148C]/70 hover:bg-[#EDE7F6] disabled:cursor-not-allowed disabled:opacity-40";
+const iconButtonClass =
+  "inline-flex shrink-0 items-center justify-center rounded-lg text-[#94A3B8] transition-colors hover:bg-[#FEF2F2] hover:text-[#DC2626] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#94A3B8]";
 
 type SpecRow = { key: number; label: string; value: string };
 
@@ -40,13 +53,18 @@ type VariantRow = {
 const SectionHeader = ({
   title,
   description,
+  aside,
 }: {
   title: string;
   description: string;
+  aside?: React.ReactNode;
 }) => (
-  <div>
-    <h5 className="font-semibold text-[#1E293B]">{title}</h5>
-    <p className="text-sm text-[#64748B]">{description}</p>
+  <div className="flex items-start gap-3">
+    <div className="min-w-0 flex-1">
+      <h5 className="font-semibold text-[#0F172A]">{title}</h5>
+      <p className="text-sm text-[#64748B]">{description}</p>
+    </div>
+    {aside}
   </div>
 );
 
@@ -59,49 +77,55 @@ type SpecEditorProps = {
 
 const SpecEditor = ({ rows, disabled, nextKey, onChange }: SpecEditorProps) => (
   <div className="flex flex-col gap-3">
+    {rows.length === 0 && (
+      <p className="rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-4 py-3 text-sm text-[#64748B]">
+        No details yet.
+      </p>
+    )}
+
     {rows.map((row) => (
-      <div
-        key={row.key}
-        className="grid items-center gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
-      >
-        <input
-          type="text"
-          aria-label="Detail label"
-          placeholder="Storage"
-          value={row.label}
-          disabled={disabled}
-          onChange={(e) =>
-            onChange(
-              rows.map((r) =>
-                r.key === row.key ? { ...r, label: e.target.value } : r,
-              ),
-            )
-          }
-          className={`${inputClass} py-2.5`}
-        />
-        <input
-          type="text"
-          aria-label="Detail value"
-          placeholder="Cool, dry place"
-          value={row.value}
-          disabled={disabled}
-          onChange={(e) =>
-            onChange(
-              rows.map((r) =>
-                r.key === row.key ? { ...r, value: e.target.value } : r,
-              ),
-            )
-          }
-          className={`${inputClass} py-2.5`}
-        />
+      <div key={row.key} className="flex items-start gap-2">
+        <div className="grid flex-1 gap-2 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+          <input
+            type="text"
+            aria-label="Detail label"
+            placeholder="Storage"
+            value={row.label}
+            disabled={disabled}
+            onChange={(e) =>
+              onChange(
+                rows.map((r) =>
+                  r.key === row.key ? { ...r, label: e.target.value } : r,
+                ),
+              )
+            }
+            className={`${inputClass} py-2.5`}
+          />
+          <input
+            type="text"
+            aria-label="Detail value"
+            placeholder="Cool, dry place"
+            value={row.value}
+            disabled={disabled}
+            onChange={(e) =>
+              onChange(
+                rows.map((r) =>
+                  r.key === row.key ? { ...r, value: e.target.value } : r,
+                ),
+              )
+            }
+            className={`${inputClass} py-2.5`}
+          />
+        </div>
         <button
           type="button"
           aria-label="Remove detail"
+          title="Remove detail"
           disabled={disabled}
           onClick={() => onChange(rows.filter((r) => r.key !== row.key))}
-          className="flex size-10 shrink-0 items-center justify-center rounded-md text-[#64748B] transition-colors hover:bg-[#FEE2E2] hover:text-[#B91C1C] disabled:cursor-not-allowed disabled:opacity-40"
+          className={`${iconButtonClass} size-10`}
         >
-          <FaXmark />
+          <FaTrashCan size={14} />
         </button>
       </div>
     ))}
@@ -112,9 +136,9 @@ const SpecEditor = ({ rows, disabled, nextKey, onChange }: SpecEditorProps) => (
       onClick={() =>
         onChange([...rows, { key: nextKey(), label: "", value: "" }])
       }
-      className="flex w-fit items-center gap-2 rounded border border-dashed border-[#4A148C]/50 px-4 py-2 text-sm font-semibold text-[#4A148C] transition-colors hover:bg-[#EDE7F6] disabled:cursor-not-allowed disabled:opacity-40"
+      className={addButtonClass}
     >
-      <FaPlus size={12} />
+      <FaPlus size={11} />
       Add detail
     </button>
   </div>
@@ -138,41 +162,71 @@ const ImageField = ({
   onClear,
 }: ImageFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const locked = disabled || isUploading;
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <span className={labelClass}>{label}</span>
-      <div className="flex items-center gap-3 flex-wrap">
-        {url ? (
-          <img
-            src={url}
-            alt=""
-            className="size-16 rounded border border-[#E2E8F0] object-cover"
-          />
-        ) : (
-          <div className="size-16 rounded border border-dashed border-[#CBD5E1] bg-[#F8FAFC]" />
-        )}
+      <div className="flex items-center gap-4 flex-wrap">
+        <button
+          type="button"
+          aria-label={url ? "Replace image" : "Upload image"}
+          disabled={locked}
+          onClick={() => inputRef.current?.click()}
+          className="group relative size-24 shrink-0 overflow-hidden rounded-2xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] transition-colors hover:border-[#4A148C]/60 hover:bg-[#F5F0FA] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {url ? (
+            <img src={url} alt="" className="size-full object-cover" />
+          ) : (
+            <span className="flex size-full flex-col items-center justify-center gap-1 text-[#94A3B8] transition-colors group-hover:text-[#4A148C]">
+              <FaImage size={20} />
+              <span className="text-[11px] font-medium">Add image</span>
+            </span>
+          )}
 
-        <div className="flex gap-2 flex-wrap">
-          <button
-            type="button"
-            disabled={disabled || isUploading}
-            onClick={() => inputRef.current?.click()}
-            className={outlineButton}
-          >
-            {isUploading && <FaSpinner className="animate-spin" />}
-            {url ? "Replace" : "Upload image"}
-          </button>
-          {url && (
+          {url && !isUploading && (
+            <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-white opacity-0 transition-opacity group-hover:opacity-100">
+              <FaCloudArrowUp size={18} />
+            </span>
+          )}
+
+          {isUploading && (
+            <span className="absolute inset-0 flex items-center justify-center bg-white/75 text-[#4A148C]">
+              <FaSpinner className="animate-spin" size={18} />
+            </span>
+          )}
+        </button>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button
               type="button"
-              disabled={disabled || isUploading}
-              onClick={onClear}
+              disabled={locked}
+              onClick={() => inputRef.current?.click()}
               className={outlineButton}
             >
-              Remove
+              {isUploading ? (
+                <FaSpinner className="animate-spin" />
+              ) : (
+                <FaCloudArrowUp />
+              )}
+              {isUploading ? "Uploading..." : url ? "Replace" : "Upload"}
             </button>
-          )}
+            {url && (
+              <button
+                type="button"
+                disabled={locked}
+                onClick={onClear}
+                className={outlineButton}
+              >
+                <FaTrashCan size={13} />
+                Remove
+              </button>
+            )}
+          </div>
+          <span className="text-xs text-[#64748B]">
+            JPG, PNG or WebP, up to 5 MB.
+          </span>
         </div>
 
         <input
@@ -188,7 +242,6 @@ const ImageField = ({
           }}
         />
       </div>
-      <span className="text-xs text-[#64748B]">JPG, PNG or WebP, up to 5 MB.</span>
     </div>
   );
 };
@@ -387,44 +440,56 @@ const OfflineProductForm = () => {
   const showError = isEdit && !detail && !fetchProductDetailLoading;
 
   return (
-    <div className="flex flex-col gap-5 mt-2">
+    <div className="flex flex-col gap-5 mt-2 pb-4">
       <div className="flex items-center gap-3">
         <button
           type="button"
           aria-label="Go back"
           onClick={() => navigate(`/offline-points/products${listQuery}`)}
-          className="bg-white text-primary-purple text-lg p-1.5 rounded"
+          className="flex size-10 items-center justify-center rounded-xl border border-[#E2E8F0] bg-white text-primary-purple shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:bg-[#F5F0FA]"
         >
-          <FaArrowLeft />
+          <FaArrowLeft size={14} />
         </button>
         <div>
-          <h4 className="font-semibold text-[#1E293B]">
+          <h4 className="font-semibold text-[#0F172A]">
             {isEdit ? "Edit product" : "New product"}
           </h4>
-          <p className="text-sm text-[#64748B]">
-            Offline points · Products
-          </p>
+          <p className="text-sm text-[#64748B]">Offline  Products</p>
         </div>
       </div>
 
       {showSkeleton && (
-        <div className="bg-white rounded-xl p-6 flex flex-col gap-4 animate-pulse">
-          <div className="h-5 w-48 bg-[#E2E8F0] rounded" />
-          <div className="h-12 bg-[#E2E8F0] rounded" />
-          <div className="h-12 bg-[#E2E8F0] rounded" />
-          <div className="h-40 bg-[#E2E8F0] rounded" />
+        <div className="flex flex-col gap-5">
+          {[0, 1, 2].map((item) => (
+            <div
+              key={item}
+              className="bg-white rounded-2xl border border-[#E2E8F0] p-6 flex flex-col gap-4 animate-pulse"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-2">
+                  <div className="h-4 w-40 bg-[#E2E8F0] rounded" />
+                  <div className="h-3 w-64 max-w-full bg-[#E2E8F0] rounded" />
+                </div>
+              </div>
+              <div className="h-12 bg-[#E2E8F0] rounded-lg" />
+              <div className="h-12 bg-[#E2E8F0] rounded-lg" />
+            </div>
+          ))}
         </div>
       )}
 
       {showError && (
-        <div className="bg-white rounded-xl p-8 text-center flex flex-col items-center gap-4">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 text-center flex flex-col items-center gap-4">
+          <span className="flex size-12 items-center justify-center rounded-full bg-[#FEF2F2] text-[#DC2626]">
+            <FaCircleExclamation size={20} />
+          </span>
           <p className="text-sm text-[#475569]">
             {fetchProductDetailError || "Unable to load this product."}
           </p>
           <button
             type="button"
             onClick={loadDetail}
-            className="text-sm text-[#4A148C] font-semibold"
+            className={outlineButton}
           >
             Try again
           </button>
@@ -501,14 +566,16 @@ const OfflineProductForm = () => {
                 otherInputProps={{ disabled: isBusy }}
               />
 
-              <ImageField
-                label="Product image"
-                url={imageUrl}
-                isUploading={uploadingTarget === "product"}
-                disabled={!hasTarget || isSaving}
-                onPick={(file) => uploadImage(file, "product", setImageUrl)}
-                onClear={() => setImageUrl("")}
-              />
+              <div className="md:col-span-2">
+                <ImageField
+                  label="Product image"
+                  url={imageUrl}
+                  isUploading={uploadingTarget === "product"}
+                  disabled={!hasTarget || isSaving}
+                  onPick={(file) => uploadImage(file, "product", setImageUrl)}
+                  onClear={() => setImageUrl("")}
+                />
+              </div>
 
               <div className="flex flex-col gap-1 md:col-span-2">
                 <label htmlFor="description" className={labelClass}>
@@ -530,6 +597,13 @@ const OfflineProductForm = () => {
             <SectionHeader
               title="Details"
               description="Any label and value, such as Storage or Ingredients."
+              aside={
+                specs.length > 0 ? (
+                  <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 text-xs font-medium text-[#475569]">
+                    {specs.length}
+                  </span>
+                ) : null
+              }
             />
             <SpecEditor
               rows={specs}
@@ -543,15 +617,41 @@ const OfflineProductForm = () => {
             <SectionHeader
               title="Variants"
               description='Each size, flavour or pack. If it has no sizes, keep one variant called "Standard".'
+              aside={
+                <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 text-xs font-medium text-[#475569]">
+                  {variants.length}/{MAX_VARIANTS}
+                </span>
+              }
             />
 
             <div className="flex flex-col gap-4">
-              {variants.map((variant) => (
+              {variants.map((variant, index) => (
                 <div
                   key={variant.key}
-                  className="flex flex-col gap-4 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3 md:p-4"
+                  className="flex flex-col gap-5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 md:p-5"
                 >
-                  <div className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-7 items-center justify-center rounded-full bg-[#4A148C] text-xs font-semibold text-white">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm font-semibold text-[#0F172A]">
+                        {variant.name.trim() || `Variant ${index + 1}`}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={variants.length === 1 || isBusy}
+                      onClick={() => removeVariant(variant.key)}
+                      className={`${iconButtonClass} h-9 gap-2 px-3 text-sm font-medium`}
+                    >
+                      <FaTrashCan size={13} />
+                      Remove
+                    </button>
+                  </div>
+
+                  <div className="grid items-start gap-4 md:grid-cols-2">
                     <CustomTextInput
                       id={`variant-name-${variant.key}`}
                       label="Variant name"
@@ -575,16 +675,6 @@ const OfflineProductForm = () => {
                       focusBorderColor={FOCUS_COLOR}
                       otherInputProps={{ disabled: isBusy }}
                     />
-
-                    <button
-                      type="button"
-                      aria-label="Remove variant"
-                      disabled={variants.length === 1 || isBusy}
-                      onClick={() => removeVariant(variant.key)}
-                      className="flex size-11 shrink-0 items-center justify-center self-end rounded-md text-[#64748B] transition-colors hover:bg-[#FEE2E2] hover:text-[#B91C1C] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#64748B]"
-                    >
-                      <FaXmark />
-                    </button>
                   </div>
 
                   <ImageField
@@ -615,13 +705,21 @@ const OfflineProductForm = () => {
               ))}
 
               {hasEmptyVariantName && (
-                <p role="alert" className="text-xs text-[#B91C1C]">
+                <p
+                  role="alert"
+                  className="flex items-center gap-2 text-xs text-[#B91C1C]"
+                >
+                  <FaCircleExclamation size={12} />
                   Every variant needs a name.
                 </p>
               )}
 
               {hasDuplicateVariantName && (
-                <p role="alert" className="text-xs text-[#B91C1C]">
+                <p
+                  role="alert"
+                  className="flex items-center gap-2 text-xs text-[#B91C1C]"
+                >
+                  <FaCircleExclamation size={12} />
                   Variant names must be different.
                 </p>
               )}
@@ -630,9 +728,9 @@ const OfflineProductForm = () => {
                 type="button"
                 disabled={variants.length >= MAX_VARIANTS || isBusy}
                 onClick={addVariant}
-                className="flex w-fit items-center gap-2 rounded border border-dashed border-[#4A148C]/50 px-4 py-2 text-sm font-semibold text-[#4A148C] transition-colors hover:bg-[#EDE7F6] disabled:cursor-not-allowed disabled:opacity-40"
+                className={addButtonClass}
               >
-                <FaPlus size={12} />
+                <FaPlus size={11} />
                 Add variant
               </button>
 
@@ -645,7 +743,7 @@ const OfflineProductForm = () => {
             </div>
           </section>
 
-          <div className="flex justify-end gap-3">
+          <div className="sticky bottom-4 z-10 ml-auto flex w-fit items-center gap-2 rounded-2xl border border-[#E2E8F0] bg-white/95 p-2 shadow-[0_8px_24px_rgba(15,23,42,0.12)] backdrop-blur">
             <button
               type="button"
               disabled={isSaving}
@@ -654,7 +752,11 @@ const OfflineProductForm = () => {
             >
               Cancel
             </button>
-            <button type="submit" disabled={!canSubmit} className={primaryButton}>
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className={primaryButton}
+            >
               {isSaving && <FaSpinner className="animate-spin" />}
               {isSaving ? "Saving..." : "Save product"}
             </button>

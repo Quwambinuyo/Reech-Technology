@@ -8,9 +8,10 @@ import { HiArrowDownLeft, HiArrowUpRight } from "react-icons/hi2";
 
 import TransactionCard from "../../customer/partials/TransactionCard";
 import TabSelector from "../../components/TabSelector";
-import { billLine, wallet, reechCurrency } from "../../assets";
+// import { billLine, wallet, reechCurrency } from "../../assets";
+import { wallet, reechCurrency } from "../../assets";
 import { tabs } from "../../customer/partials";
-import PayBillCard from "../../customer/partials/PaybillCard";
+// import PayBillCard from "../../customer/partials/PaybillCard";
 import SendPointFlow from "./sendCreditSteps/SendpointFlow";
 import TokenGenerationFlow from "./tokenGenerationStep/TokenGenerationFlow";
 import CreatePinFlow from "../../pages/payment/createPinStep/CreatePinFlow";
@@ -105,7 +106,7 @@ const MakePayment = () => {
 
           <div className="flex flex-col gap-3">
             <p className="text-[#797979] capitalize text-[15px]">
-              Reech Credit Balance
+              Reech Point Balance
             </p>
 
             <div className="flex gap-1.5">
@@ -148,7 +149,7 @@ const MakePayment = () => {
             </p>
           </button>
 
-          <button
+          {/* <button
             onClick={() => setActiveModal("bill")}
             className="flex-1 flex flex-col items-center gap-2.5 py-4 lg:py-5 rounded-xl bg-white border border-[#F0F1FE] hover:bg-[#F5F3FF] hover:border-[#E8E3FF] active:scale-[0.97] transition-all duration-150"
           >
@@ -156,7 +157,7 @@ const MakePayment = () => {
               <img src={billLine} alt="bill" className="w-5 h-5" />
             </span>
             <p className="text-[13px] lg:text-[10px] font-medium">Pay Bill</p>
-          </button>
+          </button> */}
 
           <button
             onClick={() => setActiveModal("token")}
@@ -245,11 +246,11 @@ const MakePayment = () => {
         </Modal>
       )}
 
-      {activeModal === "bill" && (
+      {/* {activeModal === "bill" && (
         <Modal modal={activeModal === "bill"} onClose={closeModal}>
           <PayBillCard onClose={closeModal} />
         </Modal>
-      )}
+      )} */}
 
       {activeModal === "token" && (
         <Modal modal={activeModal === "token"} onClose={closeModal}>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { FaArrowLeft, FaPen, FaPlus, FaTrash } from "react-icons/fa6";
+import { FaPlus } from "react-icons/fa6";
 import { DataTable, type DataTableColumn } from "../../components/DataTable";
 import { Pagination } from "../../components/Pagination";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -17,6 +17,13 @@ import {
   inputClass,
   primaryButton,
 } from "../manage-merchant/OfflineHelpers";
+import {
+  CardSkeleton,
+  ProductActions,
+  ProductCard,
+  ProductThumb,
+  VariantChips,
+} from "./OfflineProductHelpers";
 
 const PAGE_SIZE = 25;
 
@@ -83,6 +90,9 @@ const OfflineProducts = () => {
   const totalPages = Math.max(1, Math.ceil(allProducts.totalCount / PAGE_SIZE));
   const showSkeleton = fetchProductsLoading && items.length === 0;
   const query = businessId ? `?businessId=${businessId}` : "";
+  const emptyMessage = search
+    ? "No products match your search"
+    : "No products yet";
 
   const handleDelete = async () => {
     if (!toDelete) return;
@@ -106,30 +116,67 @@ const OfflineProducts = () => {
     {
       key: "product",
       header: "Product",
-      maxWidth: 260,
-      skeletonWidth: "w-32",
+      maxWidth: 300,
+      skeletonWidth: "w-40",
       tooltip: (product) => product.name,
       render: (product) => (
-        <span className="font-medium text-[#1E293B]">{product.name}</span>
+        <div className="flex items-center gap-3">
+          <ProductThumb
+            url={product.imageUrl}
+            name={product.name}
+            size="size-11"
+          />
+          <div className="min-w-0">
+            <p className="truncate font-medium text-[#1E293B]">{product.name}</p>
+            {product.description?.trim() && (
+              <p className="truncate text-xs text-[#64748B]">
+                {product.description}
+              </p>
+            )}
+          </div>
+        </div>
       ),
     },
     {
       key: "brand",
       header: "Brand",
-      maxWidth: 180,
-      skeletonWidth: "w-24",
+      maxWidth: 160,
+      skeletonWidth: "w-20",
       render: (product) => product.brand?.trim() || NOT_SET,
+    },
+    {
+      key: "registrationNumber",
+      header: "Reg. no",
+      maxWidth: 140,
+      skeletonWidth: "w-20",
+      render: (product) => product.registrationNumber?.trim() || NOT_SET,
+    },
+    {
+      key: "origin",
+      header: "Manufacturer",
+      maxWidth: 220,
+      skeletonWidth: "w-28",
+      tooltip: (product) =>
+        [product.manufacturer, product.countryOfOrigin]
+          .filter((value) => value?.trim())
+          .join(" · "),
+      render: (product) => (
+        <div className="min-w-0">
+          <p className="truncate">{product.manufacturer?.trim() || NOT_SET}</p>
+          {product.countryOfOrigin?.trim() && (
+            <p className="truncate text-xs text-[#64748B]">
+              {product.countryOfOrigin}
+            </p>
+          )}
+        </div>
+      ),
     },
     {
       key: "variants",
       header: "Variants",
       maxWidth: 320,
       skeletonWidth: "w-40",
-      tooltip: (product) =>
-        (product.variants ?? []).map((variant) => variant.name).join(" · "),
-      render: (product) =>
-        (product.variants ?? []).map((variant) => variant.name).join(" · ") ||
-        NOT_SET,
+      render: (product) => <VariantChips product={product} />,
     },
     {
       key: "action",
@@ -138,43 +185,18 @@ const OfflineProducts = () => {
       pinRight: true,
       skeleton: <div className="ml-auto h-8 w-20 rounded bg-[#E2E8F0]" />,
       render: (product) => (
-        <div className="flex justify-end gap-2">
-          <Link
-            to={`/offline-points/products/${product.id}${query}`}
-            aria-label={`Edit ${product.name}`}
-            className="p-2 rounded border border-[#4A148C] text-[#4A148C] text-xs hover:bg-[#4A148C] hover:text-white transition-colors"
-          >
-            <FaPen />
-          </Link>
-          <button
-            type="button"
-            aria-label={`Delete ${product.name}`}
-            onClick={() => setToDelete(product)}
-            className="p-2 rounded border border-[#B91C1C] text-[#B91C1C] text-xs hover:bg-[#B91C1C] hover:text-white transition-colors"
-          >
-            <FaTrash />
-          </button>
-        </div>
+        <ProductActions
+          product={product}
+          query={query}
+          onDelete={setToDelete}
+        />
       ),
     },
   ];
 
   return (
     <div className="mt-2 flex flex-col gap-5">
-      <div className="flex items-center gap-3">
-        <Link
-          to={`/offline-points${query}`}
-          aria-label="Back to offline points"
-          className="bg-white text-primary-purple text-lg p-1.5 rounded"
-        >
-          <FaArrowLeft />
-        </Link>
-        <div>
-          <h4 className="font-semibold text-[#1E293B]">Offline points</h4>
-          <p className="text-sm text-[#64748B]">Products</p>
-        </div>
-      </div>
-
+  
       <section className="rounded-xl bg-white p-4 lg:p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
@@ -184,12 +206,12 @@ const OfflineProducts = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex w-full items-center gap-3 flex-wrap md:w-auto">
             {!isMerchant && (
               <MerchantSelect
                 value={businessId}
                 onChange={(value) => updateParams({ businessId: value, page: 1 })}
-                className="w-[220px]"
+                className="w-full md:w-[220px]"
               />
             )}
 
@@ -200,7 +222,7 @@ const OfflineProducts = () => {
               placeholder="Search products"
               aria-label="Search products"
               disabled={!canLoad}
-              className={`${inputClass} w-[220px]`}
+              className={`${inputClass} w-full md:w-[220px]`}
             />
 
             {canLoad ? (
@@ -225,19 +247,54 @@ const OfflineProducts = () => {
             Select a merchant to see its products.
           </p>
         ) : (
-          <DataTable
-            className="mt-3"
-            minWidth={760}
-            columns={columns}
-            rows={items}
-            getRowKey={(product) => product.id}
-            isLoading={showSkeleton}
-            error={fetchProductsError}
-            onRetry={load}
-            emptyMessage={
-              search ? "No products match your search" : "No products yet"
-            }
-          />
+          <>
+            <div className="hidden md:block">
+              <DataTable
+                className="mt-3"
+                minWidth={1040}
+                columns={columns}
+                rows={items}
+                getRowKey={(product) => product.id}
+                isLoading={showSkeleton}
+                error={fetchProductsError}
+                onRetry={load}
+                emptyMessage={emptyMessage}
+              />
+            </div>
+
+            <div className="flex flex-col gap-3 md:hidden">
+              {showSkeleton ? (
+                <>
+                  <CardSkeleton />
+                  <CardSkeleton />
+                </>
+              ) : fetchProductsError ? (
+                <div className="flex flex-col items-center gap-3 rounded-xl border border-[#E2E8F0] p-6 text-center">
+                  <p className="text-sm text-[#475569]">{fetchProductsError}</p>
+                  <button
+                    type="button"
+                    onClick={load}
+                    className="text-sm font-semibold text-[#4A148C]"
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : items.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-[#CBD5E1] p-6 text-center text-sm text-[#64748B]">
+                  {emptyMessage}
+                </p>
+              ) : (
+                items.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    query={query}
+                    onDelete={setToDelete}
+                  />
+                ))
+              )}
+            </div>
+          </>
         )}
 
         {canLoad && !fetchProductsError && allProducts.totalCount > PAGE_SIZE && (

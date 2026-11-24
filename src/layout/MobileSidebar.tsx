@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import logo from "../assets/reech-single.png";
 import { useRole } from "../hooks/useRole";
-import { FiLogOut } from "react-icons/fi";
+import { FiChevronDown, FiLogOut } from "react-icons/fi";
 import { onLogout, onToggleMobileSidebar } from "../redux/auth/authReducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { toast } from "react-toastify";
@@ -169,17 +169,29 @@ const MobileSidebar = () => {
         <div className="relative mx-5 h-px bg-gradient-to-r from-white/30 to-transparent" />
 
         <nav className="relative flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1.5 hide-scroll">
-          {links.map((link, index) => (
-            <MobileSidebarLink
-              link={link}
-              key={link.text}
-              index={index}
-              visible={visible}
-              entered={entered}
-              isActive={getActivePath(link.text)}
-              onNavigate={closeSidebar}
-            />
-          ))}
+          {links.map((link, index) =>
+            link.children ? (
+              <MobileSidebarGroup
+                key={link.text}
+                link={link}
+                index={index}
+                pathname={pathname}
+                visible={visible}
+                entered={entered}
+                onNavigate={closeSidebar}
+              />
+            ) : (
+              <MobileSidebarLink
+                key={link.text}
+                link={link}
+                index={index}
+                visible={visible}
+                entered={entered}
+                isActive={getActivePath(link.text)}
+                onNavigate={closeSidebar}
+              />
+            ),
+          )}
         </nav>
 
         <div className="relative px-4 pb-6 pt-2">
@@ -240,5 +252,103 @@ const MobileSidebarLink = ({
         <span className="size-1.5 rounded-full bg-primary-purple" />
       )}
     </Link>
+  );
+};
+
+const MobileSidebarGroup = ({
+  link,
+  pathname,
+  onNavigate,
+  index,
+  visible,
+  entered,
+}: {
+  link: SidebarLinkProps;
+  pathname: string;
+  onNavigate: () => void;
+  index: number;
+  visible: boolean;
+  entered: boolean;
+}) => {
+  const children = link.children ?? [];
+  const isActive = children.some((child) => child.match(pathname));
+  const [open, setOpen] = useState(isActive);
+
+  useEffect(() => {
+    if (isActive) setOpen(true);
+  }, [isActive]);
+
+  const showPill = isActive && !open;
+
+  return (
+    <div
+      style={{
+        transitionDelay: visible && !entered ? `${index * 45 + 120}ms` : "0ms",
+      }}
+      className={`grid gap-1 transition-[opacity,transform] duration-300 ${
+        visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+      }`}
+    >
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((prev) => !prev)}
+        className={`flex items-center gap-3 capitalize px-4 h-[54px] text-sm w-full rounded-[18px] transition-colors duration-200 active:scale-[0.98] ${
+          showPill
+            ? "bg-white text-primary-purple font-semibold shadow-lg shadow-black/20"
+            : open
+              ? "bg-white/10 text-white"
+              : "text-white/85 active:bg-white/10"
+        }`}
+      >
+        <img
+          src={showPill ? link.icon.active : link.icon.inactive}
+          alt=""
+          className="w-[18px] h-[18px] shrink-0"
+        />
+        <span className="flex-1 text-left">{link.text}</span>
+        <FiChevronDown
+          size={16}
+          className={`shrink-0 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="ml-7 mt-1 grid gap-1 border-l border-white/15 pl-3">
+            {children.map((child) => {
+              const childActive = child.match(pathname);
+              const ChildIcon = child.icon;
+
+              return (
+                <Link
+                  key={child.text}
+                  to={child.path}
+                  onClick={onNavigate}
+                  tabIndex={open ? 0 : -1}
+                  className={`flex items-center gap-2 capitalize px-4 h-[46px] text-sm rounded-[16px] transition-[transform,background-color] duration-200 active:scale-[0.98] ${
+                    childActive
+                      ? "bg-white text-primary-purple font-semibold shadow-lg shadow-black/20"
+                      : "text-white/85 active:bg-white/10"
+                  }`}
+                >
+                  <ChildIcon size={16} className="shrink-0" />
+                  <span className="flex-1">{child.text}</span>
+                  {childActive && (
+                    <span className="size-1.5 rounded-full bg-primary-purple" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
